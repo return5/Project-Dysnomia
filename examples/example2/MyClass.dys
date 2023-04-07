@@ -1,0 +1,14 @@
+PersonClass = require('examples.example2.PersonClass')
+
+class MyClass(name,age,sex,phoneNumber) :> PersonClass {
+	function print()
+		return "name: " .. self.name .. ". age: " .. self.age .. ". sex: " .. self.sex .. ". phone number: " .. self.phoneNumber
+	end
+
+	function MyClass(name,age,sex,phoneNumber)
+		super(name,age,sex)
+		self.phoneNumber = phoneNumber
+	end
+}
+
+

@@ -1,0 +1,9 @@
+MyClass = require('examples.example2.MyClass')
+
+function main()
+	io.write("running example.dys\n")
+	myObj = MyClass("return5","unknown","yes,please","1800-youSuck")
+	io.write(myObj:print(),"\n")
+end
+
+main()
