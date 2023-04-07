@@ -1,5 +1,5 @@
 
-Project Dysnomia: adding syntax and features on top of Lua 5.4  
+Project [Dysnomia](https://en.wikipedia.org/wiki/Dysnomia_(moon)): adding syntax and features on top of Lua 5.4  
 The stated goal of this project is to build on top of Lua 5.4 with new syntax, features, and enhancements.
 currently this is a work in progress.
   
@@ -74,26 +74,26 @@ to keep the parser simpler and easier to write, there are a few things to keep i
 - when declaring classes, the keywords in class declarations should have spaces around them. the parameters, if any, should not have spaces.
   - ```class MyClass(par1,par2,par3) :> MyParentClass {}```
 - the `(` of function declarations and calls should not have a space before it.
+- classes need to be declared inside their own separate file.
 - function parameters should not include spaces.
   - ```function myFunc(p1,p2) end``` and also ``myFunc(1,2)``
 - for declaring multiple variables on the same line, do not include a space between them
   - ```var1,var2,var3 = 5```
 - for best results, declare them separately and use a comma between.
   - ````var1 = 5;var2 = 5;var3 = 5````
-- for simplicity reasons, the readability of the lua output isnt a high priority, as such it is not formatted for easy reading.
-- classes need to be declared inside their own separate file.
+- for simplicity reasons, the readability of the outputted lua code wasnt a high priority. as such, it doesnt follow coding conventions in a readable manner.
 
 ## examples
-  please see the ``eamples`` directory for an example dysnomia program.
+  please see the ``eamples`` directory for examples of dysnomia.
 
 ## TODO
 - [ ] add mutable and immutable records
 - [ ] add lambda constructs
 - [ ] add built in data types
-- [ ] add built in functions and libraries
+- [ ] add built-in functions and libraries
 - [ ] fix ```repeat ... until``` constructs
 - [ ] test on windows
-- [ ] test on mac
+- [ ] test on Mac
 - [ ] do more edge case testing
 - [ ] syntax highlighter
 - [ ] syntax checking and error handling
