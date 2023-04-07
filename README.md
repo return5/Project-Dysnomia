@@ -101,7 +101,6 @@ to keep the parser simpler and easier to write, there are a few things to keep i
 - [ ] add lambda constructs
 - [ ] add built in data types
 - [ ] add built-in functions and libraries
-- [ ] fix ```repeat ... until``` constructs
 - [ ] test on windows
 - [ ] test on Mac
 - [ ] do more edge case testing

@@ -10,6 +10,7 @@ local pairs <const> = pairs
 local gmatch <const> = string.gmatch
 local insert <const> = table.insert
 local gsub <const> = string.gsub
+local io = io
 
 local Parser <const> = {}
 Parser.__index = Parser
@@ -185,7 +186,7 @@ end
 
 --grab parameters for function or class
 local function grabParams(text, func)
-	local funcParams <const> = match(text,"%(([^)]*)%)")
+	local funcParams <const> = match(text,"%(?.*%(([^)]*)%)")
 	for param in gmatch(funcParams,"([^,]*),?") do
 		func(param)
 	end
@@ -381,8 +382,6 @@ end
 function Parser:record(index)
 	--TODO syntax error if includes parent or anything within brackets
 	local recordScope <const> = getRecordScope(self.text,index - 1)
-	io.write("token at index is:",self.text[index],";\n")
-	io.write("token at index + 1 is:",self.text[index + 1],";\n")
 	local className <const>, bracketLoc <const> = parseClassDeclaration(index + 1,self)
 	local closingLoc <const> = findMatch(self.text,index + 2,"}")
 	self.text[closingLoc] = ""
@@ -415,6 +414,7 @@ function Parser:setScopeOfFunc(index,name)
 end
 
 function Parser:scanFunc(index)
+	io.write("scanning func:",self.text[index],";\n")
 	self.scope:new()
 	grabParams(self.text[index],function(param) self.scope:add(param) end)
 	local i <const> = self:loopTokens(index + 1,checkEndScope)
@@ -479,6 +479,11 @@ function Parser:skipTblConstruct(index)
 	return index
 end
 
+function Parser:repUntil(index)
+	self.tokens = {["function"] = self.tokens["function"]}
+	local newIndex <const> = findMatch(self.text,index)
+end
+
 function Parser:skipSpace(index)
 	return index
 end
@@ -513,6 +518,7 @@ local tokens = {
 	['local'] = Parser.loc,
 	class = Parser.class,
 	record = Parser.record,
+	--["until"] = Parser.repUntil,
 	['='] = Parser.equals,
 	['+='] = Parser.add,
 	['-='] = Parser.sub,
@@ -532,7 +538,7 @@ local tokens = {
 local tokenPatterns = {
 	['^[^%-]*require'] = Parser.require,
 	["^%-%-"] = Parser.comments,
-	["[(,;]*function%("] = Parser.scanFunc
+	["[(,;]?function%("] = Parser.scanFunc
 }
 
 local function copyPatterns()
