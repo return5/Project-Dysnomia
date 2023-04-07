@@ -1,0 +1,20 @@
+
+--create an immutable record for holding three values
+record MyRecord(a,b,c) { }
+
+
+function main()
+	rec = MyRecord(2,3,4)
+	--attempt to change a value, but since it is immutable, no changes happen
+	rec.a = 100
+	io.write("var a is: ",rec.a,"\n")
+	--attempt to add new field to record, but since they are immutable it does nothing
+	rec.g = 200
+	if rec.g then
+		io.write("rec.g is: ",rec.g,"\n")
+	else
+		io.write("rec does not contain a value for g\n")
+	end
+end
+
+main()

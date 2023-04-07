@@ -27,9 +27,20 @@ function ClassProperties:generateMetatable(constructorName)
 	local params <const> = concat(self.params,",")
 	local metatable <const> = {
 		"setmetatable(",self.name,",{__index = ",self:getParentName(),",__call = function(_,",params,") return ",self.name,
-		":",constructorName,"(",params,") end })",Config.newLine,"return ",self.name,Config.newLine
-	}
-	return concat(metatable)
+		":",constructorName,"(",params,") end })",Config.newLine }
+	return metatable
+end
+
+function ClassProperties:generateMetatableAndReturn(constructorName)
+	local strTbl <const> = self:generateMetatable(constructorName)
+	strTbl[#strTbl + 1] = "return "
+	strTbl[#strTbl + 1] = self.name
+	strTbl[#strTbl + 1] = Config.newLine
+	return concat(strTbl)
+end
+
+function ClassProperties:generateClassObj()
+	return concat({"local " .. self.name .. " <const> = {}" .. Config.newLine})
 end
 
 --hold constructor, loc of closing brackets, name of class, reference to parent class, functions in class

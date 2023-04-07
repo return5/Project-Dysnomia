@@ -4,7 +4,6 @@ local concat <const> = table.concat
 local random <const> = math.random
 local Config <const> = require('config.config')
 
-
 local ConstructorProperties <const> = {}
 ConstructorProperties.__index = ConstructorProperties
 
@@ -19,20 +18,19 @@ function ConstructorProperties:replaceSuper(params)
 	return self:makeMetatableWithParent(params)
 end
 
-local function adjustParams(params)
-	local adjustedParams <const> = {}
+local function adjustParams(params,tbl)
 	for i=1,#params,1 do
-		adjustedParams[#adjustedParams + 1] = params[i]
-		adjustedParams[#adjustedParams + 1] = " = "
-		adjustedParams[#adjustedParams + 1] = params[i]
-		adjustedParams[#adjustedParams + 1] = ","
+		tbl[#tbl + 1] = params[i]
+		tbl[#tbl + 1] = " = "
+		tbl[#tbl + 1] = params[i]
+		tbl[#tbl + 1] = ","
 	end
-	adjustedParams[#adjustedParams] = nil
-	return adjustedParams
+	tbl[#tbl] = nil
+	return tbl
 end
 
 function ConstructorProperties:makeMetatableNoParent(params)
-	local adjustedParams <const> = concat(adjustParams(params))
+	local adjustedParams <const> = concat(adjustParams(params,{}))
 	local constTbl <const> = generateMetatable(self.objName,self.classProperties.name,"","{","}",adjustedParams)
 	return concat(constTbl)
 end
@@ -90,14 +88,6 @@ function ConstructorProperties:generateConstructorWithParent()
 	return concat(constructor)
 end
 
-function ConstructorProperties:generateConstructor()
-	self.name = "new"
-	if not self.classProperties.parent then
-		return self:generateNoParentConstructor()
-	end
-	return self:generateConstructorWithParent()
-end
-
 local nameTable <const> = {
 	"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w",
 	"x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"
@@ -112,6 +102,24 @@ local function generateRandomName()
 	return concat(name)
 end
 
+function ConstructorProperties:generateConstructor()
+	self.name = "new"
+	if not self.classProperties.parent then
+		return self:generateNoParentConstructor()
+	end
+	return self:generateConstructorWithParent()
+end
+
+function ConstructorProperties:generateRecord(scope)
+	local record = {scope," function ",self.classProperties.name,"(",concat(self.classProperties.params,","), "); local ",self.objName," <const> = {",}
+	adjustParams(self.classProperties.params,record)
+	record[#record + 1] = "}; return setmetatable({},{__index = "
+	record[#record + 1] = self.objName
+	record[#record + 1] = ",__newindex = function() end,__len = function() return #"
+	record[#record + 1] = self.objName
+	record[#record + 1] = " end }) end "
+	return concat(record)
+end
 --hold info about constructor. if exists then update otherwise construct it.
 function ConstructorProperties:new(classProperties,loc)
 	local o <const> = setmetatable({constExist = false,classProperties = classProperties,includeReturn = true,metatableExist = false,objName = generateRandomName()},self)

@@ -4,7 +4,6 @@ local ClassProperties <const> = require('parser.ClassProperties')
 local ConstructorProperties <const> = require('parser.ConstructorProperties')
 local Scope <const> = require('parser.Scope')
 local Config <const> = require('config.config')
-
 local setmetatable <const> = setmetatable
 local match <const> = string.match
 local pairs <const> = pairs
@@ -200,11 +199,10 @@ local function grabParent(text,index)
 	return nil,index
 end
 
-local function setClassDeclaration(text,start,stop,name)
+local function setClassDeclaration(text,start,stop)
 	for i=start,stop - 1,1 do
 		text[i] = ""
 	end
-	text[stop] = "local " .. name .. " <const> = {}" .. Config.newLine
 end
 
 local function adjustTokenTable(parser)
@@ -322,7 +320,7 @@ function Parser:endClass(index)
 	if not self.currentConstructor.constExist then
 		self.text[index] = self.currentConstructor:generateConstructor()
 	end
-	self.text[index] =self.text[index] .. self.currentClass:generateMetatable(self.currentConstructor.name)
+	self.text[index] =self.text[index] .. self.currentClass:generateMetatableAndReturn(self.currentConstructor.name)
 	return index
 end
 
@@ -339,18 +337,24 @@ function Parser:secondClassLoop(startIndex,endIndex)
 	self.tokens = Parser.copyOfTokens
 end
 
-function Parser:class(index)
-	local className <const> = match(self.text[index + 1],"[^(]+")
-	self.classPatterns[className] = true
+local function parseClassDeclaration(index, parser)
+	local className <const> = match(parser.text[index],"[^(]+")
+	parser.classPatterns[className] = true
 	local classParams <const> = {}
-	grabParams(self.text[index + 1],function(param) classParams[#classParams + 1] = param end)
-	local parentName <const>, bracketLoc <const> = grabParent(self.text,index + 2)
-	local parent <const> = self.classRead[parentName]
-	self.currentClass = ClassProperties:new(className,classParams,parent)
-	self.classRead[className] = self.currentClass
-	self.currentClass = self.classRead[className]
-	self.currentConstructor = ConstructorProperties:new(self.currentClass)
-	setClassDeclaration(self.text,index, bracketLoc,className)
+	grabParams(parser.text[index],function(param) classParams[#classParams + 1] = param end)
+	local parentName <const>, bracketLoc <const> = grabParent(parser.text,index + 1)
+	setClassDeclaration(parser.text,index - 1,bracketLoc,className)
+	local parent <const> = parser.classRead[parentName]
+	parser.currentClass = ClassProperties:new(className,classParams,parent)
+	parser.classRead[className] = parser.currentClass
+	parser.currentClass = parser.classRead[className]
+	parser.currentConstructor = ConstructorProperties:new(parser.currentClass)
+	return className,bracketLoc
+end
+
+function Parser:class(index)
+	local className <const>, bracketLoc <const> = parseClassDeclaration(index + 1,self)
+	self.text[bracketLoc] = self.currentClass:generateClassObj()
 	adjustTokenTable(self)
 	self.scope:new()
 	local newIndex <const> = self:loopTokens(index + 1,checkEnd)
@@ -359,6 +363,32 @@ function Parser:class(index)
 	self.tokens = Parser.copyOfTokens
 	self.tokenPatterns = Parser.copyOfPatterns
 	return newIndex
+end
+
+local function getRecordScope(text,index)
+	if index > 0 then
+		if match(text[index],"global") then
+			text[index] = ""
+			return ""
+		end
+		if match(text[index],"local") then
+			text[index] = ""
+		end
+	end
+	return "local"
+end
+
+function Parser:record(index)
+	--TODO syntax error if includes parent or anything within brackets
+	local recordScope <const> = getRecordScope(self.text,index - 1)
+	io.write("token at index is:",self.text[index],";\n")
+	io.write("token at index + 1 is:",self.text[index + 1],";\n")
+	local className <const>, bracketLoc <const> = parseClassDeclaration(index + 1,self)
+	local closingLoc <const> = findMatch(self.text,index + 2,"}")
+	self.text[closingLoc] = ""
+	self.text[bracketLoc] = self.currentConstructor:generateRecord(recordScope)
+	self.classPatterns[className] = nil
+	return index
 end
 
 function Parser:classConstructor(index)
@@ -482,6 +512,7 @@ end
 local tokens = {
 	['local'] = Parser.loc,
 	class = Parser.class,
+	record = Parser.record,
 	['='] = Parser.equals,
 	['+='] = Parser.add,
 	['-='] = Parser.sub,
