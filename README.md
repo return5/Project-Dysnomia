@@ -97,7 +97,7 @@ to keep the parser simpler and easier to write, there are a few things to keep i
   please see the ``eamples`` directory for examples of dysnomia.
 
 ## TODO
-- [ ] add mutable and immutable records
+- [x] add immutable records
 - [ ] add lambda constructs
 - [ ] add built in data types
 - [ ] add built-in functions and libraries
