@@ -33,12 +33,14 @@ a list of the flags and command line options for dysnomia:
   - ```myVar <global> = 5```
 - ```mutable``` keyword. declares a variable is mutable.
   - ```myVar <mutable> = 6```
-- ```class``` keyowrd. declares a class. [(please see class section)](#class)
+- ```class``` keyword. declares a class. [(please see class section)](#class)
   - ```class myClass(var1,var12,var3) {}```
 - ```:>``` used to declare inheritance of class. [(please see class section)](#class)
   - ```class childClass() :> parentClass {}```
 - ```super()``` calls parent constructor inside of class. [(please see class section)](#class)
   - ``super(var1,var2)``
+- ``record`` immutable collection for holding data. [(please see records section)](#records)
+  - ```record MyRecord(a,b,c,d) {}```
 
 ## class
 offers class declaration inspired by java records.  
@@ -65,6 +67,14 @@ basic syntax is: class keyword followed by class name. then include any paramete
   - ``global function myFunc(a,b) end``
 - note: spaces are required between keywords in declaration. spaces should not be included between parameters in declaration.
 - note: classes need to be declared inside their own separate file.
+
+## records
+An immutable object for storing data. declare the number and names of the parameters. call it like a function to generate objects from it.
+````  
+record MyRecord(a,b) {}   
+rec = MyRecord(5,6)
+````
+- unlike classes, they do not have to be declared inside their own file.
 
 ## considerations
 to keep the parser simpler and easier to write, there are a few things to keep in mind when writing dysnomia syntax.
