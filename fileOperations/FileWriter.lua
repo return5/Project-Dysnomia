@@ -3,7 +3,6 @@ local open <const> = io.open
 local concat <const> = table.concat
 local remove <const> = os.remove
 
-local io = io
 
 local FileWriter <const> = {}
 FileWriter.__index = FileWriter
@@ -13,7 +12,6 @@ _ENV = FileWriter
 FileWriter.files = {}
 
 function FileWriter.writeFile(fileInfo)
-	io.write("writing file\n")
 	fileInfo.text[#fileInfo.text] = Config.newLine
 	local fileName <const> = fileInfo.filePath .. ".lua"
 	local file <const> = open(fileName,"w+")
