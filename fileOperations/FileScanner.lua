@@ -8,10 +8,10 @@ local openFile <const> = io.open
 local gsub <const> = string.gsub
 local concat <const> = table.concat
 
-local FileReader <const> = {}
-FileReader.__index = FileReader
+local FileScanner <const> = {}
+FileScanner.__index = FileScanner
 
-_ENV = FileReader
+_ENV = FileScanner
 
 local function handleMultiLineString(char,strTbl)
 	strTbl[#strTbl + 1] = char
@@ -44,6 +44,15 @@ local function resetStrTbl(strTbl,tbl)
 	return {}
 end
 
+local restStrTblChars <const> = {
+ [";"] = true,
+ ["}"] = true,
+ ["{"] = true,
+ ["("] = true,
+ [")"] = true,
+ [","] = true,
+}
+
 local function readFileIntoTbl(file)
 	local tbl <const> = {}
 	local strTbl = {}
@@ -57,7 +66,7 @@ local function readFileIntoTbl(file)
 			inString = handleString(char,strTbl,closingQuote)
 		elseif checkSpace(char) then
 			strTbl = resetStrTbl(strTbl,tbl)
-		elseif char == ";" or char == "}" then
+		elseif restStrTblChars[char] then
 			strTbl = resetStrTbl(strTbl,tbl)
 			tbl[#tbl + 1] = char
 		elseif checkQuotes(char) then
@@ -89,7 +98,7 @@ local function findFile(filePath,ending)
 	return false
 end
 
-function FileReader:readFile(filePath)
+function FileScanner:readFile(filePath)
 	--if we havent already read this file
 	if not self.fileRead[filePath] then
 		self.fileRead[filePath] = true
@@ -115,7 +124,7 @@ end
 
 --when user passes in main file to start with, they might have included the .dys or .lua ending.
 --this messes up our existing code, so we remove that ending if it is there.
-function FileReader:checkMainFile(file)
+function FileScanner:checkMainFile(file)
 	if file:match("%.lua$") then
 		return file:match("(.+)%.lua$")
 	end
@@ -125,8 +134,8 @@ function FileReader:checkMainFile(file)
 	return file
 end
 
-function FileReader:new()
+function FileScanner:new()
 	return setmetatable({fileRead = {}},self)
 end
 
-return FileReader
+return FileScanner
