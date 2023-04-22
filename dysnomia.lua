@@ -17,7 +17,7 @@
 --]]
 
 local Config <const> = require  ('config.config')
-local FileReader <const> = require  ('fileOperations.FileReader')
+local FileReader <const> = require  ('fileOperations.FileScanner')
 local FileWriter <const> = require  ('fileOperations.FileWriter')
 local ArgOption <const> = require('misc.ArgOptions')
 
