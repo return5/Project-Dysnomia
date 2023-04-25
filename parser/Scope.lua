@@ -11,11 +11,11 @@ function Scope:new()
 end
 
 function Scope:add(var)
-	self.vars[#self.vars][var] = true
+	self.vars[#self.vars][var.name] = var
 end
 
 function Scope:addGlobal(var)
-	self.vars[#self.vars][var] = true
+	self:add(var)
 	self.globalScope:add(var)
 end
 
@@ -26,7 +26,7 @@ end
 function Scope:check(var)
 	for i = #self.vars,1,-1 do
 		if self.vars[i][var] then
-			return true
+			return self.vars[i][var]
 		end
 	end
 	if self.globalScope then

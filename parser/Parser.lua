@@ -1,9 +1,9 @@
 local FileWriter <const> = require('fileOperations.FileWriter')
-local VariableOptions <const> = require('parser.VariableOptions')
 local ClassProperties <const> = require('parser.ClassProperties')
 local ConstructorProperties <const> = require('parser.ConstructorProperties')
 local Scope <const> = require('parser.Scope')
 local Config <const> = require('config.config')
+local Variable <const> = require('parser.variable')
 local setmetatable <const> = setmetatable
 local match <const> = string.match
 local pairs <const> = pairs
@@ -11,6 +11,7 @@ local gmatch <const> = string.gmatch
 local insert <const> = table.insert
 local gsub <const> = string.gsub
 local io = io
+local exit = os.exit
 
 local Parser <const> = {}
 Parser.__index = Parser
@@ -35,7 +36,7 @@ end
 function Parser:loopForRequire()
 	for i=1, #self.text,1 do
 		if self.text[i] == "require" then
-			--when we find the require keyword, try to open that fil if it is .lua or .dys then parse it.
+			--when we find the require keyword, try to open that file if it is .lua or .dys then parse it.
 			readRequireFile(i + 2,self.text,self.fileScanner)
 		end
 	end
@@ -80,7 +81,7 @@ function Parser:incrI(index)
 end
 
 function Parser:comment(index)
-	return self:loopTokens(index,Parser.checkForEndLine,Parser.incrI) + 1
+	return self:loopTokens(index,Parser.checkForEndLine,Parser.incrI)
 end
 
 function Parser:checkForEnd(index)
@@ -90,7 +91,6 @@ end
 function Parser:parseToken(index)
 	local token <const> = self.text[index]
 	if self.tokens[token] then
-		io.write(token,";\n")
 		return self.tokens[token](self,index)
 	end
 	for pat,func in pairs(self.tokenPatterns) do
@@ -101,8 +101,102 @@ function Parser:parseToken(index)
 	return index + 1
 end
 
+function Parser:skipSpace(index)
+	return index + 1
+end
+
+function Parser:grabVarModifiers(index,modifiers)
+	self.text[index] = ""
+	local i = index
+	while i >= 1 and self.text[i] ~= "<" do
+		if self.text[i] == "global" then
+			modifiers.global = ""
+			modifiers.mutable = ""
+		elseif self.text[i] == "mutable" then
+			modifiers.mutable = ""
+		end
+		self.text[i] = ""
+		i = i - 1
+	end
+	self.text[i] = ""
+	return i - 1
+end
+
+function Parser:writeModifiers(index,modifiers)
+	self.text[index] = modifiers.global .. self.text[index] .. modifiers.mutable
+end
+
+function Parser:equals(index)
+	return index + 1
+end
+
+function Parser:newLine(index)
+	self.lineCount = self.lineCount + 1
+	return index + 1
+end
+
+function Parser:decrI(index)
+	return index - 1
+end
+
+function Parser:findLessThan(index)
+	return index >= 1 and self.text[index] ~= "<"
+end
+
+function Parser:addGlobalVarToScope(index)
+	local varName <const> = self.text[index]
+	local found <const> = self.scope.globalScope:check(varName)
+	if found then
+		io.stderr:write("Error: ",varName," on line: ",self.lineCount, "\n\tpreviously defined on line: ",found.line,"\n")
+		exit(64)
+	end
+	local variable <const> = Variable:new(varName,self.lineCount,self.prevNewLineLoc)
+	variable.scope = ""
+	variable.mutable = ""
+	self.scope:addGlobal(variable)
+end
+
+function Parser:erase(index)
+	self.text[index] = ""
+	return index + 1
+end
+
+function Parser:findGreaterThan(index)
+	return self:checkForEnd(index) and self.text[index] ~= ">"
+end
+
+function Parser:foundGlobal(index)
+	if self.text[index + 1] == "function" then
+		self.text[index] = ""
+		self:addGlobalVarToScope(index + 2)
+		return index + 2
+	else
+		local newIndex <const> = self:loopTokens(index - 1,Parser.findLessThan,Parser.decrI)
+		local endIndex <const> = self:loopTokens(newIndex,Parser.findGreaterThan,Parser.erase)
+		self.text[endIndex] = ""
+		self:addGlobalVarToScope(newIndex - 1)
+		return endIndex + 1
+	end
+	return index + 1
+end
+
+local globalHuntTbl <const> = {
+	["--"] = Parser.comment,
+	["\n"] = Parser.newLine,
+	["global"] = Parser.foundGlobal
+}
+
+function Parser:huntForGlobal(index)
+	if globalHuntTbl[self.text[index]] then
+		return globalHuntTbl[self.text[index]](self,index)
+	end
+	return index + 1
+end
+
 function Parser:startParsing()
-	self:loopTokens(1,Parser.checkForEnd,Parser.parseToken)
+	--loop through and hunt for global variables and functions
+	self:loopTokens(1,Parser.checkForEnd,Parser.huntForGlobal)
+--	self:loopTokens(1,Parser.checkForEnd,Parser.parseToken)
 	FileWriter.writeFile(self.fileAttr)
 	return true
 end
@@ -110,7 +204,7 @@ end
 function Parser:loopTokens(start,condFunc,tokenFunc)
 	local index = start
 	while condFunc(self,index) do
-		io.write(self.text[index],";\n")
+	--	io.write(self.text[index],";\n")
 		index = tokenFunc(self,index)
 	end
 	return index
@@ -118,7 +212,6 @@ end
 
 local tokenPatterns = {
 	['^[^%-]*require'] = Parser.require,
-	['%-%-'] = Parser.comment
 }
 
 local tokens = {
@@ -140,7 +233,8 @@ local tokens = {
 	["while"] = Parser.loops,
 	["fruit"] = Parser.fruit,
 	["{"] = Parser.skipTblConstruct,
-	["--"] = Parser.comment
+	["--"] = Parser.comment,
+	["\n"] = Parser.newLine
 }
 
 local function copyTokens(tbl)
@@ -156,7 +250,7 @@ Parser.copyOfPatterns = copyTokens(tokenPatterns)
 Parser.copyOfTokens = copyTokens(tokens)
 
 function Parser:new(fileAttr,fileScanner)
-	return setmetatable({text = fileAttr.text,fileAttr = fileAttr,fileScanner = fileScanner,varOpts = VariableOptions:new(),
+	return setmetatable({text = fileAttr.text,fileAttr = fileAttr,fileScanner = fileScanner,lineCount = 1,
 						 scope = Scope:init(Parser.globalScope), classFuncs = {}, tokens = copyTokens(tokens), tokenPatterns = copyTokens(tokenPatterns)},self)
 end
 

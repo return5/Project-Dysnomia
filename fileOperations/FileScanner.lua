@@ -44,13 +44,24 @@ local function resetStrTbl(strTbl,tbl)
 	return {}
 end
 
+local function resetTblAddChar(strTbl,tbl,char)
+	local newStrTbl <const> = resetStrTbl(strTbl,tbl)
+	tbl[#tbl + 1] = char
+	return newStrTbl
+end
+
 local restStrTblChars <const> = {
- [";"] = true,
- ["}"] = true,
- ["{"] = true,
- ["("] = true,
- [")"] = true,
- [","] = true,
+ [";"] = resetTblAddChar,
+ ["}"] = resetTblAddChar,
+ ["<"] = resetTblAddChar,
+ [">"] = resetTblAddChar,
+ ["{"] = resetTblAddChar,
+ ["("] = resetTblAddChar,
+ [")"] = resetTblAddChar,
+ [","] = resetTblAddChar,
+ [" "] = resetStrTbl,
+ ["\t"] = resetStrTbl,
+ ["\n"] = resetTblAddChar
 }
 
 local function readFileIntoTbl(file)
@@ -64,21 +75,20 @@ local function readFileIntoTbl(file)
 			multiLineString = handleMultiLineString(char,strTbl)
 		elseif inString then
 			inString = handleString(char,strTbl,closingQuote)
-		elseif checkSpace(char) then
-			strTbl = resetStrTbl(strTbl,tbl)
 		elseif restStrTblChars[char] then
-			strTbl = resetStrTbl(strTbl,tbl)
-			tbl[#tbl + 1] = char
+			strTbl = restStrTblChars[char](strTbl,tbl,char)
 		elseif checkQuotes(char) then
 			closingQuote = char
 			inString = true
 			strTbl[#strTbl + 1] = char
-		elseif char == "\n" then
-			strTbl = resetStrTbl(strTbl,tbl)
-			tbl[#tbl + 1] = char
 		elseif char == "[" and strTbl[#strTbl] == "[" then
 			multiLineString = true
 			strTbl[#strTbl + 1] = char
+		elseif char == "-" and strTbl[#strTbl] == "-" then
+			strTbl[#strTbl] = nil
+			strTbl = resetStrTbl(strTbl,tbl)
+			strTbl[1] = "--"
+			strTbl = resetStrTbl(strTbl,tbl)
 		else
 			strTbl[#strTbl + 1] = char
 		end

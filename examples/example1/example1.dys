@@ -4,7 +4,7 @@ function main()
 	--local const variable
 	myVar = 5
 	--global variable
-	GlobalVar <global> = 6
+	GlobalVar <global,mutable> = 6
 	--mutable local variable
 	i <mutable> = 1
 	--increase i by 1
@@ -15,7 +15,7 @@ function main()
 	i *= 2
 	--divide i by 2
 	i /= 2
-	--all valid lua syntax is also valid dysnomia syntax
+	-- all valid lua syntax is also valid dysnomia syntax
 	local var1 <const> = add(1,2)
 end
 
@@ -23,5 +23,9 @@ end
 global function add(a,b)
 	return a + b
 end
+
+GlobalVar2 <global> = 7
+
+i = 7
 
 main()
