@@ -24,7 +24,6 @@ global function add(a,b)
 	return a + b
 end
 
-GlobalVar2 <global> = 7
 
 i = 7
 
