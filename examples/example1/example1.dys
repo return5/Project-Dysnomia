@@ -17,6 +17,7 @@ function main()
 	i /= 2
 	-- all valid lua syntax is also valid dysnomia syntax
 	local var1 <const> = add(1,2)
+	GlobalVar = 7
 end
 
 --global function
