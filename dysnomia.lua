@@ -17,7 +17,7 @@
 --]]
 
 local Config <const> = require  ('config.config')
-local FileReader <const> = require  ('fileOperations.FileScanner')
+local FileReader <const> = require  ('fileOperations.FileReader')
 local FileWriter <const> = require  ('fileOperations.FileWriter')
 local ArgOption <const> = require('misc.ArgOptions')
 
@@ -128,14 +128,17 @@ argOptions = {
 
 local function runParser()
 	local fileReader <const> = FileReader:new()
-	fileReader:readFile(fileReader:checkMainFile(arg[#arg]))
-	if Config.run then
-		local file <const> = arg[#arg]:gsub("%.dys$",".lua")
-		os.execute("lua " .. file)
+	local file <const> = fileReader:readFile(fileReader:checkMainFile(arg[#arg]))
+	for i=1,#file,1 do
+		io.write("word: ",file[i],";;;\n")
 	end
-	if Config.temp then
-		FileWriter.removeFiles()
-	end
+	--if Config.run then
+	--	local file <const> = arg[#arg]:gsub("%.dys$",".lua")
+	--	os.execute("lua " .. file)
+	--end
+	--if Config.temp then
+	--	FileWriter.removeFiles()
+	--end
 end
 
 local function parseOptions(preChecks)

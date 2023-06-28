@@ -1,0 +1,17 @@
+
+"first string"
+
+local function(hello,world)
+	i + 1
+	j - 1 --doing nothing
+end
+
+--do stuff
+
+
+local tbl = {}
+
+"this is a string"
+
+function("this is a arg") --this is a comment
+
