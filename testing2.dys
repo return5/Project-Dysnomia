@@ -1,0 +1,10 @@
+
+local linux = "l"
+local windows = "\\"
+
+local function doStuff(a,b,c) return 5 end
+
+
+"this is string"
+
+--this is comment

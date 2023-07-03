@@ -3,6 +3,8 @@ local setmetatable <const> = setmetatable
 local concat <const> = table.concat
 local gmatch <const> = string.gmatch
 
+local io = io
+
 local Scanner <const> = {}
 Scanner.__index = Scanner
 
@@ -16,10 +18,9 @@ local function clearWord(word)
 end
 
 local function createWord(word,tbl)
-	if #word > 0 then
-		tbl[#tbl + 1] = concat(word)
-		clearWord(word)
-	end
+	tbl[#tbl + 1] = concat(word)
+	io.write("word:",concat(word),";\n")
+	clearWord(word)
 end
 
 local function handleWordBreak(word,tbl,char)
@@ -79,20 +80,26 @@ local quoteTable <const> = {
 
 
 local function handleSpaces(word,tbl,flags,char)
+	--if we are on a space char then add it to word table.
 	if spaceTbl[char] then
 		word[#word + 1] = char
 	else
+		--otherwise add current word to tbl then clear word table
 		endLoopSpaces(word,tbl,flags)
 	end
 end
 
-local function skipToClosing(word,tbl,flags,char,prevChar,closingChar)
-	if char == closingChar and prevChar ~= "\\" then
+local function skipToClosing(word,tbl,flags,char,prevChar,closingChar,twoPrevChar)
+	--io.write("char:",char,";\n")
+	--io.write("prevChar:",prevChar,";\n")
+	--io.write("twoprevChar:",twoPrevChar,";\n")
+	--if we reach the closing char and it isnt preceded by a '\' then we can end.
+	if char == closingChar and (prevChar ~= "\\" or twoPrevChar == "\\") then
 		endSkipToChar(word,tbl,flags,char)
 		return ""
 	end
-		word[#word + 1] = char
-		return closingChar
+	word[#word + 1] = char
+	return closingChar
 end
 
 local function scannerChecks(word,tbl,flags,char,prevChar,closingChar)
@@ -115,6 +122,7 @@ function Scanner.scanFile(file)
 	local tbl <const> = {}
 	local word <const> = {}
 	local prevChar = ""
+	local twoPrevChar = ""
 	local flags <const> = { loopSpaces = false, skipChecks = false, skipToClosing = false}
 	local closingChar = ""
 	for char in gmatch(file,".") do
@@ -124,10 +132,11 @@ function Scanner.scanFile(file)
 		end
 		--loop over chars until you get to the closing char.
 		if flags.skipToClosing then
-			closingChar = skipToClosing(word,tbl,flags,char,prevChar,closingChar)
+			closingChar = skipToClosing(word,tbl,flags,char,prevChar,closingChar,twoPrevChar)
 		elseif not flags.skipChecks then
 			closingChar = scannerChecks(word,tbl,flags,char,prevChar,closingChar)
 		end
+		twoPrevChar = prevChar
 		prevChar = char
 	end
 	createWord(word,tbl)
