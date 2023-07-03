@@ -2,7 +2,7 @@
 --local Parser <const> = require('parser.Parser')
 local Config <const> = require('config.config')
 local FileAttr <const> = require('fileOperations.FileAttr')
-local Scanner <const> = require('scanner.Scanner'):new()
+local Scanner <const> = require('scanner.Scanner')
 local setmetatable <const> = setmetatable
 local openFile <const> = io.open
 local gsub <const> = string.gsub
@@ -18,7 +18,7 @@ local function findFile(filePath,ending)
 	if file then
 		local text <const> = file:read("a*") .. "\n"
 		file:close()
-		return Scanner.scanFile(text),fulFilePath
+		return Scanner:new(text):scanFile(),fulFilePath
 	end
 	return false
 end

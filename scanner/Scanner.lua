@@ -112,14 +112,14 @@ local function scannerChecks(word,tbl,flags,char,prevChar,closingChar)
 	return closingChar
 end
 
-function Scanner.scanFile(file)
+function Scanner:scanFile()
 	local tbl <const> = {}
 	local word <const> = {}
 	local prevChar = ""
 	local twoPrevChar = ""
 	local flags <const> = { loopSpaces = false, skipChecks = false, skipToClosing = false}
 	local closingChar = ""
-	for char in gmatch(file,".") do
+	for char in gmatch(self.file,".") do
 		--loop over spaces until you get to something not a space
 		if flags.loopSpaces then
 			handleSpaces(word,tbl,flags,char)
@@ -137,8 +137,8 @@ function Scanner.scanFile(file)
 	return tbl
 end
 
-function Scanner:new()
-	return setmetatable({},self)
+function Scanner:new(file)
+	return setmetatable({file = file},self)
 end
 
 return Scanner
