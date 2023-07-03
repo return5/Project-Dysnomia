@@ -78,6 +78,39 @@ local quoteTable <const> = {
 }
 
 
+local function handleSpaces(word,tbl,flags,char)
+	if spaceTbl[char] then
+		word[#word + 1] = char
+	else
+		endLoopSpaces(word,tbl,flags)
+	end
+end
+
+local function skipToClosing(word,tbl,flags,char,prevChar,closingChar)
+	if char == closingChar and prevChar ~= "\\" then
+		endSkipToChar(word,tbl,flags,char)
+		return ""
+	end
+		word[#word + 1] = char
+		return closingChar
+end
+
+local function scannerChecks(word,tbl,flags,char,prevChar,closingChar)
+	if quoteTable[char] then
+		return skipChars(word,char,flags)
+	elseif char == "-" and prevChar == "-" then
+		skipChars(word,char,flags)
+		return "\n"
+	elseif wordBreaks[char]	then
+		wordBreaks[char](word,tbl,char,flags)
+	elseif spaceTbl[char] then
+		spaceTbl[char](word,tbl,char,flags)
+	else
+		word[#word + 1] = char
+	end
+	return closingChar
+end
+
 function Scanner.scanFile(file)
 	local tbl <const> = {}
 	local word <const> = {}
@@ -87,33 +120,13 @@ function Scanner.scanFile(file)
 	for char in gmatch(file,".") do
 		--loop over spaces until you get to something not a space
 		if flags.loopSpaces then
-			if spaceTbl[char] then
-				word[#word + 1] = char
-			else
-				endLoopSpaces(word,tbl,flags)
-			end
+			handleSpaces(word,tbl,flags,char)
 		end
 		--loop over chars until you get to the closing char.
 		if flags.skipToClosing then
-			if char == closingChar and prevChar ~= "\\" then
-				endSkipToChar(word,tbl,flags,char)
-				closingChar = ""
-			else
-				word[#word + 1] = char
-			end
+			closingChar = skipToClosing(word,tbl,flags,char,prevChar,closingChar)
 		elseif not flags.skipChecks then
-			if quoteTable[char] then
-				closingChar = skipChars(word,char,flags)
-			elseif char == "-" and prevChar == "-" then
-				skipChars(word,char,flags)
-				closingChar = "\n"
-			elseif wordBreaks[char]	then
-				wordBreaks[char](word,tbl,char,flags)
-			elseif spaceTbl[char] then
-				spaceTbl[char](word,tbl,char,flags)
-			else
-				word[#word + 1] = char
-			end
+			closingChar = scannerChecks(word,tbl,flags,char,prevChar,closingChar)
 		end
 		prevChar = char
 	end

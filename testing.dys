@@ -13,5 +13,5 @@ local tbl = {}
 
 "this is a string"
 
-function("this is a arg") --this is a comment
+function("this is an arg") --this is a comment
 
