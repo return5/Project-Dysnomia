@@ -3,8 +3,6 @@ local setmetatable <const> = setmetatable
 local concat <const> = table.concat
 local gmatch <const> = string.gmatch
 
-local io = io
-
 local Scanner <const> = {}
 Scanner.__index = Scanner
 
@@ -19,7 +17,6 @@ end
 
 local function createWord(word,tbl)
 	tbl[#tbl + 1] = concat(word)
-	io.write("word:",concat(word),";\n")
 	clearWord(word)
 end
 
@@ -90,9 +87,6 @@ local function handleSpaces(word,tbl,flags,char)
 end
 
 local function skipToClosing(word,tbl,flags,char,prevChar,closingChar,twoPrevChar)
-	--io.write("char:",char,";\n")
-	--io.write("prevChar:",prevChar,";\n")
-	--io.write("twoprevChar:",twoPrevChar,";\n")
 	--if we reach the closing char and it isnt preceded by a '\' then we can end.
 	if char == closingChar and (prevChar ~= "\\" or twoPrevChar == "\\") then
 		endSkipToChar(word,tbl,flags,char)
