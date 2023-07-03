@@ -129,9 +129,9 @@ argOptions = {
 local function runParser()
 	local fileReader <const> = FileReader:new()
 	local file <const> = fileReader:readFile(fileReader:checkMainFile(arg[#arg]))
-	for i=1,#file,1 do
-		io.write("word: ",file[i],";;;\n")
-	end
+	--for i=1,#file,1 do
+	--	io.write("word: ",file[i],";;;\n")
+--	end
 	--if Config.run then
 	--	local file <const> = arg[#arg]:gsub("%.dys$",".lua")
 	--	os.execute("lua " .. file)
