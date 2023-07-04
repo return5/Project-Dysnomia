@@ -16,8 +16,10 @@ local function clearWord(word)
 end
 
 local function createWord(word,tbl)
-	tbl[#tbl + 1] = concat(word)
-	clearWord(word)
+	if #word > 0 then
+		tbl[#tbl + 1] = concat(word)
+		clearWord(word)
+	end
 end
 
 local function handleWordBreak(word,tbl,char)
@@ -56,13 +58,32 @@ local function endSkipToChar(word,tbl,flags,char)
 	createWord(word,tbl)
 end
 
+local mathOps <const> = {
+	["+"] = true,
+	["-"] = true,
+	["/"] = true,
+	["*"] = true
+}
+
+local function handleEquals(word,tbl,char)
+	if not mathOps[word[#word]] then createWord(word,tbl) end
+	word[#word + 1] = char
+	createWord(word,tbl)
+end
+
 local wordBreaks <const> = {
 	[","] = handleWordBreak,
 	[")"] = handleWordBreak,
 	["("] = handleWordBreak,
 	[";"] = handleWordBreak,
+	["<"] = handleWordBreak,
+	[">"] = handleWordBreak,
+	["="] = handleEquals,
 	["\n"] = handleWordBreak,
-	["-"] = breakWordThenAddNewChar
+	["-"] = breakWordThenAddNewChar,
+	["+"] = breakWordThenAddNewChar,
+	["/"] = breakWordThenAddNewChar,
+	["*"] = breakWordThenAddNewChar
 }
 
 local spaceTbl <const> = {

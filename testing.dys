@@ -2,15 +2,29 @@
 
 "first string"
 
+var i <const> = 1
+var j <const>;
+var k = 1
+var h,i,j,k,l <const>
+var i, o , p
+var h, g ,k <const>
+
 local function(hello,world)
 	i + 1
 	j - 1 --doing nothing
+	k += 1
+	--trying sub operator
+	m -= 4
+	"this next one will be multiply"
+	n *= 6
 end
 
 --do stuff
 
 
 local tbl = {}
+
+v /= 7
 
 "this is a string"
 
