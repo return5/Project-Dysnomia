@@ -52,26 +52,51 @@ local function addToVarName()
 	end
 end
 
+local function addToFlags()
+	local flags <const> = {['local'] = true}
+	return flags,function(text)
+		local str <const> = trimString(text)
+		if str and #str > 0 and str ~= "," then
+			flags[str] = true
+		end
+	end
+end
+
+function Parser:writeDysText(text)
+	self.dysText[#self.dysText + 1] = text
+end
+
 function Parser:scrapeVarFlags(i)
-	local flagNames <const> ,flagFunc <const> = addToVarName()
+	local flagNames <const> ,flagFunc <const> = addToFlags()
 	local newI <const> = self:loopUntil(i + 1,match,"[^>]",flagFunc)
-	io.write("new-var-I is: ",newI,"\n")
-	return flagNames,newI
+	if flagNames['global'] then flagNames['local'] = false end
+	return flagNames,newI + 1
 end
 
 function Parser:makeVars(vars,flags)
+	if flags['local'] then
+		self:writeDysText('local ')
+	end
 	for i=1,#vars,1 do
 		local var <const> = Variable:new(vars[i],flags)
 		self.scope:addVar(var)
+		var:writeVar(self.dysText)
+		self:writeDysText(',')
 	end
+	self.dysText[#self.dysText] = nil
 end
 
 function Parser:variable(i)
 	local varNames <const>, varNameFunc <const> = addToVarName()
 	local newI <const> = self:loopUntil(i + 1,match,"[^<=;\n]",varNameFunc)
-	io.write("newI is: ",newI,"\n")
-	local flags <const>, finalI <const> = self.text[newI] == "<" and self:scrapeVarFlags(newI) or {['local'] = true,['const'] = true},newI
-	self:makeVars(varNames,flags)
+	local finalI = newI
+	if self.text[newI] == "<" then
+		local flags
+		flags,finalI = self:scrapeVarFlags(newI)
+		self:makeVars(varNames,flags)
+	else
+		self:makeVars(varNames,{['local'] = true, ['const'] = true})
+	end
 	return finalI
 end
 
@@ -105,6 +130,7 @@ function Parser:loopText()
 		if functionTable[self.text[i]] then
 			i = functionTable[self.text[i]](self,i)
 		else
+			self.dysText[#self.dysText + 1] = self.text[i]
 			i = i + 1
 		end
 	end

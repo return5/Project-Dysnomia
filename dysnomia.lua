@@ -130,7 +130,10 @@ argOptions = {
 local function runParser()
 	local fileReader <const> = FileReader:new()
 	local file <const> = fileReader:readFile(fileReader:checkMainFile(arg[#arg]))
-	Parser:new(file):loopText()
+	local parsed <const> = Parser:new(file):loopText()
+	for i=1,#parsed,1 do
+		io.write(parsed[i],";\n")
+	end
 	--for i=1,#file,1 do
 	--	io.write("word: ",file[i],";;;\n")
 --	end
