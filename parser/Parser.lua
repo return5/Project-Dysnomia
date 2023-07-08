@@ -46,16 +46,6 @@ local function addToVarName()
 	end
 end
 
-local function addToMathOps()
-	local mathOps <const> = {}
-	return mathOps,function(text)
-		local str <const> = trimString(text)
-		if str and #str > 0 then
-			mathOps[#mathOps + 1] = str
-		end
-	end
-end
-
 function Parser:addOp(i)
 	return self:updateOps(i," +")
 end
