@@ -1,14 +1,11 @@
-local Scope <const> = require('parser.Scope')
 local setmetatable <const> = setmetatable
 local match <const> = string.match
-local Variable <const> = require('parser.Variable')
 
+local io = io
 local Parser <const> = {}
 Parser.__index = Parser
 
 _ENV = Parser
-
-local GlobalScope <const> = Scope:new()
 
 local function trimString(str)
 	return match(str,"^%s*(.-)%s*$")
@@ -103,9 +100,20 @@ end
 function Parser:scrapeVarFlags(i)
 	local flagNames <const> ,flagFunc <const> = addToFlags()
 	local newI <const> = self:loopUntil(i + 1,matchFunc,"[^>]",flagFunc)
-	if flagNames['global'] then flagNames['local'] = false end
-	if flagNames['immutable'] then flagNames['const'] = false end
+	if flagNames['global'] then
+		flagNames['local'] = false
+		flagNames['const'] = false
+	elseif flagNames['mutable'] then
+		flagNames['const'] = false
+	end
 	return flagNames,newI + 1
+end
+
+function Parser:writeVar(var,flags)
+	self:writeDysText(var)
+	if flags['const'] then
+		self:writeDysText(" <const>")
+	end
 end
 
 function Parser:makeVars(vars,flags)
@@ -113,9 +121,7 @@ function Parser:makeVars(vars,flags)
 		self:writeDysText('local ')
 	end
 	for i=1,#vars,1 do
-		local var <const> = Variable:new(vars[i],flags)
-		self.scope:addVar(var)
-		var:writeVar(self.dysText)
+		self:writeVar(vars[i],flags)
 		self:writeDysText(',')
 	end
 	self.dysText[#self.dysText] = nil
@@ -144,6 +150,40 @@ function Parser:loopBack(from,toFunc,to,doFunc)
 	return i
 end
 
+function Parser:functionFunc(i)
+	local newI <const> = self:loopBack(i - 1, matchFunc,"%s",doNothing)
+	local str <const> = trimString(self.text[newI])
+	if "=" == str then
+		self:writeDysText('function')
+	else
+		self:writeDysText('local function')
+	end
+	return i + 1
+end
+
+function Parser:localFunc(i)
+	self:writeDysText('local ')
+	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
+	--just skip over the function keyword.
+	if self.text[next] == 'function' then
+		self:writeDysText('function')
+		return next + 1
+	end
+	return next
+end
+
+function Parser:globalFunc(i)
+	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
+	--just skip over the keyword 'global'.
+	if self.text[next] == 'function' then
+		self:writeDysText('function')
+		return next + 1
+	end
+	--otherwise write the word 'global' to the file.
+	self:writeDysText('global ')
+	return next
+end
+
 function Parser:loopUntil(from,toFunc,to,doFunc)
 	local i = from
 	while toFunc(self.text[i],to) and i <= #self.text do
@@ -158,7 +198,10 @@ local functionTable <const> = {
 	["+="] = Parser.addOp,
 	["-="] = Parser.subOp,
 	["/="] = Parser.divOp,
-	["*="] = Parser.multOp
+	["*="] = Parser.multOp,
+	['global'] = Parser.globalFunc,
+	['function'] = Parser.functionFunc,
+	['local'] = Parser.localFunc
 }
 
 function Parser:loopText()
@@ -175,7 +218,7 @@ function Parser:loopText()
 end
 
 function Parser:new(text)
-	local o <const> = setmetatable({text = text,dysText = {},scope = GlobalScope},self)
+	local o <const> = setmetatable({text = text,dysText = {}},self)
 	return o
 end
 
