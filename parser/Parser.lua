@@ -12,7 +12,7 @@ local function trimString(str)
 end
 
 local function matchFunc(text,char)
-	return match(text,char)
+	return text and match(text,char)
 end
 
 local function matchOrEmptyString(text,pat)
@@ -166,6 +166,10 @@ function Parser:writeEndRecord(recName)
 end
 
 function Parser:startRecord(i)
+	if self.dysText[#self.dysText] ~= "local " then
+		local prevI <const> = self:loopBack(i - 1,matchFunc,"%s",doNothing)
+		if self.text[prevI] ~= "global" then self:writeDysText("local ") end
+	end
 	--find the index for the record name.
 	local newI <const> = self:loopUntil(i + 1,matchFunc,"%s",doNothing)
 	local recordName <const> = self.text[newI]
@@ -180,7 +184,6 @@ function Parser:startRecord(i)
 	local params <const>, paramsFunc <const> = recordParams(self.dysText)
 	--find index to closing parenthesis while also filling the params table.
 	local endI <const> = self:loopUntil(startParenth + 1,matchFunc,"[^)]",paramsFunc)
-	io.write("after lopp unit dysText[#]: ",self.dysText[#self.dysText],";\n")
 	local tempRecName <const> = "__" .. recordName .. "__"
 	return tempRecName,params,endI
 end
@@ -191,7 +194,6 @@ function Parser:record(i)
 --	self.dysText = newDysText
 	local recNameCpy <const> = self.recName
 	self:writeRecordParams(params,tempRecName)
-	io.write("after write records dysText[#]: ",self.dysText[#self.dysText],";\n")
 	self.recName = tempRecName
 	local _,endRecI <const> = self:loopText(endI + 1,Parser.checkEndRecord)
 	self.recName = recNameCpy
