@@ -1,26 +1,4 @@
-
-
-"first string"
-
-global function myFunc(a,b)
---do stuff
-end
-
-function myFunc2(a,b)
---do stuff
-end
-
-
-var i <const> = 1
-var j <const>;
-var k = 1
-var h,i,j,k,l <const>
-var i, o , p <global>
-var h, g ,k <const>
-var g <mutable> = 6
-var z <mutable>
-
-var k <global> = function(a,n) doStuff end
+record myRec(a,b,c,d) endRec
 
 local function(hello,world)
 	i + 1

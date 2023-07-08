@@ -35,9 +35,9 @@ a list of the flags and command line options for dysnomia:
 - ```mutable``` keyword. declares a variable is mutable.
   - ```myVar <mutable> = 6```
 - ```class``` keyword. declares a class. [(please see class section)](#class)
-  - ```class myClass(var1,var12,var3) {}```
+  - ```class myClass(var1,var12,var3) endCLass```
 - ```:>``` used to declare inheritance of class. [(please see class section)](#class)
-  - ```class childClass() :> parentClass {}```
+  - ```class childClass() :> parentClass endClass```
 - ```super()``` calls parent constructor inside of class. [(please see class section)](#class)
   - ``super(var1,var2)``
 - ``record`` immutable collection for holding data. [(please see records section)](#records)
@@ -46,7 +46,7 @@ a list of the flags and command line options for dysnomia:
 ## class
 offers class declaration inspired by java records.  
 basic syntax is: class keyword followed by class name. then include any parameters to pass into constructor and a parent class if it is a child class. finally needs opening and closing brackets:    
-```class MyChildClass(param1,param2) :> MyParentClass {}```
+```class MyChildClass(param1,param2) :> MyParentClass endClass```
 - if no constructor is provided, then one will be created automatically.  
   - constructor names scanned for: ``init`` ``new`` and the ``name of the class.``
 - you may declare class methods inside the brackets:
@@ -72,7 +72,7 @@ basic syntax is: class keyword followed by class name. then include any paramete
 ## records
 An immutable object for storing data. declare the number and names of the parameters. call it like a function to generate objects from it.
 ````  
-record MyRecord(a,b) {}   
+record MyRecord(a,b) endRec
 rec = MyRecord(5,6)
 ````
 - unlike classes, they do not have to be declared inside their own file.
@@ -83,7 +83,7 @@ to keep the parser simpler and easier to write, there are a few things to keep i
   - this rule can be disregarded when it comes to table constructs ```myTbl = {a=4,b=6,c=7}``` is valid dysnomia syntax.
 - put spaces around update operators. ```i += 1``` 
 - when declaring classes, the keywords in class declarations should have spaces around them. the parameters, if any, should not have spaces.
-  - ```class MyClass(par1,par2,par3) :> MyParentClass {}```
+  - ```class MyClass(par1,par2,par3) :> MyParentClass endClass```
 - the `(` of function declarations and calls should not have a space before it.
 - classes need to be declared inside their own separate file.
 - function parameters should not include spaces.
