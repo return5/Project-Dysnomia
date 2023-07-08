@@ -1,4 +1,15 @@
-record myRec(a,b,c,d) endRec
+record myRec(a,b,c,d)
+
+	myMeth(1,2,3)
+
+	record recTwo(n,m,j)
+	 method meth2(i,j,k) end
+	 meth2(4,5,6)
+	 endRec
+	method myMeth(i,j,k) end
+endRec
+
+
 
 local function(hello,world)
 	i + 1

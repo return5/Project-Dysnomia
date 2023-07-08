@@ -188,21 +188,42 @@ function Parser:startRecord(i)
 	return tempRecName,params,endI
 end
 
+function Parser:loopIDysText(start,stop)
+	for i=start,stop,1 do
+		if self.methods[self.dysText[i]] then
+			local prevI <const> = self:loopBack(i - 1, matchFunc,"%s",doNothing)
+			if self.dysText[prevI] ~= "." and self.dysText[prevI] ~= ":" then
+				self.dysText[i] = "self:" .. self.dysText[i]
+			end
+		end
+	end
+end
+
+
 function Parser:record(i)
 	local tempRecName <const>, params <const>, endI <const> = self:startRecord(i)
---	local dysTextCpy <const> = self.dysText
---	self.dysText = newDysText
 	local recNameCpy <const> = self.recName
+	local startRecDysText <const> = #self.dysText
 	self:writeRecordParams(params,tempRecName)
 	self.recName = tempRecName
+	local copyMethods <const> = self.methods
+	self.methods = {}
 	local _,endRecI <const> = self:loopText(endI + 1,Parser.checkEndRecord)
-	self.recName = recNameCpy
 	self:writeEndRecord(tempRecName)
---	for j = 1,#self.dysText,1 do
---		dysTextCpy[#dysTextCpy + 1] = self.dysText[j]
---	end
---	self.dysText = dysTextCpy
+	self:loopIDysText(startRecDysText,#self.dysText)
+	self.recName = recNameCpy
+	self.methods = copyMethods
 	return endRecI + 1
+end
+
+function Parser:method(i)
+	local newI <const> = self:loopUntil(i + 1,matchFunc,"%s",doNothing)
+	self.methods[self.text[newI]] = true
+	self:writeDysText("function ")
+	self:writeDysText(self.recName)
+	self:writeDysText(":")
+	self:writeDysText(self.text[newI])
+	return self:loopUntil(newI + 1,matchFunc,"[^(]",doNothing)
 end
 
 function Parser:loopBack(from,toFunc,to,doFunc)
@@ -299,7 +320,7 @@ function Parser:loopText(i,untilFunc)
 end
 
 function Parser:new(text)
-	local o <const> = setmetatable({text = text,dysText = {}},self)
+	local o <const> = setmetatable({text = text,dysText = {},methods = {}},self)
 	return o
 end
 

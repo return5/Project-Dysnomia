@@ -1,0 +1,38 @@
+local function myRec(a,b,c,d)
+	local __myRec__ <const> = {a = a,b = b,c = c,d = d}
+
+
+	self:myMeth(1,2,3)
+
+	local function recTwo(n,m,j)
+	local __recTwo__ <const> = {n = n,m = m,j = j}
+
+	 function __recTwo__:meth2(i,j,k) end
+	 self:meth2(4,5,6)
+	  return setmetatable({},{__index = __recTwo__,__newindex = function() end,__len = function() return #__recTwo__end}) end
+	function __myRec__:myMeth(i,j,k) end
+ return setmetatable({},{__index = __myRec__,__newindex = function() end,__len = function() return #__myRec__end}) end
+
+
+
+local function(hello,world)
+	i + 1
+	j - 1 --doing nothing
+	k = k + 1
+	--trying sub operator
+	m = m - 4
+	"this next one will be multiply"
+	n = n * 6
+end
+
+--do stuff
+
+
+local tbl = {}
+
+v = v / 7
+
+"this is a string"
+
+local function("this is an arg") --this is a comment
+
