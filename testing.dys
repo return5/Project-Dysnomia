@@ -6,7 +6,7 @@ var i <const> = 1
 var j <const>;
 var k = 1
 var h,i,j,k,l <const>
-var i, o , p
+var i, o , p <global>
 var h, g ,k <const>
 
 local function(hello,world)
