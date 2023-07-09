@@ -15,26 +15,15 @@ local function matchFunc(text,char)
 	return text and match(text,char)
 end
 
-local function matchOrEmptyString(text,pat)
-	return match(text,pat) or #text == 0
+local function loopBack(from,toFunc,to,doFunc,text)
+	local i = from
+	while toFunc(text[i],to) and i > 0 do
+		doFunc(text[i])
+		i = i - 1
+	end
+	return i
 end
 
-local keywords <const> = {
-	['then'] = true,
-	['do'] = true,
-	['end'] = true,
-	['function'] = true,
-	['if'] = true,
-	['elseif'] = true,
-	['else'] = true,
-	['while'] = true,
-	['for'] = true,
-	['local'] = true
-}
-
-local function matchFuncOrKeyWord(text,char)
-	return matchFunc(text,char) or keywords[trimString(text)]
-end
 
 local function addToVarName()
 	local varName <const> = {}
@@ -66,7 +55,7 @@ end
 local function doNothing() end
 
 function Parser:updateOps(i,op)
-	local varI <const> = self:loopBack(i - 1,matchFunc,"%s",doNothing)
+	local varI <const> = loopBack(i - 1,matchFunc,"%s",doNothing,self.text)
 	self:writeDysText("= ")
 	self:writeDysText(self.text[varI])
 	self:writeDysText(op)
@@ -102,7 +91,7 @@ end
 function Parser:writeVar(var,flags)
 	self:writeDysText(var)
 	if flags['const'] then
-		self:writeDysText(" <const>")
+		self:writeDysText(" <const> ")
 	end
 end
 
@@ -162,19 +151,17 @@ function Parser:writeEndRecord(recName)
 	self:writeDysText(recName)
 	self:writeDysText(",__newindex = function() end,__len = function() return #")
 	self:writeDysText(recName)
-	self:writeDysText("end}) end")
+	self:writeDysText(" end}) end")
 end
 
 function Parser:startRecord(i)
 	if self.dysText[#self.dysText] ~= "local " then
-		local prevI <const> = self:loopBack(i - 1,matchFunc,"%s",doNothing)
+		local prevI <const> = loopBack(i - 1,matchFunc,"%s",doNothing,self.text)
 		if self.text[prevI] ~= "global" then self:writeDysText("local ") end
 	end
 	--find the index for the record name.
 	local newI <const> = self:loopUntil(i + 1,matchFunc,"%s",doNothing)
 	local recordName <const> = self.text[newI]
-	--create a new table which will hold the replacement text for the record.
-	--local newDysText <const> = {"function ",recordName,"(",}
 	self:writeDysText("function ")
 	self:writeDysText(recordName)
 	self:writeDysText("(")
@@ -188,17 +175,18 @@ function Parser:startRecord(i)
 	return tempRecName,params,endI
 end
 
-function Parser:loopIDysText(start,stop)
+--go over the code written for a record and add a 'self:' in front of all method calls if they do not have it already.
+function Parser:recordSecondPass(start,stop)
+	local regex <const> = self.recName .. "[:%.]"
 	for i=start,stop,1 do
 		if self.methods[self.dysText[i]] then
-			local prevI <const> = self:loopBack(i - 1, matchFunc,"%s",doNothing)
-			if self.dysText[prevI] ~= "." and self.dysText[prevI] ~= ":" then
+			local prevI <const> = loopBack(i - 1, matchFunc,"%s",doNothing,self.dysText)
+			if self.dysText[prevI] ~= "." and self.dysText[prevI] ~= ":" and not match(self.dysText[prevI],regex) then
 				self.dysText[i] = "self:" .. self.dysText[i]
 			end
 		end
 	end
 end
-
 
 function Parser:record(i)
 	local tempRecName <const>, params <const>, endI <const> = self:startRecord(i)
@@ -210,10 +198,20 @@ function Parser:record(i)
 	self.methods = {}
 	local _,endRecI <const> = self:loopText(endI + 1,Parser.checkEndRecord)
 	self:writeEndRecord(tempRecName)
-	self:loopIDysText(startRecDysText,#self.dysText)
+	self:recordSecondPass(startRecDysText,#self.dysText)
 	self.recName = recNameCpy
 	self.methods = copyMethods
 	return endRecI + 1
+end
+
+function Parser:startClass(i)
+	local newI <const> = self:loopUntil(i + 1, matchFunc,"%s",doNothing)
+	local className <const> = self.text[newI]
+
+end
+
+function Parser:class(i)
+
 end
 
 function Parser:method(i)
@@ -226,17 +224,8 @@ function Parser:method(i)
 	return self:loopUntil(newI + 1,matchFunc,"[^(]",doNothing)
 end
 
-function Parser:loopBack(from,toFunc,to,doFunc)
-	local i = from
-	while toFunc(self.text[i],to) and i > 0 do
-		doFunc(self.text[i])
-		i = i - 1
-	end
-	return i
-end
-
 function Parser:functionFunc(i)
-	local newI <const> = self:loopBack(i - 1, matchFunc,"%s",doNothing)
+	local newI <const> = loopBack(i - 1, matchFunc,"%s",doNothing,self.text)
 	local str <const> = trimString(self.text[newI])
 	if "=" == str then
 		self:writeDysText('function')
