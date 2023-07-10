@@ -141,14 +141,16 @@ argOptions = {
 local function runParser()
 	local fileReader <const> = FileReader:new(FileReader.checkMainFile(arg[#arg]))
 	local file <const> = fileReader:readFile()
-	local scanned <const> = Scanner:new(file):scanFile()
-	Parser:new(scanned,file.filePath):beginParsing()
-	if Config.run then
-		local file <const> = arg[#arg]:gsub("%.dys$",".lua")
-		os.execute("lua " .. file)
-	end
-	if Config.temp then
-		FileWriter.removeFiles()
+	if file then
+		local scanned <const> = Scanner:new(file):scanFile()
+		Parser:new(scanned,file.filePath):beginParsing()
+		if Config.run then
+			local file <const> = arg[#arg]:gsub("%.dys$",".lua")
+			os.execute("lua " .. file)
+		end
+		if Config.temp then
+			FileWriter.removeFiles()
+		end
 	end
 end
 
@@ -180,7 +182,6 @@ local function main()
 	for i=1,#preChecks,1 do
 		preChecks[i]()
 	end
-	math.randomseed(os.time())
 	runParser()
 end
 

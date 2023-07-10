@@ -6,7 +6,6 @@ local setmetatable <const> = setmetatable
 local openFile <const> = io.open
 local gsub <const> = string.gsub
 local match <const> = string.match
-local io = io
 local FileReader <const> = {}
 FileReader.__index = FileReader
 

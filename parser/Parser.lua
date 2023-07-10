@@ -55,6 +55,18 @@ function Parser:loopUntil(from,toFunc,to,doFunc)
 	return i
 end
 
+
+function Parser:scanForRequire()
+	local i = 1
+	while i <= #self.text do
+		if self.text[i] == "require" then
+			i = self:require(i)
+		else
+			i = i +1
+		end
+	end
+end
+
 function Parser:loopText(i,untilFunc)
 	local j = i
 	while untilFunc(self,j) do
@@ -123,11 +135,16 @@ function Parser:require(i)
 	self:loopStartStop(i,endParenI,Parser.writeDysText)
 	local openingChar <const> = match(requireFile[1],"^[\"']")
 	local fileName <const> = match(requireFile[1],"^" .. openingChar .. "(.+)" .. openingChar .."$")
-	local fileAttr <const> = FileReader:new(fileName):readFile()
+	local fileAttr <const>, isLuaFile <const> = FileReader:new(fileName):readFile()
 	if fileAttr then
 		local scanner <const> = Scanner:new(fileAttr)
 		local scanned <const> = scanner:scanFile()
-		Parser:new(scanned,fileAttr.filePath):beginParsing()
+		local parser <const> = Parser:new(scanned,fileAttr.filePath)
+		if isLuaFile then
+			parser:scanForRequire()
+		else
+			parser:beginParsing()
+		end
 	end
 	return endParenI + 1
 end
