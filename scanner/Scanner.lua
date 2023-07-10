@@ -54,7 +54,6 @@ end
 local function endSkipToChar(word,tbl,flags,char)
 	flags.skipToClosing = false
 	flags.skipChecks = false
-	word[#word + 1] = char
 	createWord(word,tbl)
 end
 
@@ -110,7 +109,15 @@ end
 local function skipToClosing(word,tbl,flags,char,prevChar,closingChar,twoPrevChar)
 	--if we reach the closing char and it isnt preceded by a '\' then we can end.
 	if char == closingChar and (prevChar ~= "\\" or twoPrevChar == "\\") then
-		endSkipToChar(word,tbl,flags,char)
+		if char == "\n" then
+			endSkipToChar(word,tbl,flags,char)
+			word[#word + 1] = char
+			createWord(word,tbl)
+
+		else
+			word[#word + 1] = char
+			endSkipToChar(word,tbl,flags,char)
+		end
 		return ""
 	end
 	word[#word + 1] = char
@@ -140,7 +147,7 @@ function Scanner:scanFile()
 	local twoPrevChar = ""
 	local flags <const> = { loopSpaces = false, skipChecks = false, skipToClosing = false}
 	local closingChar = ""
-	for char in gmatch(self.file,".") do
+	for char in gmatch(self.file.text,".") do
 		--loop over spaces until you get to something not a space
 		if flags.loopSpaces then
 			handleSpaces(word,tbl,flags,char)

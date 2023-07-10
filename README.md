@@ -1,7 +1,11 @@
 
 Project [Dysnomia](https://en.wikipedia.org/wiki/Dysnomia_(moon)): adding syntax and features on top of Lua 5.4  
-The stated goal of this project is to build on top of Lua 5.4 with new syntax, features, and enhancements.
-currently this is a work in progress.
+The stated goal of this project is to build on top of Lua 5.4 with new syntax, features, and enhancements.    
+  
+Takes dysnomia files and cross-compiles them into syntactically correct lua 5.4 files.  
+  
+this repo is a huge rewrite of my previous attempt.   
+currently this is a work in progress.  
   
 ## requirements
  - Lua >= 5.4
@@ -18,6 +22,7 @@ a list of the flags and command line options for dysnomia:
  - ```-os [os name]```  enter the os type you are using, such as linux or windows.
  - ```-sep [separator]```  the file separator used by your OS for filepaths.
 - ```-nl [char(s)]```  enter the newline character(s) which your OS uses.
+- ``-skip [file(s)]`` comma separated list of files to skip over.
  - ```-perm```  Do not remove generated files after running.
  - ```-temp```  remove all generated files after running.(default)
  - ```-help```  print help screen.  
@@ -29,11 +34,13 @@ a list of the flags and command line options for dysnomia:
   - ```/=``` 
   - ```*=```
 - by default, all vars are local and const.
+- ```var``` keyword. declares a variable.
+  - ``var myVariable``
 - ```global``` keyword. declares a variable or function to not be local
-  - ```myVar <global> = 5```
+  - ```var myVar <global> = 5```
   - ``global function myFunc() return 5 end``
 - ```mutable``` keyword. declares a variable is mutable.
-  - ```myVar <mutable> = 6```
+  - ```var myVar <mutable> = 6```
 - ```class``` keyword. declares a class. [(please see class section)](#class)
   - ```class myClass(var1,var12,var3) endCLass```
 - ```:>``` used to declare inheritance of class. [(please see class section)](#class)
@@ -45,35 +52,35 @@ a list of the flags and command line options for dysnomia:
 
 ## class
 offers class declaration inspired by java records.  
-basic syntax is: class keyword followed by class name. then include any parameters to pass into constructor and a parent class if it is a child class. finally needs opening and closing brackets:    
+basic syntax is: class keyword followed by class name. then include any parameters to pass into constructor and a parent class if it is a child class. finally, close with ``endClass``:    
 ```class MyChildClass(param1,param2) :> MyParentClass endClass```
 - if no constructor is provided, then one will be created automatically.  
-  - constructor names scanned for: ``init`` ``new`` and the ``name of the class.``
-- you may declare class methods inside the brackets:
-  - ```function myMethod(a,b) end```
-    - this will be replaced by parser as: ```function MyClass:myMethod(a,b) end```
+- ``constructor`` declares a class constructor.
+  - ```constructor(param1,param2) end```
+- ``super`` calls the parent constructor. needs to be included if you include a constructor and class has a parent class.
+  - ``super(param1)``
+- you may declare class methods inside the class:
+  - ```method myMethod(a,b) end```
 - to access class variables you use the ```self``` keyword
   - ```self.myVar = 6```
 - ```self``` is not needed when accessing class methods
   - ```myMethod(5,6)``` 
     - translates to: ```self:myMethod(5,6)```
-- ``super`` calls the parent constructor. only needed if you provide a constructor and your class also inherents from a parent class.
-  - ```super(var1,var2) ```
 - ```:>``` used in class declaration to declare a parent class.
-- new objects can be instantiated from class by calling class name as a function.  
-  - ```myObj = MyClass(var1,var2)```
+- new objects can be instantiated from class by calling the ``new`` function on the class.  
+  - ```var myObj = MyClass:new(var1,var2)```
 - ``local`` declares a function to be local.
   - ```local function myFun(a,b) end```
 - ``global`` declares that a function is global in scope.
   - ``global function myFunc(a,b) end``
-- note: spaces are required between keywords in declaration. spaces should not be included between parameters in declaration.
+- note: spaces are required between keywords in declaration.
 - note: classes need to be declared inside their own separate file.
 
 ## records
 An immutable object for storing data. declare the number and names of the parameters. call it like a function to generate objects from it.
 ````  
 record MyRecord(a,b) endRec
-rec = MyRecord(5,6)
+var rec = MyRecord(5,6)
 ````
 - unlike classes, they do not have to be declared inside their own file.
 
@@ -82,7 +89,7 @@ to keep the parser simpler and easier to write, there are a few things to keep i
 - when declaring classes, the keywords in class declarations should have spaces around them. the parameters, if any, should not have spaces.
   - ```class MyClass(par1,par2,par3) :> MyParentClass endClass```
 - classes need to be declared inside their own separate file.
-- for simplicity reasons, the readability of the outputted lua code wasnt a high priority. as such, it doesnt follow coding conventions in a readable manner.
+- for simplicity reasons, the readability of the outputted lua code wasnt a high priority. as such, it isnt as readable or optimized as hand-written code.
 
 ## examples
   please see the ``eamples`` directory for examples of dysnomia.

@@ -1,0 +1,7 @@
+-- #skipRequire
+local myFile <const> = require("myFile")
+
+var req = require("testing2")
+
+--#skipRequire
+local notReq <const> = require("testing 3")

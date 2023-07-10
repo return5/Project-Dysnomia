@@ -21,6 +21,7 @@ local FileReader <const> = require  ('fileOperations.FileReader')
 local FileWriter <const> = require  ('fileOperations.FileWriter')
 local ArgOption <const> = require('misc.ArgOptions')
 local Parser <const> = require('parser.Parser')
+local Scanner <const> = require('scanner.Scanner')
 
 local separators <const> = {
 	linux = "/",
@@ -117,37 +118,38 @@ local function newLineType(checkOs,checkSep,_,args)
 	return checkOs,checkSep,nil
 end
 
+
+local function skipFiles(checkOs,checkSep,checkNl,args)
+	local files <const> = args:match(argOptions.skip.pat)
+	for match in files:gmatch("[^,]+") do
+		Config.skip[match] = true
+	end
+	return checkOs,checkSep,checkNl
+end
+
 argOptions = {
 	parse = ArgOption:new("-parse","-parse;","only parse through files, do not run the program after parsing.",parseOnly),
 	os = ArgOption:new("-os [os name]","-os;?%s*([^;]+);","enter the os type you are using, such as linux or windows.",osType),
 	sep = ArgOption:new("-sep [separator]","-sep;?%s*([^;]+);","the file separator used by your OS for filepaths.",sepType),
 	perm = ArgOption:new("-perm","-perm;","Do not remove generated files after running.",permFiles),
 	temp = ArgOption:new("-temp","-temp;","remove all generated files after running.(default)",tempFiles),
+	skip = ArgOption:new("-skip [files]","-skip;?s*(.+);","comma separated list of files to skip over",skipFiles),
 	help = ArgOption:new("-help","-help;","print help screen.",printHelpAndExit),
 	newLine = ArgOption:new("-nl -[char(s)]","-nl:?s*(.+);","enter the newline character(s) which your OS uses.",newLineType)
 }
 
 local function runParser()
-	local fileReader <const> = FileReader:new()
-	local file <const> = fileReader:readFile(fileReader:checkMainFile(arg[#arg]))
-	local parsed <const> = Parser:new(file):beginParsing()
-	local f <const> = io.open("testingOut.lua","w+")
-	f:write(table.concat(parsed))
-	f:close()
-
-	--for i=1,#parsed,1 do
-	--	io.write(parsed[i],";\n")
-	--end
-	--for i=1,#file,1 do
-	--	io.write("word: ",file[i],";;;\n")
---	end
-	--if Config.run then
-	--	local file <const> = arg[#arg]:gsub("%.dys$",".lua")
-	--	os.execute("lua " .. file)
-	--end
-	--if Config.temp then
-	--	FileWriter.removeFiles()
-	--end
+	local fileReader <const> = FileReader:new(FileReader.checkMainFile(arg[#arg]))
+	local file <const> = fileReader:readFile()
+	local scanned <const> = Scanner:new(file):scanFile()
+	Parser:new(scanned,file.filePath):beginParsing()
+	if Config.run then
+		local file <const> = arg[#arg]:gsub("%.dys$",".lua")
+		os.execute("lua " .. file)
+	end
+	if Config.temp then
+		FileWriter.removeFiles()
+	end
 end
 
 local function parseOptions(preChecks)
