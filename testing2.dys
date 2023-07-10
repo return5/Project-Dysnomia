@@ -1,10 +1,18 @@
-
-local linux = "l"
-local windows = "\\"
-
-local function doStuff(a,b,c) return 5 end
+class parent(a,b)
+endClass
 
 
-"this is string"
+class myClass(a,b,c) :> parent
+	myMeth(7,7)
 
---this is comment
+	method myMeth(k,j) end
+
+	myMeth(4,5)
+
+	constructor(a,b,c)
+		super(a,b)
+		self.c = c
+	end
+
+endClass
+

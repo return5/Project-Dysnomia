@@ -95,3 +95,4 @@ to keep the parser simpler and easier to write, there are a few things to keep i
 - [ ] do more edge case testing
 - [ ] syntax highlighter
 - [ ] syntax checking and error handling
+- [ ] add metatable functions for classes

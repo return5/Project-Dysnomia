@@ -131,7 +131,7 @@ local function runParser()
 	local fileReader <const> = FileReader:new()
 	local file <const> = fileReader:readFile(fileReader:checkMainFile(arg[#arg]))
 	local parsed <const> = Parser:new(file):beginParsing()
-	local f <const> = io.open("testingOut.txt","w+")
+	local f <const> = io.open("testingOut.lua","w+")
 	f:write(table.concat(parsed))
 	f:close()
 
