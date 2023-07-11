@@ -7,6 +7,7 @@ local FileAttr <const> = require('fileOperations.FileAttr')
 local setmetatable <const> = setmetatable
 local match <const> = string.match
 
+
 local Parser <const> = {}
 Parser.__index = Parser
 
@@ -187,9 +188,8 @@ end
 local function addToFlags()
 	local flags <const> = {['local'] = true,['const'] = true}
 	return flags,function(text)
-		local str <const> = trimString(text)
-		if str and #str > 0 and str ~= "," then
-			flags[str] = true
+		if text and #text > 0 and text ~= "," then
+			flags[text] = true
 		end
 	end
 end

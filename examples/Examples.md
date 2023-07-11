@@ -8,9 +8,6 @@ example of dys files and their syntax
 
 ## example 2
 - files: ``example2.dys`` ``MyClass.dys`` ``PrsonClass.dys``
-- example includes instatiating an object from a class which includes one layer of inheritance.
-  - ``example1.dys`` includes an example of instantiating an object from a class.
-  - ``MyClass.dys`` example of a class with a user provided method and constructor.
-  - ``PersonClass.dys`` example of a class which provides a default constructor and no methods.
+- example includes creating a simple class and instantiating an object from it and creating a simple record and instantiating an object form it.
 - to run, try: ``lua dysnomia.lua examples/example2/example2.dys``
   - to view the lua output, try: ``lua dysnomia.lua -perm examples/example2/example2.dys``

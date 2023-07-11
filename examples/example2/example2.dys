@@ -1,0 +1,26 @@
+
+--import in Simpleclass.dys
+var SimpleClass = require('examples.example2.SimpleClass')
+
+--instantiate a object from SimpleClass
+var myClass = SimpleClass:new(2,3)
+
+io.write("myClass.a is: ",myClass.a,"\n")
+
+--create a simple Record
+record MyRecord(a,b) endRec
+
+--make an instance of 'MyRecord'
+var myRec = MyRecord(5,6)
+
+io.write("myRec.a is: ",myRec.a,"\n")
+
+--we can modify or update values in classes but not records
+myClass.a = 6
+io.write("after update, myClass.a is: ",myClass.a,"\n")
+
+--we can update and add fields in classes, but not records
+myClass.c = 7
+io.write("myClass.c is: ",myClass.c,"\n")
+
+--if you want to test it, try to update or add a field to the record.

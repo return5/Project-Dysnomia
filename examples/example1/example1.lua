@@ -14,12 +14,12 @@ function printGlobal()
 	io.write("global is: ",globalVar,"\n")
 end
 
+--declare a global variable 'globalVar'
 globalVar = "dysnomia is great!"
-
 
 local function printUpdate()
 	--create a local mutable variable 'i'
-	 i = 1
+	local i = 1
 	i = i + 2  -- increase i by 2
 	io.write("after update 'i' is: ",i,"\n")
 end

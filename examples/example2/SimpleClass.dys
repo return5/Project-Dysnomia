@@ -1,0 +1,2 @@
+--create a very simple class example
+class SimpleClass(a,b) endClass

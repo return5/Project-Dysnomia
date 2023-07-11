@@ -1,0 +1,6 @@
+
+class ParentClass(a,b)
+	--make a method on this class
+	method returnAB()
+		return self.a,self.b
+	end
