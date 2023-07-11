@@ -1,30 +1,29 @@
 
- -- local function 
- function main ( ) 
- -- local const variable 
- myVar = 5 
- -- global variable 
- GlobalVar      = 6 
- -- mutable local variable 
- i < mutable > = 1 
- -- increase i by 1 
- i += 1 
- -- decrease i by one 
- i -= 1 
- -- multiply i by 2 
- i *= 2 
- -- divide i by 2 
- i /= 2 
- -- all valid lua syntax is also valid dysnomia syntax 
- local var1 < const > = add ( 1 , 2 ) 
- end
- 
- -- global function 
-  function add ( a , b ) 
- return a + b 
- end 
- 
- 
- i = 7 
- 
- main ( ) 
+--create a local constant variable 'name'
+local name <const> = "example 1"
+
+
+--create a local function. no need for local keyword unless you want it.
+local function printName()
+	io.write("name is: ",name,"\n")
+	printGlobal()
+end
+
+--declare a global function
+function printGlobal()
+	io.write("global is: ",globalVar,"\n")
+end
+
+globalVar = "dysnomia is great!"
+
+
+local function printUpdate()
+	--create a local mutable variable 'i'
+	 i = 1
+	i = i + 2  -- increase i by 2
+	io.write("after update 'i' is: ",i,"\n")
+end
+
+printName()
+printUpdate()
+

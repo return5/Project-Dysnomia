@@ -7,7 +7,6 @@ local FileAttr <const> = require('fileOperations.FileAttr')
 local setmetatable <const> = setmetatable
 local match <const> = string.match
 
-local io = io
 local Parser <const> = {}
 Parser.__index = Parser
 

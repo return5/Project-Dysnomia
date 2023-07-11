@@ -2,7 +2,7 @@ example of dys files and their syntax
 
 ## example 1
 - files: ``example1.dys``
-- example include update operators, local and global functions, and various function declarations.
+- example include local and global variables, update operators, local and global functions.
 - to run, try: ``lua dysnomia.lua examples/example1/example1.dys``
   - to view the lua output, try: ``lua dysnomia.lua -perm examples/example1/example1.dys``
 
