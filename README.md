@@ -49,6 +49,11 @@ a list of the flags and command line options for dysnomia:
   - ``super(var1,var2)``
 - ``record`` immutable collection for holding data. [(please see records section)](#records)
   - ```record MyRecord(a,b,c,d) {}```
+- ```#skipRequire``` add this in a comment on the line directly above any ```require``` statement to tell dysnomia to ignore that file. dysnomia will not attempt to parse the file included in the require.
+  ```
+    -- #skipRequire
+    var myRequire = require('myFile') --dysnomia will not scan this file.
+  ```
 
 ## class
 offers class declaration inspired by java records.  
