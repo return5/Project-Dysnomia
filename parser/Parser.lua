@@ -378,9 +378,6 @@ function Parser:writeFirstPartOfClass(class)
 		self:writeDysText(class.parent.name)
 		self:writeDysText(")\n")
 	end
-	self:writeDysText("_ENV = ")
-	self:writeDysText(class.name)
-	self:writeDysText("\n")
 end
 
 function Parser:writeParams(params)

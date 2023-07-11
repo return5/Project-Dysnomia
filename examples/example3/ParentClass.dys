@@ -1,6 +1,17 @@
 
 class ParentClass(a,b)
 	--make a method on this class
-	method returnAB()
-		return self.a,self.b
+	method printA()
+		io.write("a is: ",self.a,"\n")
 	end
+
+	--declare a local function in a class
+	function exampleFunc(b)
+		io.write("var passed to exampleFun: ",b,"\n")
+	end
+
+	method printB()
+		exampleFunc(self.b)
+	end
+
+endClass

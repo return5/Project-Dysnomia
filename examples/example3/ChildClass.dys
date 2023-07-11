@@ -1,0 +1,17 @@
+var ParentClass = require('examples.example3.ParentClass')
+
+--declare a class which inherents from ParentClass
+class ChildClass(a,b,c) :> ParentClass
+
+	--we can override the method in the parent class.
+	method printB()
+		io.write("in ChildCLass B is: ",self.b,"\n")
+	end
+
+	--provide our own custom constructor
+	constructor(a,b,c)
+		super(a,b)  --call parent constructor
+		self.c = c
+	end
+
+endClass

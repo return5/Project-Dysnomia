@@ -1,0 +1,28 @@
+var ParentClass = require('examples.example3.ParentClass')
+var ChildClass = require('examples.example3.ChildClass')
+
+var myParent = ParentClass:new(1,2)
+
+--call a method on myParent
+myParent:printA()
+myParent:printB()
+
+var myChild = ChildClass:new(4,5,6)
+
+--call a method which only exists on the parent
+myChild:printA()
+--call the overloaded method on child
+myChild:printB()
+
+
+record MyRecord(a,b)
+	--place a method onto a record
+	method printVars()
+		io.write("MyRecord.a is: ",self.a,"; MyRecord.b is: ",self.b,"\n")
+	end
+endRec
+
+
+var myRecord = MyRecord(6,7)
+--call the method on the record
+myRecord:printVars()
