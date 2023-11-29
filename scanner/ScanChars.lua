@@ -81,10 +81,6 @@ function ScanChars:breakWordThenAddCharToWord(word,char,allWords)
 	return self
 end
 
-function ScanChars:scanTillEqualSign(word,char,allWords)
-	return self.ScannerDriver:scanMathOps(word,char,allWords)
-end
-
 local scanTbl <const> = {
 	[","] = ScanChars.breakWordThenAddCharToAllWords,
 	[")"] = ScanChars.breakWordThenAddCharToAllWords,
@@ -97,7 +93,7 @@ local scanTbl <const> = {
 	["+"] = ScanChars.scanTillEqualSign,
 	["/"] = ScanChars.scanTillEqualSign,
 	["*"] = ScanChars.scanTillEqualSign,
-	["="] = ScanChars.scanEqualSign,
+	["="] = ScanChars.breakWordThenAddCharToAllWords,
 	["'"] = ScanChars.scanSingleQuote,
 	['"'] = ScanChars.scanDoubleQuote
 }
