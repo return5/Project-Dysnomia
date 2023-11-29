@@ -100,7 +100,6 @@ for k in pairs(ScanChars.spaceChars) do
 	scanTbl[k] = ScanChars.scanSpaces
 end
 
-
 function ScanChars:parseInput(word,char,allWords)
 	if scanTbl[char] then
 		return scanTbl[char](self,word,char,allWords) end

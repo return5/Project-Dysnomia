@@ -146,9 +146,6 @@ local function runParser()
 	local file <const> = fileReader:readFile()
 	if file then
 		local scanned <const> = Scanner:new(file):scanFile()
-		for i=1,#scanned,1 do
-			io.write(scanned[i],";;\n")
-		end
 		Parser:new(scanned,file.filePath):beginParsing()
 		if Config.run then
 			local file <const> = arg[#arg]:gsub("%.dys$",".lua")
