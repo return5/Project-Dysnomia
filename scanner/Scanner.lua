@@ -2,7 +2,7 @@ local ScanChars <const> = require('scanner.ScanChars')
 local setmetatable <const> = setmetatable
 local gmatch <const> = string.gmatch
 
-local Scanner <const> = {}
+local Scanner <const> = {type = "Scanner"}
 Scanner.__index = Scanner
 
 _ENV = Scanner
