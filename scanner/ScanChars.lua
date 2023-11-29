@@ -14,8 +14,9 @@ ScanChars.spaceChars = {
 	["\t"] = true
 }
 
-function ScanChars:scanComments(word,char,allWords)
-	return self.ScannerDriver:scanComments(word,char,allWords)
+function ScanChars:scanMinusSign(word,char,allWords)
+	io.write("in minus type is: ",self.type,"\n")
+	return self.ScannerDriver:scanMinusSign(word,char,allWords)
 end
 
 function ScanChars:ScanEqualSign(word,char,allWords)
@@ -92,7 +93,7 @@ local scanTbl <const> = {
 	["<"] = ScanChars.breakWordThenAddCharToAllWords,
 	[">"] = ScanChars.breakWordThenAddCharToAllWords,
 	["\n"] = ScanChars.breakWordThenAddCharToAllWords,
-	["-"] = ScanChars.scanComments,
+	["-"] = ScanChars.scanMinusSign,
 	["+"] = ScanChars.scanTillEqualSign,
 	["/"] = ScanChars.scanTillEqualSign,
 	["*"] = ScanChars.scanTillEqualSign,

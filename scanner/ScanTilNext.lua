@@ -12,13 +12,21 @@ function ScanTilNext:firstInput(word,char,allWords)
 	return self:breakWordThenAddCharToWord(word,char,allWords)
 end
 
-function ScanTilNext:parseInput(word,char,allWords)
-	if char == self.endingChar then
-		self:addCharToWordThenCreateNewWord(word,char,allWords)
-		return ScanChars
-	end
+function ScanTilNext:parseEndingChar(word,char,allWords)
+	self:addCharToWordThenCreateNewWord(word,char,allWords)
+	return ScanChars
+end
+
+function ScanTilNext:parseNotEndingChar(word,char,allWords)
 	self:createNewWord(word,allWords)
 	return ScanChars:parseInput(word,char,allWords)
+end
+
+function ScanTilNext:parseInput(word,char,allWords)
+	if char == self.endingChar then
+		return self:parseEndingChar(word,char,allWords)
+	end
+	return self:parseNotEndingChar(word,char,allWords)
 end
 
 function ScanTilNext:new(char)
