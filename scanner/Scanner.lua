@@ -8,29 +8,30 @@ Scanner.__index = Scanner
 
 _ENV = Scanner
 
+--
+--local function clearWord(word)
+--	for i=#word,1 do
+--		word[i] = nil
+--	end
+--end
 
-local function clearWord(word)
-	for i=#word,1,-1 do
-		word[i] = nil
-	end
-end
+--local function createWord(word,tbl)
+--	if #word > 0 then
+--		tbl[#tbl + 1] = concat(word)
+--		clearWord(word)
+--	end
+--end
+--
 
-local function createWord(word,tbl)
-	if #word > 0 then
-		tbl[#tbl + 1] = concat(word)
-		clearWord(word)
-	end
-end
+--local function handleWordBreak(word,tbl,char)
+--	createWord(word,tbl)
+--	tbl[#tbl + 1] = char
+--end
 
-local function handleWordBreak(word,tbl,char)
-	createWord(word,tbl)
-	tbl[#tbl + 1] = char
-end
-
-local function breakWordThenAddNewChar(word,tbl,char)
-	createWord(word,tbl)
-	word[#word + 1] = char
-end
+--local function breakWordThenAddNewChar(word,tbl,char)
+--	createWord(word,tbl)
+--	word[#word + 1] = char
+--end
 
 local function loopSpaces(word,tbl,char,flags)
 	breakWordThenAddNewChar(word,tbl,char)
@@ -57,33 +58,26 @@ local function endSkipToChar(word,tbl,flags,char)
 	createWord(word,tbl)
 end
 
-local mathOps <const> = {
-	["+"] = true,
-	["-"] = true,
-	["/"] = true,
-	["*"] = true
-}
+--local function handleEquals(word,tbl,char)
+--	if not mathOps[word[#word]] then createWord(word,tbl) end
+--	word[#word + 1] = char
+--	createWord(word,tbl)
+--end
 
-local function handleEquals(word,tbl,char)
-	if not mathOps[word[#word]] then createWord(word,tbl) end
-	word[#word + 1] = char
-	createWord(word,tbl)
-end
-
-local wordBreaks <const> = {
-	[","] = handleWordBreak,
-	[")"] = handleWordBreak,
-	["("] = handleWordBreak,
-	[";"] = handleWordBreak,
-	["<"] = handleWordBreak,
-	[">"] = handleWordBreak,
-	["="] = handleEquals,
-	["\n"] = handleWordBreak,
-	["-"] = breakWordThenAddNewChar,
-	["+"] = breakWordThenAddNewChar,
-	["/"] = breakWordThenAddNewChar,
-	["*"] = breakWordThenAddNewChar
-}
+--local wordBreaks <const> = {
+	--[","] = handleWordBreak,
+	--[")"] = handleWordBreak,
+	--["("] = handleWordBreak,
+	--[";"] = handleWordBreak,
+	--["<"] = handleWordBreak,
+	--[">"] = handleWordBreak,
+	--["\n"] = handleWordBreak,
+	--["="] = handleEquals,
+	--["-"] = breakWordThenAddNewChar,
+	--["+"] = breakWordThenAddNewChar,
+	--["/"] = breakWordThenAddNewChar,
+	--["*"] = breakWordThenAddNewChar
+--}
 
 local spaceTbl <const> = {
 	[" "] = loopSpaces,
