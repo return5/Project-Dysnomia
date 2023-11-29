@@ -1,4 +1,4 @@
-local ScanChars <const> = require('Scanner.ScanChars')
+local ScanChars <const> = require('scanner.ScanChars')
 local setmetatable <const> = setmetatable
 
 local SKipTillNewLine <const> = {type = 'ScanTillNewLine'}

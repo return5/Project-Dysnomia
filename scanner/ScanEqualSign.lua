@@ -5,6 +5,7 @@ local ScanEqualSign <const> = {type = 'ScanEqualSign'}
 ScanEqualSign.__index = ScanEqualSign
 
 setmetatable(ScanEqualSign,ScanChars)
+local io = io
 
  _ENV = ScanEqualSign
 
@@ -17,7 +18,8 @@ local mathOps <const> = {
 }
 
 function ScanEqualSign:checkIfNMathChar(char)
-	return mathOps[char] ~= nil
+	io.write("word char is: ",char,";;\n")
+	return mathOps[char] == true
 end
 
 function ScanEqualSign:parseInput(word,char,allWords)

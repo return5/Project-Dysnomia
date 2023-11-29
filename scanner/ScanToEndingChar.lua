@@ -1,4 +1,4 @@
-local ScanChars <const> = require('Scanner.ScanChars')
+local ScanChars <const> = require('scanner.ScanChars')
 local setmetatable <const> = setmetatable
 
 local ScanToEndingChar <const> = {type = 'ScanToEndingChar'}
@@ -8,12 +8,17 @@ setmetatable(ScanToEndingChar,ScanChars)
 
 _ENV = ScanToEndingChar
 
+function ScanToEndingChar:openingChar(word,char)
+	self:addToTable(char,word)
+	return self
+end
+
 function ScanToEndingChar:parseInput(word,char,allWords)
 	if not self:checkIfCharIsEscaped(word) and char == self.endingChar then
 		self:addCharToWordThenCreateNewWord(word,char,allWords)
 		return ScanChars
 	end
-	self:addToWord(char)
+	self:addToTable(char,word)
 	return self
 end
 

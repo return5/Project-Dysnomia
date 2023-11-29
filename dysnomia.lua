@@ -22,6 +22,8 @@ local FileWriter <const> = require  ('fileOperations.FileWriter')
 local ArgOption <const> = require('misc.ArgOptions')
 local Parser <const> = require('parser.Parser')
 local Scanner <const> = require('scanner.Scanner')
+local ScannerDriver <const> = require('scanner.ScannerDriver')
+local ScanChars <const> = require('scanner.ScanChars')
 
 local separators <const> = {
 	linux = "/",
@@ -139,10 +141,14 @@ argOptions = {
 }
 
 local function runParser()
+	io.write("running parser\n")
 	local fileReader <const> = FileReader:new(FileReader.checkMainFile(arg[#arg]))
 	local file <const> = fileReader:readFile()
 	if file then
 		local scanned <const> = Scanner:new(file):scanFile()
+		for i=1,#scanned,1 do
+			io.write(scanned[i],";;\n")
+		end
 		Parser:new(scanned,file.filePath):beginParsing()
 		if Config.run then
 			local file <const> = arg[#arg]:gsub("%.dys$",".lua")
@@ -182,6 +188,7 @@ local function main()
 	for i=1,#preChecks,1 do
 		preChecks[i]()
 	end
+	ScanChars.initScannerDriver(ScannerDriver)
 	runParser()
 end
 
