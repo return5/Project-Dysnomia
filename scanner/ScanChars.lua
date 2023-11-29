@@ -2,7 +2,6 @@
 local remove <const> = table.remove
 local concat <const> = table.concat
 local pairs <const> = pairs
-local io = io
 
 local ScanChars <const> = {type = 'ScanChars'}
 ScanChars.__index = ScanChars
@@ -19,7 +18,6 @@ function ScanChars:scanMinusSign(word,char,allWords)
 end
 
 function ScanChars:scanMathOps(word,char,allWords)
-	io.write("scanning math ops\n")
 	return self.ScannerDriver:scanMathOps(word,char,allWords)
 end
 
@@ -104,9 +102,7 @@ end
 
 
 function ScanChars:parseInput(word,char,allWords)
-	io.write("char is: ",char,";;  self is: ",self.type,"\n")
 	if scanTbl[char] then
-		io.write("it matches\n")
 		return scanTbl[char](self,word,char,allWords) end
 	self:addToTable(char,word)
 	return self
