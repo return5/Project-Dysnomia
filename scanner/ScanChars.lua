@@ -15,12 +15,12 @@ ScanChars.spaceChars = {
 }
 
 function ScanChars:scanMinusSign(word,char,allWords)
-	io.write("in minus type is: ",self.type,"\n")
 	return self.ScannerDriver:scanMinusSign(word,char,allWords)
 end
 
-function ScanChars:ScanEqualSign(word,char,allWords)
-	return self.ScannerDriver:ScanEqualSign(word,char,allWords)
+function ScanChars:scanMathOps(word,char,allWords)
+	io.write("scanning math ops\n")
+	return self.ScannerDriver:scanMathOps(word,char,allWords)
 end
 
 function ScanChars:scanSpaces(word,char,allWords)
@@ -90,9 +90,9 @@ local scanTbl <const> = {
 	[">"] = ScanChars.breakWordThenAddCharToAllWords,
 	["\n"] = ScanChars.breakWordThenAddCharToAllWords,
 	["-"] = ScanChars.scanMinusSign,
-	["+"] = ScanChars.scanTillEqualSign,
-	["/"] = ScanChars.scanTillEqualSign,
-	["*"] = ScanChars.scanTillEqualSign,
+	["+"] = ScanChars.scanMathOps,
+	["/"] = ScanChars.scanMathOps,
+	["*"] = ScanChars.scanMathOps,
 	["="] = ScanChars.breakWordThenAddCharToAllWords,
 	["'"] = ScanChars.scanSingleQuote,
 	['"'] = ScanChars.scanDoubleQuote
