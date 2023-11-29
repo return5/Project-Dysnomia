@@ -1,14 +1,19 @@
 local ScannerDriver <const> = require('scanner.ScannerDriver')
 
-local setmetatable <const> = setmetatable
 local remove <const> = table.remove
 local concat <const> = table.concat
+local pairs <const> = pairs
 
 local ScanChars <const> = {type = 'ScanChars'}
 ScanChars.__index = ScanChars
 
 
 _ENV = ScanChars
+
+ScanChars.spaceChars = {
+	[" "] = true,
+	["\t"] = true
+}
 
 local scanTbl <const> = {
 	[","] = ScanChars.breakWordThenAddCharToAllWords,
@@ -22,17 +27,27 @@ local scanTbl <const> = {
 	["+"] = ScanChars.breakWordThenAddCharToWord,
 	["/"] = ScanChars.breakWordThenAddCharToWord,
 	["*"] = ScanChars.breakWordThenAddCharToWord,
-	["="] = ScannerDriver.handleEqualSign
+	["="] = ScanChars.scanEqualSign
 }
 
+for k in pairs(scanTbl) do
+	scanTbl[k] = ScanChars.scanSpaces
+end
+
+function ScannerDriver:ScanEqualSign(word,char,allWords)
+	return ScannerDriver:ScanEqualSign(word,char,allWords)
+end
+
+function ScanChars:scanSpaces(word,char,allWords)
+	return ScannerDriver:scanSpaces(word,char,allWords)
+end
+
 function ScanChars:scanDoubleQuote(word,char)
-	self:addToTable(char,word)
-	return ScannerDriver:handleDoubleQuote()
+	return ScannerDriver:handleDoubleQuote(word,char)
 end
 
 function ScanChars:scanSingleQuote(word,char)
-	self:addToTable(char,word)
-	return ScannerDriver:handleSingleQuote()
+	return ScannerDriver:handleSingleQuote(word,char)
 end
 
 function ScanChars:checkIfEndOfWordMatches(word,char)
@@ -83,6 +98,7 @@ end
 
 function ScanChars:parseInput(word,char,allWords)
 	if scanTbl[char] then return scanTbl[char](word,char,allWords) end
+	self:addToTable(char,word)
 	return self
 end
 
