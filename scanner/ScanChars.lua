@@ -62,7 +62,6 @@ end
 
 function ScanChars:createNewWord(word,allWords)
 	if #word > 0 then
-		io.write("creating new word: ",concat(word),";;;;;\n")
 		self:addToTable(concat(word),allWords)
 		self:clearWord(word)
 	end
@@ -70,8 +69,6 @@ function ScanChars:createNewWord(word,allWords)
 end
 
 function ScanChars:breakWordThenAddCharToAllWords(word,char,allWords)
-	io.write("breakWordThenAddChar: ",char, "|||\n")
-	io.write("old word is: ",concat(word),"((((\n")
 	self:createNewWord(word,allWords)
 	self:addToTable(char,allWords)
 	return self
@@ -79,8 +76,12 @@ end
 
 function ScanChars:breakWordThenAddCharToWord(word,char,allWords)
 	self:createNewWord(word,allWords)
-	self:addToTable(word,char)
+	self:addToTable(char,word)
 	return self
+end
+
+function ScanChars:scanTillEqualSign(word,char,allWords)
+	return self.ScannerDriver:scanMathOps(word,char,allWords)
 end
 
 local scanTbl <const> = {
@@ -92,10 +93,9 @@ local scanTbl <const> = {
 	[">"] = ScanChars.breakWordThenAddCharToAllWords,
 	["\n"] = ScanChars.breakWordThenAddCharToAllWords,
 	["-"] = ScanChars.scanComments,
-	--TODO fix these
---	["+"] = ScanChars.breakWordThenAddCharToAllWords,
-	--["/"] = ScanChars.breakWordThenAddCharToAllWords,
---	["*"] = ScanChars.breakWordThenAddCharToAllWords,
+	["+"] = ScanChars.scanTillEqualSign,
+	["/"] = ScanChars.scanTillEqualSign,
+	["*"] = ScanChars.scanTillEqualSign,
 	["="] = ScanChars.scanEqualSign,
 	["'"] = ScanChars.scanSingleQuote,
 	['"'] = ScanChars.scanDoubleQuote
