@@ -68,6 +68,7 @@ end
 
 function VarParser:writeVars(parserParams)
 	self:writeLocal(parserParams)
+	self:writeVarNames(parserParams)
 	return self
 end
 
@@ -83,7 +84,7 @@ function VarParser:parseInput(parserParams)
 	self.varNames = {}
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams.i + 1,"[^<=;\n]",self:parseVarNames())
 	local finalI <const> = self:getFlags(newI,parserParams)
-	self:writeVars(parserParams,flags)
+	self:writeVars(parserParams)
 	parserParams:updateSetI(TokenParser,finalI)
 	return self
 end
