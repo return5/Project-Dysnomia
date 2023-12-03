@@ -150,15 +150,15 @@ function Parser:require(i)
 	return endParenI + 1
 end
 
-local function addToVarName()
-	local varName <const> = {}
-	return varName,function(text)
-		local str <const> = trimString(text)
-		if str and #str > 0 and str ~= "," then
-			varName[#varName + 1] = str
-		end
-	end
-end
+--local function addToVarName()
+--	local varName <const> = {}
+--	return varName,function(text)
+--		local str <const> = trimString(text)
+--		if str and #str > 0 and str ~= "," then
+--			varName[#varName + 1] = str
+--		end
+--	end
+--end
 
 --function Parser:addOp(i)
 --	return self:updateOps(i," +")
@@ -186,62 +186,62 @@ end
 --	return i + 1
 --end
 
-local function addToFlags()
-	local flags <const> = {['local'] = true,['const'] = true}
-	return flags,function(text)
-		if text and #text > 0 and text ~= "," then
-			flags[text] = true
-		end
-	end
-end
+--local function addToFlags()
+--	local flags <const> = {['local'] = true,['const'] = true}
+--	return flags,function(text)
+--		if text and #text > 0 and text ~= "," then
+--			flags[text] = true
+--		end
+--	end
+--end
 
 function Parser:writeDysText(text)
 	self.dysText[#self.dysText + 1] = text
 end
 
-function Parser:scrapeVarFlags(i)
-	local flagNames <const> ,flagFunc <const> = addToFlags()
-	local newI <const> = self:loopUntil(i + 1,matchFunc,"[^>]",flagFunc)
-	if flagNames['global'] then
-		flagNames['local'] = false
-		flagNames['const'] = false
-	elseif flagNames['mutable'] then
-		flagNames['const'] = false
-	end
-	return flagNames,newI + 1
-end
+--function Parser:scrapeVarFlags(i)
+--	local flagNames <const> ,flagFunc <const> = addToFlags()
+--	local newI <const> = self:loopUntil(i + 1,matchFunc,"[^>]",flagFunc)
+--	if flagNames['global'] then
+--		flagNames['local'] = false
+--		flagNames['const'] = false
+--	elseif flagNames['mutable'] then
+--		flagNames['const'] = false
+--	end
+--	return flagNames,newI + 1
+--end
 
-function Parser:writeVar(var,flags)
-	self:writeDysText(var)
-	if flags['const'] then
-		self:writeDysText(" <const> ")
-	end
-end
+--function Parser:writeVar(var,flags)
+--	self:writeDysText(var)
+--	if flags['const'] then
+--		self:writeDysText(" <const> ")
+--	end
+--end
 
-function Parser:makeVars(vars,flags)
-	if flags['local'] then
-		self:writeDysText('local ')
-	end
-	for i=1,#vars,1 do
-		self:writeVar(vars[i],flags)
-		self:writeDysText(',')
-	end
-	self.dysText[#self.dysText] = nil
-end
+--function Parser:makeVars(vars,flags)
+--	if flags['local'] then
+--		self:writeDysText('local ')
+--	end
+--	for i=1,#vars,1 do
+--		self:writeVar(vars[i],flags)
+--		self:writeDysText(',')
+--	end
+--	self.dysText[#self.dysText] = nil
+--end
 
-function Parser:variable(i)
-	local varNames <const>, varNameFunc <const> = addToVarName()
-	local newI <const> = self:loopUntil(i + 1,matchFunc,"[^<=;\n]",varNameFunc)
-	local finalI = newI
-	if self.text[newI] == "<" then
-		local flags
-		flags,finalI = self:scrapeVarFlags(newI)
-		self:makeVars(varNames,flags)
-	else
-		self:makeVars(varNames,{['local'] = true, ['const'] = true})
-	end
-	return finalI
-end
+--function Parser:variable(i)
+--	local varNames <const>, varNameFunc <const> = addToVarName()
+--	local newI <const> = self:loopUntil(i + 1,matchFunc,"[^<=;\n]",varNameFunc)
+--	local finalI = newI
+--	if self.text[newI] == "<" then
+--		local flags
+--		flags,finalI = self:scrapeVarFlags(newI)
+--		self:makeVars(varNames,flags)
+--	else
+--		self:makeVars(varNames,{['local'] = true, ['const'] = true})
+--	end
+--	return finalI
+--end
 
 local function recordParams(dysText)
 	local params <const> = {}
@@ -572,7 +572,7 @@ function Parser:beginParsing()
 end
 
 Parser.functionTable = {
-	['var'] = Parser.variable,
+	--['var'] = Parser.variable,
 	--["+="] = Parser.addOp,
 	--["-="] = Parser.subOp,
 	--["/="] = Parser.divOp,

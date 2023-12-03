@@ -8,31 +8,31 @@ setmetatable(VarParser,TokenParser)
 
 _ENV = VarParser
 
-local function matchVarFlags(flags)
+ function VarParser:matchVarFlags()
 	return function(text)
 		if text and #text > 0 and text ~= "," then
-			flags[text] = true
+			self.flags[text] = true
 		end
 	end
 end
 
-function VarParser:scrapeVarFlags(newI,parserParams,flags)
-	local finalI <const> = self:loopUntilMatch(parserParams,newI + 1,"[^<=;\n]",matchVarFlags(flags))
-	if flags['global'] then
-		flags['local'] = false
-		flags['const'] = false
-	elseif flags['mutable'] then
-		flags['const'] = false
+function VarParser:scrapeVarFlags(newI,parserParams)
+	local finalI <const> = self:loopUntilMatch(parserParams,newI + 1,"[^<=;\n]",self:matchVarFlags())
+	if self.flags['global'] then
+		self.flags['local'] = false
+		self.flags['const'] = false
+	elseif self.flags['mutable'] then
+		self.flags['const'] = false
 	end
-	return finalI + 1,flags
+	return finalI + 1
 end
 
 function VarParser:getFlags(newI,parserParams)
-	local flags <const> = {['local'] = true, ['const'] = true}
+	self.flags = {['local'] = true, ['const'] = true}
 	if parserParams.tokens[newI] == "<" then
-		return self:scrapeVarFlags(newI,parserParams,flags)
+		return self:scrapeVarFlags(newI,parserParams)
 	end
-	return newI,flags
+	return newI
 end
 
 function VarParser:addToVarName(text)
@@ -49,27 +49,31 @@ function VarParser:parseVarNames()
 	end
 end
 
-local function writeLocal(parserParams,flags)
-	if flags['local'] then
+function VarParser:writeLocal(parserParams)
+	if self.flags['local'] then
 		parserParams.dysText:write('local ')
 	end
 end
 
-function VarParser:writeVars(parserParams,flags)
-	writeLocal(parserParams,flags)
+function VarParser:writeVarNames(parserParams)
 	if #self.varNames > 0 then
 		for i=1,#self.varNames - 1,1 do
-			self:writeVar(self.varNames[i],flags,parserParams)
+			self:writeVar(i,parserParams)
 			parserParams.dysText:write(',')
 		end
-		self:writeVar(self.varNames[#self.varNames],flags,parserParams)
+		self:writeVar(#self.varNames,parserParams)
 	end
 	return self
 end
 
-function VarParser:writeVar(var,flags,parserParams)
-	parserParams.dysText:write(var)
-	if flags['const'] then
+function VarParser:writeVars(parserParams)
+	self:writeLocal(parserParams)
+	return self
+end
+
+function VarParser:writeVar(i,parserParams)
+	parserParams.dysText:write(self.varNames[i])
+	if self.flags['const'] then
 		parserParams.dysText:write(" <const> ")
 	end
 	return self
@@ -78,7 +82,7 @@ end
 function VarParser:parseInput(parserParams)
 	self.varNames = {}
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams.i + 1,"[^<=;\n]",self:parseVarNames())
-	local finalI <const>, flags <const> = self:getFlags(newI,parserParams)
+	local finalI <const> = self:getFlags(newI,parserParams)
 	self:writeVars(parserParams,flags)
 	parserParams:updateSetI(TokenParser,finalI)
 	return self
