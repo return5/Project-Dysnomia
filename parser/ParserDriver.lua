@@ -1,4 +1,6 @@
 local UpdateOpParser <const> = require('parser.UpdateOpParser')
+local VarParser <const> = require('parser.VarParser')
+local GlobalParser <const> = require('parser.GlobalParser')
 
 local ParserDriver <const> = {type = 'ParserDriver'}
 ParserDriver.__index = ParserDriver
@@ -26,5 +28,12 @@ function ParserDriver:parseMultOp(parserParams)
 	return multUpOp:parseUpdateOp(parserParams)
 end
 
+function ParserDriver:parseVar(parserParams)
+	return VarParser:parseInput(parserParams)
+end
+
+function ParserDriver:parseGlobal(parserParams)
+	return GlobalParser:parseInput(parserParams)
+end
 
 return ParserDriver

@@ -4,6 +4,8 @@ local FileReader <const> = require('fileOperations.FileReader')
 local FileWriter <const> = require('fileOperations.FileWriter')
 local FileAttr <const> = require('fileOperations.FileAttr')
 local ParserParameters <const> = require('parser.ParserParameters')
+local TokenParser <const> = require('parser.TokenParser')
+local DysText <const> = require('parser.DysText')
 
 local setmetatable <const> = setmetatable
 local match <const> = string.match
@@ -550,26 +552,26 @@ function Parser:functionFunc(i)
 	return i + 1
 end
 
-function Parser:globalFunc(i)
-	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
-	--just skip over the keyword 'global'.
-	if self.text[next] == 'function' then
-		self:writeDysText('function')
-		return next + 1
-	end
-	if self.text[next] == "record" then
-		return next
-	end
-	--otherwise write the word 'global' to the file.
-	self:writeDysText('global ')
-	return next
-end
+--function Parser:globalFunc(i)
+--	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
+--	--just skip over the keyword 'global'.
+--	if self.text[next] == 'function' then
+--		self:writeDysText('function')
+--		return next + 1
+--	end
+--	if self.text[next] == "record" then
+--		return next
+--	end
+--	--otherwise write the word 'global' to the file.
+--	self:writeDysText('global ')
+--	return next
+--end
 
-function Parser:beginParsing()
-	self:loopText(1,Parser.endOfFileCheck)
-	local fileWriter <const> = FileWriter:new(FileAttr:new(self.filePath,self.dysText))
-	fileWriter:writeFile()
-end
+--function Parser:beginParsing()
+----	self:loopText(1,Parser.endOfFileCheck)
+--	local fileWriter <const> = FileWriter:new(FileAttr:new(self.filePath,self.dysText))
+	--fileWriter:writeFile()
+--end
 
 Parser.functionTable = {
 	--['var'] = Parser.variable,
@@ -577,7 +579,7 @@ Parser.functionTable = {
 	--["-="] = Parser.subOp,
 	--["/="] = Parser.divOp,
 	--["*="] = Parser.multOp,
-	['global'] = Parser.globalFunc,
+	--['global'] = Parser.globalFunc,
 	['function'] = Parser.functionFunc,
 	['local'] = Parser.localFunc,
 	['record'] = Parser.record,
@@ -587,6 +589,15 @@ Parser.functionTable = {
 	['require'] = Parser.require
 }
 
+
+function Parser:beingParsing()
+	local parserParameters <const> = ParserParameters:new(1,TokenParser,self.text,DysText:new())
+	local index = 1
+	while index >= #self.text do
+		parserParameters.currentMode:parseInput(parserParameters.currentMode,parserParameters)
+		index = parserParameters:getI()
+	end
+end
 
 function Parser:new(text,filePath)
 	local o <const> = setmetatable({filePath = filePath,text = text,dysText = {},methods = {},inClass = false},self)

@@ -21,10 +21,14 @@ function TokenParser:multOp(parserParams)
 	return self.parserDriver:parseMultOp(parserParams)
 end
 
-function TokenParser.loopBackUntil(tokens,from,matchFunc,to,doFunc)
+function TokenParser.doNothing()
+
+end
+
+function TokenParser:loopBackUntil(parserParams,from,matchFunc,to,doFunc)
 	local index = from
-	while index > 0 and matchFunc(tokens[index],to,index) do
-		doFunc(tokens,index)
+	while index > 0 and matchFunc(parserParams:getTokenAtI(index),to,index) do
+		doFunc(parserParams:getTokenAtI(index),index)
 		index = index - 1
 	end
 	return index
@@ -32,7 +36,8 @@ end
 
 function TokenParser:loopUntilMatch(parserParams,start,toFind,doFunc)
 	local index = start
-	while index <= #parserParams.tokens and not match(parserParams.tokens[index],toFind) do
+	local stopI <const> = #parserParams:getTokens()
+	while index <= stopI and not match(parserParams:getTokenAtI(index),toFind) do
 		doFunc(parserParams,index)
 		index = index + 1
 	end
@@ -43,9 +48,17 @@ function TokenParser.trimString(str)
 	return match(str,"^%s*(.-)%s*$")
 end
 
+function TokenParser:parseVar(parserParams)
+	return self.parserDriver:parseVar(parserParams)
+end
 
+function TokenParser:parseGlobal(parserParams)
+	return self.parserDriver:parseGlobal(parserParams)
+end
 
 local tokenFuncs <const> = {
+	['var'] = TokenParser.parseVar,
+	['global'] = TokenParser.parseGlobal,
 	["+="] = TokenParser.addOp,
 	["-="] = TokenParser.subOp,
 	["/="] = TokenParser.divOp,
@@ -53,10 +66,11 @@ local tokenFuncs <const> = {
 }
 
 function TokenParser:parseInput(parserParams)
-	if tokenFuncs[parserParams.tokens[parserParams.i]] then
-		return tokenFuncs[parserParams.tokens[parserParams.i]](self,parserParams)
+	if tokenFuncs[parserParams:getCurrentToken()] then
+		return tokenFuncs[parserParams:getCurrentToken()](self,parserParams)
 	end
-	return parserParams:update(self,1)
+	parserParams:update(self,1)
+	return self
 end
 
 return TokenParser
