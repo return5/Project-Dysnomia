@@ -3,6 +3,7 @@ local VarParser <const> = require('parser.VarParser')
 local GlobalParser <const> = require('parser.GlobalParser')
 local FunctionParser <const> = require('parser.FunctionParser')
 local LocalParser <const> = require('parser.LocalParser')
+local RequireParser <const> = require('parser.RequireParser')
 
 local ParserDriver <const> = {type = 'ParserDriver'}
 ParserDriver.__index = ParserDriver
@@ -44,6 +45,10 @@ end
 
 function LocalParser:parseLocal(parserParams)
 	return LocalParser:parseInput(parserParams)
+end
+
+function LocalParser:parseRequire(parserParams)
+	return RequireParser:parseInput(parserParams)
 end
 
 return ParserDriver

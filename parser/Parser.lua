@@ -98,11 +98,11 @@ function Parser:loopUntilClosing(start,opening,closing,func)
 	return i
 end
 
-function Parser:loopStartStop(start,stop,func)
-	for i=start,stop,1 do
-		func(self,self.text[i])
-	end
-end
+--function Parser:loopStartStop(start,stop,func)
+--	for i=start,stop,1 do
+--		func(self,self.text[i])
+--	end
+--end
 
 local function doNothing() end
 
@@ -126,31 +126,31 @@ local function superParams()
 	end
 end
 
-function Parser:require(i)
-	local prevNewLine <const> = loopBack(i - 1,matchFunc,"[^\n]",doNothing,self.text)
-	local prevNonSpace <const> = loopBack(prevNewLine - 1,matchFunc,"^%s*$",doNothing,self.text)
-	if prevNewLine > 0 and prevNonSpace > 0 and match(self.text[prevNonSpace],"#skipRequire") then
-		return i + 1
-	end
-	local parenI <const> = self:loopUntil(i + 1,matchFunc,"[^(]",doNothing)
-	local requireFile <const>, requireFunc <const> = superParams()
-	local endParenI <const> = self:loopUntil(parenI + 1,matchFunc,"[^)]",requireFunc)
-	self:loopStartStop(i,endParenI,Parser.writeDysText)
-	local openingChar <const> = match(requireFile[1],"^[\"']")
-	local fileName <const> = match(requireFile[1],"^" .. openingChar .. "(.+)" .. openingChar .."$")
-	local fileAttr <const>, isLuaFile <const> = FileReader:new(fileName):readFile()
-	if fileAttr then
-		local scanner <const> = Scanner:new(fileAttr)
-		local scanned <const> = scanner:scanFile()
-		local parser <const> = Parser:new(scanned,fileAttr.filePath)
-		if isLuaFile then
-			parser:scanForRequire()
-		else
-			parser:beginParsing()
-		end
-	end
-	return endParenI + 1
-end
+--function Parser:require(i)
+--	local prevNewLine <const> = loopBack(i - 1,matchFunc,"[^\n]",doNothing,self.text)
+--	local prevNonSpace <const> = loopBack(prevNewLine - 1,matchFunc,"^%s*$",doNothing,self.text)
+--	if prevNewLine > 0 and prevNonSpace > 0 and match(self.text[prevNonSpace],"#skipRequire") then
+--		return i + 1
+--	end
+--	local parenI <const> = self:loopUntil(i + 1,matchFunc,"[^(]",doNothing)
+--	local requireFile <const>, requireFunc <const> = superParams()
+--	local endParenI <const> = self:loopUntil(parenI + 1,matchFunc,"[^)]",requireFunc)
+--	self:loopStartStop(i,endParenI,Parser.writeDysText)
+--	local openingChar <const> = match(requireFile[1],"^[\"']")
+--	local fileName <const> = match(requireFile[1],"^" .. openingChar .. "(.+)" .. openingChar .."$")
+--	local fileAttr <const>, isLuaFile <const> = FileReader:new(fileName):readFile()
+--	if fileAttr then
+--		local scanner <const> = Scanner:new(fileAttr)
+--		local scanned <const> = scanner:scanFile()
+--		local parser <const> = Parser:new(scanned,fileAttr.filePath)
+--		if isLuaFile then
+--			parser:scanForRequire()
+--		else
+--			parser:beginParsing()
+--		end
+--	end
+--	return endParenI + 1
+--end
 
 --local function addToVarName()
 --	local varName <const> = {}
@@ -586,7 +586,7 @@ Parser.functionTable = {
 	['method'] = Parser.method,
 	['class'] = Parser.class,
 	['constructor'] = Parser.constructor,
-	['require'] = Parser.require
+--	['require'] = Parser.require
 }
 
 

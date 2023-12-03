@@ -64,6 +64,10 @@ function TokenParser:parseLocal(parserParams)
 	return self.parserDriver:parseLocal(parserParams)
 end
 
+function TokenParser:parseRequire(parserParams)
+	return self.parserDriver:parseRequire(parserParams)
+end
+
 local tokenFuncs <const> = {
 	['var'] = TokenParser.parseVar,
 	['global'] = TokenParser.parseGlobal,
@@ -73,6 +77,7 @@ local tokenFuncs <const> = {
 	["*="] = TokenParser.multOp,
 	['function'] = TokenParser.parseFunction,
 	['local'] = TokenParser.parseLocal,
+	['require'] = TokenParser.parseRequire
 }
 
 function TokenParser:parseInput(parserParams)

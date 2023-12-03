@@ -1,10 +1,16 @@
 local setmetatable <const> = setmetatable
+local match <const> = string.match
 
 local ParserParameters <const> = {type = 'ParserParameters'}
 ParserParameters.__index = ParserParameters
 
 
 _ENV = ParserParameters
+
+
+function ParserParameters:isTokenMatchExpression(index,expression)
+	return match(self.tokens[index],expression)
+end
 
 function ParserParameters:isTokenMatch(index,toMatch)
 	return self.tokens[index] == toMatch
