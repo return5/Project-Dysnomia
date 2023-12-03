@@ -7,6 +7,7 @@ local ParserParameters <const> = require('parser.ParserParameters')
 local TokenParser <const> = require('parser.TokenParser')
 local DysText <const> = require('parser.DysText')
 
+
 local setmetatable <const> = setmetatable
 local match <const> = string.match
 
@@ -590,17 +591,19 @@ Parser.functionTable = {
 }
 
 
-function Parser:beingParsing()
-	local parserParameters <const> = ParserParameters:new(1,TokenParser,self.text,DysText:new())
+function Parser:beginParsing()
+	local parserParameters <const> = ParserParameters:new(TokenParser,1,self.text,DysText:new())
 	local index = 1
-	while index >= #self.text do
-		parserParameters.currentMode:parseInput(parserParameters.currentMode,parserParameters)
+	while index <= #self.text do
+		parserParameters.currentMode:parseInput(parserParameters)
 		index = parserParameters:getI()
 	end
+	local fileWriter <const> = FileWriter:new(FileAttr:new(self.filePath,parserParameters:getDysText():getDysText()))
+	fileWriter:writeFile()
 end
 
 function Parser:new(text,filePath)
-	local o <const> = setmetatable({filePath = filePath,text = text,dysText = {},methods = {},inClass = false},self)
+	local o <const> = setmetatable({filePath = filePath,text = text,methods = {},inClass = false},self)
 	return o
 end
 

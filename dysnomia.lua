@@ -24,6 +24,9 @@ local Parser <const> = require('parser.Parser')
 local Scanner <const> = require('scanner.Scanner')
 local ScannerDriver <const> = require('scanner.ScannerDriver')
 local ScanChars <const> = require('scanner.ScanChars')
+local TokenParser <const> = require('parser.TokenParser')
+local ParserDriver <const> = require('parser.ParserDriver')
+
 
 local separators <const> = {
 	linux = "/",
@@ -185,6 +188,7 @@ local function main()
 	for i=1,#preChecks,1 do
 		preChecks[i]()
 	end
+	TokenParser.parserDriver = ParserDriver
 	ScanChars.initScannerDriver(ScannerDriver)
 	runParser()
 end

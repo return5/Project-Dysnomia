@@ -20,6 +20,10 @@ function DysText:writeThreeArgs(arg1,arg2,arg3)
 	return self
 end
 
+function DysText:getDysText()
+	return self.text
+end
+
 function DysText:new()
 	return setmetatable({text = {}},self)
 end

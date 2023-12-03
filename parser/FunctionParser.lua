@@ -9,11 +9,11 @@ setmetatable(FunctionParser,TokenParser)
 _ENV = FunctionParser
 
 function FunctionParser:parseInput(parseParameters)
-	local newI <const> = self:loopBackUntil(parseParameters,parseParameters:getI() - 1, "%S+",self.doNothing)
-	if  self.trimString(parseParameters:getTokenAt(newI)) == "=" then
-		parseParameters:GetDysText():write('function')
+	local newI <const> = self:loopBackUntilMatch(parseParameters,parseParameters:getI() - 1, "%S+",self.doNothing)
+	if  self.trimString(parseParameters:getTokenAtI(newI)) == "=" then
+		parseParameters:getDysText():write('function')
 	else
-		parseParameters:GetDysText():write('local function')
+		parseParameters:getDysText():write('local function')
 	end
 	parseParameters:update(TokenParser,1)
 	return self
