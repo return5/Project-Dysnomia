@@ -541,16 +541,16 @@ function Parser:method(i)
 	return self:loopUntil(newI + 1,matchFunc,"[^(]",doNothing)
 end
 
-function Parser:functionFunc(i)
-	local newI <const> = loopBack(i - 1, matchFunc,"^%s*$",doNothing,self.text)
-	local str <const> = trimString(self.text[newI])
-	if "=" == str then
-		self:writeDysText('function')
-	else
-		self:writeDysText('local function')
-	end
-	return i + 1
-end
+--function Parser:functionFunc(i)
+--	local newI <const> = loopBack(i - 1, matchFunc,"^%s*$",doNothing,self.text)
+--	local str <const> = trimString(self.text[newI])
+--	if "=" == str then
+--		self:writeDysText('function')
+--	else
+--		self:writeDysText('local function')
+--	end
+--	return i + 1
+--end
 
 --function Parser:globalFunc(i)
 --	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
@@ -580,7 +580,7 @@ Parser.functionTable = {
 	--["/="] = Parser.divOp,
 	--["*="] = Parser.multOp,
 	--['global'] = Parser.globalFunc,
-	['function'] = Parser.functionFunc,
+	--['function'] = Parser.functionFunc,
 	['local'] = Parser.localFunc,
 	['record'] = Parser.record,
 	['method'] = Parser.method,

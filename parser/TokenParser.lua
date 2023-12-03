@@ -25,9 +25,9 @@ function TokenParser.doNothing()
 
 end
 
-function TokenParser:loopBackUntil(parserParams,from,matchFunc,to,doFunc)
+function TokenParser:loopBackUntilMatch(parserParams,from,to,doFunc)
 	local index = from
-	while index > 0 and matchFunc(parserParams:getTokenAtI(index),to,index) do
+	while index > 0 and not match(parserParams:getTokenAtI(index),to) do
 		doFunc(parserParams:getTokenAtI(index),index)
 		index = index - 1
 	end
@@ -56,6 +56,10 @@ function TokenParser:parseGlobal(parserParams)
 	return self.parserDriver:parseGlobal(parserParams)
 end
 
+function TokenParser:parseFunction(parserParams)
+	return self.parserDriver:parseFunction(parserParams)
+end
+
 local tokenFuncs <const> = {
 	['var'] = TokenParser.parseVar,
 	['global'] = TokenParser.parseGlobal,
@@ -63,6 +67,7 @@ local tokenFuncs <const> = {
 	["-="] = TokenParser.subOp,
 	["/="] = TokenParser.divOp,
 	["*="] = TokenParser.multOp,
+	['function'] = TokenParser.parseFunction,
 }
 
 function TokenParser:parseInput(parserParams)
