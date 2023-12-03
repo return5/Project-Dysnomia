@@ -3,6 +3,7 @@ local Scanner <const> = require('scanner.Scanner')
 local FileReader <const> = require('fileOperations.FileReader')
 local FileWriter <const> = require('fileOperations.FileWriter')
 local FileAttr <const> = require('fileOperations.FileAttr')
+local ParserParameters <const> = require('parser.ParserParameters')
 
 local setmetatable <const> = setmetatable
 local match <const> = string.match
@@ -159,31 +160,31 @@ local function addToVarName()
 	end
 end
 
-function Parser:addOp(i)
-	return self:updateOps(i," +")
-end
+--function Parser:addOp(i)
+--	return self:updateOps(i," +")
+--end
+--
+--function Parser:subOp(i)
+--	return self:updateOps(i," -")
+--end
+--
+--function Parser:divOp(i)
+--	return self:updateOps(i," /")
+--
+--end
+--
+--function Parser:multOp(i)
+--	return self:updateOps(i," *")
+--end
+--
 
-function Parser:subOp(i)
-	return self:updateOps(i," -")
-end
-
-function Parser:divOp(i)
-	return self:updateOps(i," /")
-
-end
-
-function Parser:multOp(i)
-	return self:updateOps(i," *")
-end
-
-
-function Parser:updateOps(i,op)
-	local varI <const> = loopBack(i - 1,matchFunc,"^%s*$",doNothing,self.text)
-	self:writeDysText("= ")
-	self:writeDysText(self.text[varI])
-	self:writeDysText(op)
-	return i + 1
-end
+--function Parser:updateOps(i,op)
+--	local varI <const> = loopBack(i - 1,matchFunc,"^%s*$",doNothing,self.text)
+--	self:writeDysText("= ")
+--	self:writeDysText(self.text[varI])
+--	self:writeDysText(op)
+--	return i + 1
+--end
 
 local function addToFlags()
 	local flags <const> = {['local'] = true,['const'] = true}
@@ -572,10 +573,10 @@ end
 
 Parser.functionTable = {
 	['var'] = Parser.variable,
-	["+="] = Parser.addOp,
-	["-="] = Parser.subOp,
-	["/="] = Parser.divOp,
-	["*="] = Parser.multOp,
+	--["+="] = Parser.addOp,
+	--["-="] = Parser.subOp,
+	--["/="] = Parser.divOp,
+	--["*="] = Parser.multOp,
 	['global'] = Parser.globalFunc,
 	['function'] = Parser.functionFunc,
 	['local'] = Parser.localFunc,
