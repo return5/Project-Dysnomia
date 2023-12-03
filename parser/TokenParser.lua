@@ -60,6 +60,10 @@ function TokenParser:parseFunction(parserParams)
 	return self.parserDriver:parseFunction(parserParams)
 end
 
+function TokenParser:parseLocal(parserParams)
+	return self.parserDriver:parseLocal(parserParams)
+end
+
 local tokenFuncs <const> = {
 	['var'] = TokenParser.parseVar,
 	['global'] = TokenParser.parseGlobal,
@@ -68,13 +72,16 @@ local tokenFuncs <const> = {
 	["/="] = TokenParser.divOp,
 	["*="] = TokenParser.multOp,
 	['function'] = TokenParser.parseFunction,
+	['local'] = TokenParser.parseLocal,
 }
 
 function TokenParser:parseInput(parserParams)
 	if tokenFuncs[parserParams:getCurrentToken()] then
 		return tokenFuncs[parserParams:getCurrentToken()](self,parserParams)
+	else
+		parserParams:getDysText():write(parserParams:getCurrentToken())
 	end
-	parserParams:update(self,1)
+	parserParams:update(TokenParser,1)
 	return self
 end
 

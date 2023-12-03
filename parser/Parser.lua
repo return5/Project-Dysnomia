@@ -106,16 +106,16 @@ end
 
 local function doNothing() end
 
-function Parser:localFunc(i)
-	self:writeDysText('local ')
-	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
-	--just skip over the function keyword.
-	if self.text[next] == 'function' then
-		self:writeDysText('function')
-		return next + 1
-	end
-	return next
-end
+--function Parser:localFunc(i)
+--	self:writeDysText('local ')
+--	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
+--	--just skip over the function keyword.
+--	if self.text[next] == 'function' then
+--		self:writeDysText('function')
+--		return next + 1
+--	end
+--	return next
+--end
 
 local function superParams()
 	local params <const> = {}
@@ -581,7 +581,7 @@ Parser.functionTable = {
 	--["*="] = Parser.multOp,
 	--['global'] = Parser.globalFunc,
 	--['function'] = Parser.functionFunc,
-	['local'] = Parser.localFunc,
+	--['local'] = Parser.localFunc,
 	['record'] = Parser.record,
 	['method'] = Parser.method,
 	['class'] = Parser.class,
