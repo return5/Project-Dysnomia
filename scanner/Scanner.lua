@@ -1,4 +1,7 @@
 local ScanChars <const> = require('scanner.ScanChars')
+require('scanner.ScannerDriver')
+
+
 local setmetatable <const> = setmetatable
 local gmatch <const> = string.gmatch
 

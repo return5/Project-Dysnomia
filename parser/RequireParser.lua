@@ -1,6 +1,5 @@
 local TokenParser <const> = require('parser.TokenParser')
 local Scanner <const> = require('scanner.Scanner')
-local Parser <const> = require('parser.Parser')
 local FileReader <const> = require('fileOperations.FileReader')
 
 local RequireParser <const> = {type = 'RequireParser'}
@@ -36,7 +35,7 @@ function RequireParser:scanAndParseRequiredFile(fileAttr,isLuaFile)
 	if fileAttr then
 		local scanner <const> = Scanner:new(fileAttr)
 		local scanned <const> = scanner:scanFile()
-		local parser <const> = Parser:new(scanned,fileAttr.filePath)
+		local parser <const> = RequireParser.Parser:new(scanned,fileAttr.filePath)
 		if isLuaFile then
 			parser:scanForRequire()
 		else

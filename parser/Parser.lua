@@ -1,12 +1,11 @@
 local Class <const> = require('parser.Class')
-local Scanner <const> = require('scanner.Scanner')
-local FileReader <const> = require('fileOperations.FileReader')
 local FileWriter <const> = require('fileOperations.FileWriter')
 local FileAttr <const> = require('fileOperations.FileAttr')
 local ParserParameters <const> = require('parser.ParserParameters')
 local TokenParser <const> = require('parser.TokenParser')
 local DysText <const> = require('parser.DysText')
-local io = io
+local RequireParser <const> = require('parser.RequireParser')
+require('parser.ParserDriver')
 
 
 local setmetatable <const> = setmetatable
@@ -100,24 +99,7 @@ function Parser:loopUntilClosing(start,opening,closing,func)
 	return i
 end
 
---function Parser:loopStartStop(start,stop,func)
---	for i=start,stop,1 do
---		func(self,self.text[i])
---	end
---end
-
 local function doNothing() end
-
---function Parser:localFunc(i)
---	self:writeDysText('local ')
---	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
---	--just skip over the function keyword.
---	if self.text[next] == 'function' then
---		self:writeDysText('function')
---		return next + 1
---	end
---	return next
---end
 
 local function superParams()
 	local params <const> = {}
@@ -128,124 +110,9 @@ local function superParams()
 	end
 end
 
---function Parser:require(i)
---	local prevNewLine <const> = loopBack(i - 1,matchFunc,"[^\n]",doNothing,self.text)
---	local prevNonSpace <const> = loopBack(prevNewLine - 1,matchFunc,"^%s*$",doNothing,self.text)
---	if prevNewLine > 0 and prevNonSpace > 0 and match(self.text[prevNonSpace],"#skipRequire") then
---		return i + 1
---	end
---	local parenI <const> = self:loopUntil(i + 1,matchFunc,"[^(]",doNothing)
---	local requireFile <const>, requireFunc <const> = superParams()
---	local endParenI <const> = self:loopUntil(parenI + 1,matchFunc,"[^)]",requireFunc)
---	self:loopStartStop(i,endParenI,Parser.writeDysText)
---	local openingChar <const> = match(requireFile[1],"^[\"']")
---	local fileName <const> = match(requireFile[1],"^" .. openingChar .. "(.+)" .. openingChar .."$")
---	local fileAttr <const>, isLuaFile <const> = FileReader:new(fileName):readFile()
---	if fileAttr then
---		local scanner <const> = Scanner:new(fileAttr)
---		local scanned <const> = scanner:scanFile()
---		local parser <const> = Parser:new(scanned,fileAttr.filePath)
---		if isLuaFile then
---			parser:scanForRequire()
---		else
---			parser:beginParsing()
---		end
---	end
---	return endParenI + 1
---end
-
---local function addToVarName()
---	local varName <const> = {}
---	return varName,function(text)
---		local str <const> = trimString(text)
---		if str and #str > 0 and str ~= "," then
---			varName[#varName + 1] = str
---		end
---	end
---end
-
---function Parser:addOp(i)
---	return self:updateOps(i," +")
---end
---
---function Parser:subOp(i)
---	return self:updateOps(i," -")
---end
---
---function Parser:divOp(i)
---	return self:updateOps(i," /")
---
---end
---
---function Parser:multOp(i)
---	return self:updateOps(i," *")
---end
---
-
---function Parser:updateOps(i,op)
---	local varI <const> = loopBack(i - 1,matchFunc,"^%s*$",doNothing,self.text)
---	self:writeDysText("= ")
---	self:writeDysText(self.text[varI])
---	self:writeDysText(op)
---	return i + 1
---end
-
---local function addToFlags()
---	local flags <const> = {['local'] = true,['const'] = true}
---	return flags,function(text)
---		if text and #text > 0 and text ~= "," then
---			flags[text] = true
---		end
---	end
---end
-
 function Parser:writeDysText(text)
 	self.dysText[#self.dysText + 1] = text
 end
-
---function Parser:scrapeVarFlags(i)
---	local flagNames <const> ,flagFunc <const> = addToFlags()
---	local newI <const> = self:loopUntil(i + 1,matchFunc,"[^>]",flagFunc)
---	if flagNames['global'] then
---		flagNames['local'] = false
---		flagNames['const'] = false
---	elseif flagNames['mutable'] then
---		flagNames['const'] = false
---	end
---	return flagNames,newI + 1
---end
-
---function Parser:writeVar(var,flags)
---	self:writeDysText(var)
---	if flags['const'] then
---		self:writeDysText(" <const> ")
---	end
---end
-
---function Parser:makeVars(vars,flags)
---	if flags['local'] then
---		self:writeDysText('local ')
---	end
---	for i=1,#vars,1 do
---		self:writeVar(vars[i],flags)
---		self:writeDysText(',')
---	end
---	self.dysText[#self.dysText] = nil
---end
-
---function Parser:variable(i)
---	local varNames <const>, varNameFunc <const> = addToVarName()
---	local newI <const> = self:loopUntil(i + 1,matchFunc,"[^<=;\n]",varNameFunc)
---	local finalI = newI
---	if self.text[newI] == "<" then
---		local flags
---		flags,finalI = self:scrapeVarFlags(newI)
---		self:makeVars(varNames,flags)
---	else
---		self:makeVars(varNames,{['local'] = true, ['const'] = true})
---	end
---	return finalI
---end
 
 local function recordParams(dysText)
 	local params <const> = {}
@@ -543,52 +410,11 @@ function Parser:method(i)
 	return self:loopUntil(newI + 1,matchFunc,"[^(]",doNothing)
 end
 
---function Parser:functionFunc(i)
---	local newI <const> = loopBack(i - 1, matchFunc,"^%s*$",doNothing,self.text)
---	local str <const> = trimString(self.text[newI])
---	if "=" == str then
---		self:writeDysText('function')
---	else
---		self:writeDysText('local function')
---	end
---	return i + 1
---end
-
---function Parser:globalFunc(i)
---	local next <const> = self:loopUntil(i + 1,matchFunc,"[%s]",doNothing)
---	--just skip over the keyword 'global'.
---	if self.text[next] == 'function' then
---		self:writeDysText('function')
---		return next + 1
---	end
---	if self.text[next] == "record" then
---		return next
---	end
---	--otherwise write the word 'global' to the file.
---	self:writeDysText('global ')
---	return next
---end
-
---function Parser:beginParsing()
-----	self:loopText(1,Parser.endOfFileCheck)
---	local fileWriter <const> = FileWriter:new(FileAttr:new(self.filePath,self.dysText))
-	--fileWriter:writeFile()
---end
-
 Parser.functionTable = {
-	--['var'] = Parser.variable,
-	--["+="] = Parser.addOp,
-	--["-="] = Parser.subOp,
-	--["/="] = Parser.divOp,
-	--["*="] = Parser.multOp,
-	--['global'] = Parser.globalFunc,
-	--['function'] = Parser.functionFunc,
-	--['local'] = Parser.localFunc,
 	['record'] = Parser.record,
 	['method'] = Parser.method,
 	['class'] = Parser.class,
 	['constructor'] = Parser.constructor,
---	['require'] = Parser.require
 }
 
 
@@ -596,7 +422,6 @@ function Parser:beginParsing()
 	local parserParameters <const> = ParserParameters:new(TokenParser,1,self.text,DysText:new())
 	local index = 1
 	while index <= #self.text do
-	--	io.write("current token: ",parserParameters:getCurrentToken(),";;;\n")
 		parserParameters.currentMode:parseInput(parserParameters)
 		index = parserParameters:getI()
 	end
@@ -608,5 +433,11 @@ function Parser:new(text,filePath)
 	local o <const> = setmetatable({filePath = filePath,text = text,methods = {},inClass = false},self)
 	return o
 end
+
+local function postConstruct()
+	RequireParser.Parser = Parser
+end
+
+postConstruct()
 
 return Parser

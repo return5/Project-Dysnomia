@@ -4,6 +4,7 @@ local GlobalParser <const> = require('parser.GlobalParser')
 local FunctionParser <const> = require('parser.FunctionParser')
 local LocalParser <const> = require('parser.LocalParser')
 local RequireParser <const> = require('parser.RequireParser')
+local TokenParser <const> = require('parser.TokenParser')
 
 local ParserDriver <const> = {type = 'ParserDriver'}
 ParserDriver.__index = ParserDriver
@@ -50,5 +51,11 @@ end
 function LocalParser:parseRequire(parserParams)
 	return RequireParser:parseInput(parserParams)
 end
+
+local function postConstruct()
+	TokenParser.parserDriver = ParserDriver
+end
+
+postConstruct()
 
 return ParserDriver
