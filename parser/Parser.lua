@@ -6,6 +6,7 @@ local FileAttr <const> = require('fileOperations.FileAttr')
 local ParserParameters <const> = require('parser.ParserParameters')
 local TokenParser <const> = require('parser.TokenParser')
 local DysText <const> = require('parser.DysText')
+local io = io
 
 
 local setmetatable <const> = setmetatable
@@ -595,6 +596,7 @@ function Parser:beginParsing()
 	local parserParameters <const> = ParserParameters:new(TokenParser,1,self.text,DysText:new())
 	local index = 1
 	while index <= #self.text do
+	--	io.write("current token: ",parserParameters:getCurrentToken(),";;;\n")
 		parserParameters.currentMode:parseInput(parserParameters)
 		index = parserParameters:getI()
 	end

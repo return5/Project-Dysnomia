@@ -1,5 +1,5 @@
 local TokenParser <const> = require('parser.TokenParser')
-local setmetatable <const> = setmetatable
+local io = io
 
 local VarParser <const> = {type = 'VarParser'}
 VarParser.__index = VarParser
@@ -11,13 +11,15 @@ _ENV = VarParser
  function VarParser:matchVarFlags()
 	return function(text)
 		if text and #text > 0 and text ~= "," then
+			io.write("adding flag: ",text,";;\n")
 			self.flags[text] = true
 		end
 	end
 end
 
 function VarParser:scrapeVarFlags(newI,parserParams)
-	local finalI <const> = self:loopUntilMatch(parserParams,newI + 1,"[^<=;\n]",self:matchVarFlags())
+	local finalI <const> = self:loopUntilMatch(parserParams,newI + 1,"[>=;\n]",self:matchVarFlags())
+	io.write("var flag: ",parserParams:getTokenAtI(finalI),";;;\n")
 	if self.flags['global'] then
 		self.flags['local'] = false
 		self.flags['const'] = false
@@ -30,22 +32,23 @@ end
 function VarParser:getFlags(newI,parserParams)
 	self.flags = {['local'] = true, ['const'] = true}
 	if parserParams:isTokenMatch(newI,"<") then
+		io.write("it does match\n")
 		return self:scrapeVarFlags(newI,parserParams)
 	end
 	return newI
 end
 
-function VarParser:addToVarName(text)
+function VarParser:addToVarNames(text)
 	local str <const> = self.trimString(text)
 	if str and #str > 0 and str ~= "," then
-		self.varName[#self.varName + 1] = str
+		self.varNames[#self.varNames + 1] = str
 	end
 	return self
 end
 
 function VarParser:parseVarNames()
-	return function(parserParams,index)
-		return self:addToVarName(parserParams:getTokenAtI(index))
+	return function(token)
+		return self:addToVarNames(token)
 	end
 end
 
@@ -81,8 +84,10 @@ function VarParser:writeVar(i,parserParams)
 end
 
 function VarParser:parseInput(parserParams)
+	io.write("parsing var\n")
 	self.varNames = {}
-	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"[^<=;\n]",self:parseVarNames())
+	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"[<=;\n]",self:parseVarNames())
+	io.write("parsing flag token is: ",parserParams:getTokenAtI(newI),"\n")
 	local finalI <const> = self:getFlags(newI,parserParams)
 	self:writeVars(parserParams)
 	parserParams:updateSetI(TokenParser,finalI)
