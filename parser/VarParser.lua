@@ -1,5 +1,4 @@
 local TokenParser <const> = require('parser.TokenParser')
-local io = io
 
 local VarParser <const> = {type = 'VarParser'}
 VarParser.__index = VarParser
@@ -11,7 +10,6 @@ _ENV = VarParser
  function VarParser:matchVarFlags()
 	return function(text)
 		if text and #text > 0 and text ~= "," then
-			io.write("adding flag: ",text,";;\n")
 			self.flags[text] = true
 		end
 	end
@@ -19,7 +17,6 @@ end
 
 function VarParser:scrapeVarFlags(newI,parserParams)
 	local finalI <const> = self:loopUntilMatch(parserParams,newI + 1,"[>=;\n]",self:matchVarFlags())
-	io.write("var flag: ",parserParams:getTokenAtI(finalI),";;;\n")
 	if self.flags['global'] then
 		self.flags['local'] = false
 		self.flags['const'] = false
@@ -32,7 +29,6 @@ end
 function VarParser:getFlags(newI,parserParams)
 	self.flags = {['local'] = true, ['const'] = true}
 	if parserParams:isTokenMatch(newI,"<") then
-		io.write("it does match\n")
 		return self:scrapeVarFlags(newI,parserParams)
 	end
 	return newI
@@ -84,10 +80,8 @@ function VarParser:writeVar(i,parserParams)
 end
 
 function VarParser:parseInput(parserParams)
-	io.write("parsing var\n")
 	self.varNames = {}
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"[<=;\n]",self:parseVarNames())
-	io.write("parsing flag token is: ",parserParams:getTokenAtI(newI),"\n")
 	local finalI <const> = self:getFlags(newI,parserParams)
 	self:writeVars(parserParams)
 	parserParams:updateSetI(TokenParser,finalI)

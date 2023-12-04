@@ -1,5 +1,4 @@
 local TokenParser <const> = require('parser.TokenParser')
-local setmetatable <const> = setmetatable
 
 local LocalParser <const> = {type = 'LocalParser'}
 LocalParser.__index = LocalParser

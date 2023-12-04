@@ -144,7 +144,6 @@ argOptions = {
 }
 
 local function runParser()
-	io.write("running parser\n")
 	local fileReader <const> = FileReader:new(FileReader.checkMainFile(arg[#arg]))
 	local file <const> = fileReader:readFile()
 	if file then

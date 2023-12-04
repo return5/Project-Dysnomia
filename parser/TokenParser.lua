@@ -1,5 +1,4 @@
 local match <const> = string.match
-local io = io
 
 local TokenParser <const> = {type = 'TokenParser'}
 TokenParser.__index = TokenParser
@@ -36,11 +35,9 @@ function TokenParser:loopBackUntilMatch(parserParams,from,to,doFunc)
 end
 
 function TokenParser:loopUntilMatch(parserParams,start,toFind,doFunc)
-	io.write("loop until match: ",toFind,"\n")
 	local index = start
 	local stopI <const> = #parserParams:getTokens()
 	while index <= stopI and not match(parserParams:getTokenAtI(index),toFind) do
-		io.write("token is: ",parserParams:getTokenAtI(index),":::\n")
 		doFunc(parserParams:getTokenAtI(index),index)
 		index = index + 1
 	end

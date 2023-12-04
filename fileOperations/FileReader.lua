@@ -8,7 +8,6 @@ local gsub <const> = string.gsub
 local match <const> = string.match
 local FileReader <const> = {}
 FileReader.__index = FileReader
-local io = io
 
 _ENV = FileReader
 
@@ -17,9 +16,7 @@ FileReader.fileRead = {}
 local function findFile(filePath,ending)
 	local fulFilePath <const> = gsub(filePath,"%.",Config.sep)
 	local file <const> = openFile(fulFilePath .. ending,"r")
-	io.write("fullPath is: ",fulFilePath,"\n")
 	if file then
-		io.write("file exists, reading text\n")
 		local text <const> = file:read("a*") .. "\n"
 		file:close()
 		return FileAttr:new(fulFilePath,text)
@@ -28,12 +25,10 @@ local function findFile(filePath,ending)
 end
 
 function FileReader:readFile()
-	io.write("reading file\n")
 	--if we havent already read this file
 	if not self.fileRead[self.file] then
 		local fileName <const> = match(self.file,"[^%.]+$")
 		self.fileRead[self.file] = true
-		io.write("fileNAme is: ",fileName,"\n")
 		if not Config.skip[fileName .. ".dys"] then
 			--search for a dysnomia file
 			local dysFile <const> = findFile(self.file,".dys")
