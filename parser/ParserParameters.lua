@@ -48,6 +48,11 @@ function ParserParameters:getDysText()
 	return self.dysText
 end
 
+function ParserParameters:setCurrentMode(currentMode)
+	self.currentMode = currentMode
+	return self
+end
+
 function ParserParameters:new(currentMode,i,tokens,dysText)
 	return setmetatable({currentMode = currentMode,i = i, tokens = tokens,dysText = dysText},self)
 end

@@ -82,11 +82,12 @@ local tokenFuncs <const> = {
 
 function TokenParser:parseInput(parserParams)
 	if tokenFuncs[parserParams:getCurrentToken()] then
-		return tokenFuncs[parserParams:getCurrentToken()](self,parserParams)
+		tokenFuncs[parserParams:getCurrentToken()](self,parserParams)
 	else
 		parserParams:getDysText():write(parserParams:getCurrentToken())
+		parserParams:update(TokenParser,1)
 	end
-	parserParams:update(TokenParser,1)
+	parserParams:setCurrentMode(self)
 	return self
 end
 
