@@ -20,8 +20,31 @@ function DysText:writeThreeArgs(arg1,arg2,arg3)
 	return self
 end
 
+function DysText:writeFourArgs(arg1,arg2,arg3,arg4)
+	self:writeThreeArgs(arg1,arg2,arg3):write(arg4)
+	return self
+end
+
+function DysText:writeFiveArgs(arg1,arg2,arg3,arg4,arg5)
+	self:writeFourArgs(arg1,arg2,arg3,arg4):write(arg5)
+	return self
+end
+
 function DysText:getDysText()
 	return self.text
+end
+
+function DysText:getLength()
+	return #self.text
+end
+
+function DysText:getTextAt(index)
+	return self.text[index]
+end
+
+function DysText:replaceTextAt(text,index)
+	self.text[index] = text
+	return self
 end
 
 function DysText:new()

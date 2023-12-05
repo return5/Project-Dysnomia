@@ -5,6 +5,7 @@ local FunctionParser <const> = require('parser.FunctionParser')
 local LocalParser <const> = require('parser.LocalParser')
 local RequireParser <const> = require('parser.RequireParser')
 local TokenParser <const> = require('parser.TokenParser')
+local RecordParser <const> = require('parser.RecordParser')
 
 local ParserDriver <const> = {type = 'ParserDriver'}
 ParserDriver.__index = ParserDriver
@@ -44,13 +45,18 @@ function ParserDriver:parseFunction(parserParams)
 	return FunctionParser:parseInput(parserParams)
 end
 
-function LocalParser:parseLocal(parserParams)
+function ParserDriver:parseLocal(parserParams)
 	return LocalParser:parseInput(parserParams)
 end
 
-function LocalParser:parseRequire(parserParams)
+function ParserDriver:parseRequire(parserParams)
 	return RequireParser:parseInput(parserParams)
 end
+
+function ParserDriver:parseRecord(parserParams,returnMode)
+	return RecordParser:new(returnMode,parserParams:getDysText():getLength()):startParsingRecord(parserParams)
+end
+
 
 local function postConstruct()
 	TokenParser.parserDriver = ParserDriver

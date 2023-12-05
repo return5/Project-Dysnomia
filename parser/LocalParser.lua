@@ -8,7 +8,7 @@ setmetatable(LocalParser,TokenParser)
 _ENV = LocalParser
 
 function LocalParser:parseInput(parserParams)
-	parserParams:getDysTest():write('local ')
+	parserParams:getDysText():write('local ')
 	local nextI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1, "%S",self.doNothing)
 	if parserParams:isTokenMatch(nextI,"function") then
 		parserParams:getDysTest():write("function")

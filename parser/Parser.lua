@@ -7,7 +7,6 @@ local DysText <const> = require('parser.DysText')
 local RequireParser <const> = require('parser.RequireParser')
 require('parser.ParserDriver')
 
-
 local setmetatable <const> = setmetatable
 local match <const> = string.match
 

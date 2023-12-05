@@ -5,25 +5,33 @@ TokenParser.__index = TokenParser
 
 _ENV = TokenParser
 
+TokenParser.returnMode = TokenParser
+
 function TokenParser:addOp(parserParams)
-	return self.parserDriver:parseAddOp(parserParams)
+	self.parserDriver:parseAddOp(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
 function TokenParser:subOp(parserParams)
-	return self.parserDriver:parseSubOp(parserParams)
+	self.parserDriver:parseSubOp(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
 function TokenParser:divOp(parserParams)
-	return self.parserDriver:parseDivOp(parserParams)
+	self.parserDriver:parseDivOp(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
 function TokenParser:multOp(parserParams)
-	return self.parserDriver:parseMultOp(parserParams)
+	self.parserDriver:parseMultOp(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
-function TokenParser.doNothing()
-
-end
+function TokenParser.doNothing() end
 
 function TokenParser:loopBackUntilMatch(parserParams,from,to,doFunc)
 	local index = from
@@ -49,26 +57,46 @@ function TokenParser.trimString(str)
 end
 
 function TokenParser:parseVar(parserParams)
-	return self.parserDriver:parseVar(parserParams)
+	self.parserDriver:parseVar(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
 function TokenParser:parseGlobal(parserParams)
-	return self.parserDriver:parseGlobal(parserParams)
+	self.parserDriver:parseGlobal(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
 function TokenParser:parseFunction(parserParams)
-	return self.parserDriver:parseFunction(parserParams)
+	self.parserDriver:parseFunction(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
 function TokenParser:parseLocal(parserParams)
-	return self.parserDriver:parseLocal(parserParams)
+	self.parserDriver:parseLocal(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
 function TokenParser:parseRequire(parserParams)
-	return self.parserDriver:parseRequire(parserParams)
+	self.parserDriver:parseRequire(parserParams)
+	parserParams:setCurrentMode(self)
+	return self
 end
 
-local tokenFuncs <const> = {
+function TokenParser:parseEndRec(parserParams)
+	--parserParams:getDysText():write('endRec')
+	parserParams:update(self.returnMode,1)
+	return self
+end
+
+function TokenParser:parseRecord(parserParams)
+	return TokenParser.parserDriver:parseRecord(parserParams,self)
+end
+
+TokenParser.tokenFuncs = {
 	['var'] = TokenParser.parseVar,
 	['global'] = TokenParser.parseGlobal,
 	["+="] = TokenParser.addOp,
@@ -77,17 +105,17 @@ local tokenFuncs <const> = {
 	["*="] = TokenParser.multOp,
 	['function'] = TokenParser.parseFunction,
 	['local'] = TokenParser.parseLocal,
-	['require'] = TokenParser.parseRequire
+	['require'] = TokenParser.parseRequire,
+	['endRec'] = TokenParser.parseEndRec,
+	['record'] = TokenParser.parseRecord
 }
 
 function TokenParser:parseInput(parserParams)
-	if tokenFuncs[parserParams:getCurrentToken()] then
-		tokenFuncs[parserParams:getCurrentToken()](self,parserParams)
-	else
-		parserParams:getDysText():write(parserParams:getCurrentToken())
-		parserParams:update(TokenParser,1)
+	if self.tokenFuncs[parserParams:getCurrentToken()] then
+		return self.tokenFuncs[parserParams:getCurrentToken()](self,parserParams)
 	end
-	parserParams:setCurrentMode(self)
+	parserParams:getDysText():write(parserParams:getCurrentToken())
+	parserParams:update(self,1)
 	return self
 end
 
