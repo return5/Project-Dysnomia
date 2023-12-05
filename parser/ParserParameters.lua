@@ -20,7 +20,7 @@ function ParserParameters:getCurrentToken()
 	return self.tokens[self.i]
 end
 
-function ParserParameters:getTokenAtI(index)
+function ParserParameters:getAt(index)
 	return self.tokens[index]
 end
 

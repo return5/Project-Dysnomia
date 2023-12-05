@@ -38,7 +38,7 @@ function DysText:getLength()
 	return #self.text
 end
 
-function DysText:getTextAt(index)
+function DysText:getAt(index)
 	return self.text[index]
 end
 

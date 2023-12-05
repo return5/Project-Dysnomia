@@ -10,27 +10,26 @@ setmetatable(RecordParser,ClassAndRecordParser)
 _ENV = RecordParser
 
 function RecordParser:writeEndRecord(parserParams)
-	local tempRecName <const> = "__" .. self.recordName .. "__"
-	parserParams:getDysText():writeFiveArgs("\treturn setmetatable({},{__index = ",tempRecName,
-			",__newindex = function() end,__len = function() return #",tempRecName," end})\nend")
+	parserParams:getDysText():writeFiveArgs("\treturn setmetatable({},{__index = ",self.classOrRecordName,
+			",__newindex = function() end,__len = function() return #",self.classOrRecordName," end})\nend")
 	return self
 end
 
-function RecordParser:writeSelfInFrontOfMethodCall(i,dysText,regex,parserParams)
-	local prevI <const> = self:loopBackUntilMatch(parserParams,i - 1,"%S",self.doNothing)
-	local text <const> = dysText:getTextAt(prevI)
+function RecordParser:writeSelfInFrontOfMethodCall(i,dysText,regex)
+	local prevI <const> = self:loopBackUntilMatch(dysText,i - 1,"%S",self.doNothing)
+	local text <const> = dysText:getAt(prevI)
 	if text ~= "." and text ~= ":" and not match(text,regex) and not match(text,"self:") then
-		dysText:replaceTextAt("self:" .. text,i)
+		dysText:replaceTextAt("self:" .. dysText:getAt(i),i)
 	end
 	return self
 end
 
 function RecordParser:recordSecondPass(parserParams)
-	local regex <const> = self.recordName .. "[:%.]"
+	local regex <const> = self.originalRecordName .. "[:%.]"
 	local dysText <const> = parserParams:getDysText()
 	for i=self.startI,dysText:getLength(),1 do
-		if self.methods[dysText:getTextAt(i)] then
-			self:writeSelfInFrontOfMethodCall(i,dysText,regex,parserParams)
+		if self.methods[dysText:getAt(i)] then
+			self:writeSelfInFrontOfMethodCall(i,dysText,regex)
 		end
 	end
 	return self
@@ -38,8 +37,9 @@ end
 
 function RecordParser:handleRecordName(parserParams)
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%S",self.doNothing)
-	self.recordName = parserParams:getTokenAtI(newI)
-	parserParams:getDysText():writeThreeArgs("function ",self.recordName,"(")
+	self.originalRecordName = parserParams:getAt(newI)
+	self.classOrRecordName = "__" .. self.originalRecordName .. "__"
+	parserParams:getDysText():writeThreeArgs("function ",self.originalRecordName,"(")
 	return newI
 end
 
@@ -84,7 +84,7 @@ end
 
 function RecordParser:writeLocalRecordVar(parserParams)
 	local dysText <const> = parserParams:getDysText()
-	dysText:writeThreeArgs("\tlocal __",self.recordName,"__ <const> = {")
+	dysText:writeThreeArgs("\tlocal ",self.classOrRecordName," <const> = {")
 	self:writeRecordParams(dysText,writeAssignmentOfParams,writeFinalAssigmentOfParams)
 	return self
 end

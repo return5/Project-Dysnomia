@@ -33,10 +33,10 @@ end
 
 function TokenParser.doNothing() end
 
-function TokenParser:loopBackUntilMatch(parserParams,from,to,doFunc)
+function TokenParser:loopBackUntilMatch(text,from,to,doFunc)
 	local index = from
-	while index > 0 and not match(parserParams:getTokenAtI(index),to) do
-		doFunc(parserParams:getTokenAtI(index),index)
+	while index > 0 and not match(text:getAt(index),to) do
+		doFunc(text:getAt(index),index)
 		index = index - 1
 	end
 	return index
@@ -45,8 +45,8 @@ end
 function TokenParser:loopUntilMatch(parserParams,start,toFind,doFunc)
 	local index = start
 	local stopI <const> = #parserParams:getTokens()
-	while index <= stopI and not match(parserParams:getTokenAtI(index),toFind) do
-		doFunc(parserParams:getTokenAtI(index),index)
+	while index <= stopI and not match(parserParams:getAt(index),toFind) do
+		doFunc(parserParams:getAt(index),index)
 		index = index + 1
 	end
 	return index

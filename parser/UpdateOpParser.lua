@@ -10,7 +10,7 @@ _ENV = UpdateOpParser
 
 function UpdateOpParser:parseUpdateOp(parserParams)
 	local varI <const> = self:loopBackUntilMatch(parserParams,parserParams:getI() - 1,"%S+",self.doNothing)
-	parserParams:getDysText():writeThreeArgs("= ",parserParams:getTokenAtI(varI),self.op)
+	parserParams:getDysText():writeThreeArgs("= ",parserParams:getAt(varI),self.op)
 	parserParams:update(TokenParser,1)
 	return self
 end
