@@ -11,7 +11,7 @@ _ENV = ScannerDriver
 
 local scanToSingleQuote <const> = ScanToEndingChar:new("'")
 local scanToDoubleQuote <const> = ScanToEndingChar:new('"')
-local scanTilEqualSign <const> = ScanTilNext:new("=")
+local scanTilEqualSign <const> = ScanTilNext:new({['='] = true})
 local scanMinusSign <const> = ScanMinusSign:new()
 
 function ScannerDriver:scanSingleQuote(word,char)

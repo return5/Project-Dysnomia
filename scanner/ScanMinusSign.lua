@@ -10,7 +10,7 @@ setmetatable(ScanMinusSign,ScanTilNext)
 _ENV = ScanMinusSign
 
 function ScanMinusSign:parseInput(word,char,allWords)
-	if char == self.endingChar then
+	if self.endingChars[char] then
 		return self:parseEndingChar(word,char,allWords)
 	end
 	if char == self.commentChar then
@@ -21,7 +21,7 @@ function ScanMinusSign:parseInput(word,char,allWords)
 end
 
 function ScanMinusSign:new()
-	local o <const> = setmetatable(ScanTilNext:new("="),self)
+	local o <const> = setmetatable(ScanTilNext:new({["="] = true, [">"] = true}),self)
 	o.commentChar = "-"
 	return o
 end

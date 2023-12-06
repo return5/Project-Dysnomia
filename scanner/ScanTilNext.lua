@@ -23,14 +23,14 @@ function ScanTilNext:parseNotEndingChar(word,char,allWords)
 end
 
 function ScanTilNext:parseInput(word,char,allWords)
-	if char == self.endingChar then
+	if self.endingChars[char] then
 		return self:parseEndingChar(word,char,allWords)
 	end
 	return self:parseNotEndingChar(word,char,allWords)
 end
 
-function ScanTilNext:new(char)
-	return setmetatable({endingChar = char},self)
+function ScanTilNext:new(endingChars)
+	return setmetatable({endingChars = endingChars},self)
 end
 
 return ScanTilNext
