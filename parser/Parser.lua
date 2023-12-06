@@ -1,4 +1,3 @@
-local Class <const> = require('parser.Class')
 local FileWriter <const> = require('fileOperations.FileWriter')
 local FileAttr <const> = require('fileOperations.FileAttr')
 local ParserParameters <const> = require('parser.ParserParameters')

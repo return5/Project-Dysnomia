@@ -64,7 +64,7 @@ function ClassParser:writeStartOfClass(parserParams)
 	parserParams:getDysText()
 			:writeFiveArgs("\nlocal setmetatable <const> = setmetatable\nlocal ",
 				self.classOrRecordName," <const> = {}\n",self.classOrRecordName,".__index = ")
-			:writeTwoArgs(class.name,"\n")
+			:writeTwoArgs(self.classOrRecordName,"\n")
 	self:writeParent(parserParams)
 	return self
 end
@@ -96,9 +96,13 @@ function ClassParser:writeClassConstructor(parserParams)
 	return self
 end
 
+local function writeFinalParamToDysText(dysText,param)
+	dysText:write(param)
+end
+
 function ClassParser:writeClassConstructorToDysText(parserParams)
 	parserParams:getDysText():writeThreeArgs("function ",self.classOrRecordName,":new(")
-	self:writeParamsToDysText(parserParams:getDysText(),self.params,self.writeParamAndCommaToDysText,write)
+	self:writeParamsToDysText(parserParams:getDysText(),self.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():write(")\n")
 	self:writeClassConstructorAndParams(parserParams)
 	return self
@@ -111,10 +115,6 @@ function ClassParser:writeClassConstructorAndParams(parserParams)
 		self:writeClassConstructNoParent(parserParams)
 	end
 	return self
-end
-
-local function writeFinalParamToDysText(dysText,param)
-	dysText:write(param)
 end
 
 function ClassParser:writeClassConstructWithParent(parserParams)

@@ -96,6 +96,10 @@ function TokenParser:parseRecord(parserParams)
 	return TokenParser.parserDriver:parseRecord(parserParams,self)
 end
 
+function TokenParser:parseClass(parserParams)
+	return TokenParser.parserDriver:parseClass(parserParams,self)
+end
+
 TokenParser.tokenFuncs = {
 	['var'] = TokenParser.parseVar,
 	['global'] = TokenParser.parseGlobal,
@@ -107,7 +111,8 @@ TokenParser.tokenFuncs = {
 	['local'] = TokenParser.parseLocal,
 	['require'] = TokenParser.parseRequire,
 	['endRec'] = TokenParser.parseEndRec,
-	['record'] = TokenParser.parseRecord
+	['record'] = TokenParser.parseRecord,
+	['class'] = TokenParser.parseClass
 }
 
 function TokenParser:parseInput(parserParams)
