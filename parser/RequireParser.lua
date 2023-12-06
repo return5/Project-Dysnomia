@@ -26,7 +26,7 @@ end
 function RequireParser:writeFileName(start,stop,parserParams)
 	local dysTest <const> = parserParams:getDysText()
 	for i=start,stop,1 do
-		dysTest:write(parserParams:getTokenAtI(i))
+		dysTest:write(parserParams:getAt(i))
 	end
 	return self
 end
