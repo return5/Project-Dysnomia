@@ -1,6 +1,8 @@
 local TokenParser <const> = require('parser.TokenParser')
 local Scanner <const> = require('scanner.Scanner')
 local FileReader <const> = require('fileOperations.FileReader')
+local gsub <const> = string.gsub
+local io = io
 
 local RequireParser <const> = {type = 'RequireParser'}
 RequireParser.__index = RequireParser
@@ -9,18 +11,11 @@ setmetatable(RequireParser,TokenParser)
 
 _ENV = RequireParser
 
-local function parseFileName(fileNameTable)
-	return function(text)
-		fileNameTable.fileName = text
-	end
-end
-
 function RequireParser:parseParenthesisStatement(parserParams)
-	local openingQuote <const> = self:loopUntilMatch(parserParams,parserParams:getI(),"'\"",self.doNothing)
-	local fileNameTable <const> = {}
-	local endQuote <const> = self:loopUntilMatch(parserParams,openingQuote + 1,"'\"",parseFileName(fileNameTable))
-	local closingParen <const> = self:loopUntilMatch(parserParams,endQuote + 1,"%)",self.doNothing)
-	return closingParen,fileNameTable.fileName
+	local fileNameI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"['\"]",self.doNothing)
+	local closingParen <const> = self:loopUntilMatch(parserParams,fileNameI + 1,"%)",self.doNothing)
+	local fileName <const> = gsub(parserParams:getAt(fileNameI),"['\"]","")
+	return closingParen,fileName
 end
 
 function RequireParser:writeFileName(start,stop,parserParams)
