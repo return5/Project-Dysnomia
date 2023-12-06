@@ -2,6 +2,7 @@ local Class <const> = require('parser.Class')
 local ClassAndRecordParser <const> = require('parser.ClassAndRecordParser')
 
 local setmetatable <const> = setmetatable
+local io = io
 
 local ClassParser <const> = {type = 'ClassParser',foundConstructor = false}
 ClassParser.__index = ClassParser
@@ -19,10 +20,12 @@ function ClassParser:grabClassParameters(parserParams,startI)
 end
 
 function ClassParser:grabClassParentName(parserParams,startingIndex)
-	local nextI <const> = self:loopUntilMatch(parserParams,startingIndex)
+	local nextI <const> = self:loopUntilMatch(parserParams,startingIndex + 1, "%S",self.doNothing)
+	io.write("less than should be: ",parserParams:getAt(nextI),"\n")
 	if parserParams:getAt(nextI) == ">"  then
 		local parentI <const> = self:loopUntilMatch(parserParams,nextI + 1, "%S",self.doNothing)
 		self.parentName = parserParams:getAt(parentI)
+		io.write("parent is: ",self.parentName)
 		return parentI + 1
 	end
 	return nextI
@@ -70,8 +73,8 @@ function ClassParser:writeStartOfClass(parserParams)
 end
 
 function ClassParser:writeParent(parserParams)
-	if self.class.parent then
-		parserParams:getDysText():writeFiveArgs("setmetatable(",self.classOrRecordName,",",self.class.parent.name,")\n")
+	if self.parentName then
+		parserParams:getDysText():writeFiveArgs("setmetatable(",self.classOrRecordName,",",self.parentName,")\n")
 	end
 	return self
 end
@@ -109,7 +112,7 @@ function ClassParser:writeClassConstructorToDysText(parserParams)
 end
 
 function ClassParser:writeClassConstructorAndParams(parserParams)
-	if self.class.parent then
+	if self.parentName then
 		self:writeClassConstructWithParent(parserParams)
 	else
 		self:writeClassConstructNoParent(parserParams)
@@ -118,7 +121,7 @@ function ClassParser:writeClassConstructorAndParams(parserParams)
 end
 
 function ClassParser:writeClassConstructWithParent(parserParams)
-	parserParams:getDysText():writeThreeArgs("\tlocal __obj__ = setmetatable(",self.class.parent.name,":new(")
+	parserParams:getDysText():writeThreeArgs("\tlocal __obj__ = setmetatable(",self.parentName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),self.class.parent.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():write("),self)\n")
 	self:writeChildParams(self.class.parent.params)
@@ -159,6 +162,7 @@ end
 function ClassParser:parseConstructor(parserParams)
 	self.foundConstructor = true
 	local closingParens<const>, constructorParams <const> = self:grabConstructorParams(parserParams)
+	io.write("closing parens in parseConstructor ",closingParens,"\n")
 	self:writeStartOfConstructor(parserParams,constructorParams)
 	local finalI <const> = self:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
 	parserParams:updateSetI(self,finalI + 1)
@@ -169,6 +173,7 @@ function ClassParser:grabConstructorParams(parserParams)
 	local openingParens <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%(",self.doNothing)
 	local constructorParams <const> = {}
 	local closingParens <const> = self:loopUntilMatch(parserParams,openingParens + 1,"%)",self:returnFunctionAddingTextToParams(constructorParams))
+	io.write("closing parens in const Params: ",closingParens,"\n")
 	return closingParens,constructorParams
 end
 
@@ -180,8 +185,9 @@ function ClassParser:writeStartOfConstructor(parserParams,constructorParams)
 end
 
 function ClassParser:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
-	if self.class.parent then
-		local endSuper <const> = self:writeSuperConstructor(endParen)
+	io.write("closing parens in super: ",closingParens,"\n")
+	if self.parentName then
+		local endSuper <const> = self:writeSuperConstructor(parserParams,closingParens)
 		self:writeEndOfConstructor(parserParams,constructorParams)
 		return endSuper + 1
 	end
@@ -206,6 +212,7 @@ local function loopThroughUntilClosingChar(start,parserParams,openingChar,closin
 		loopFunc(token)
 		index = index + 1
 	end
+	return index
 end
 
 local function writeClosingParenToSuper(dysText)
@@ -216,9 +223,9 @@ function ClassParser:writeSuperConstructor(parserParams,closingParens)
 	local parentParams <const> = {}
 	local openingParensSuper <const> = self:loopUntilMatch(parserParams,closingParens + 1,"%(",self.doNothing)
 	local endSuper <const> = loopThroughUntilClosingChar(openingParensSuper + 1,parserParams,"(",")",self:returnFunctionAddingTextToParams(parentParams))
-	parentParams[#parentParams] = nil
-	parentParams:getDysText():writeTwoArgs(self.class.parent.name,":new(")
-	self:writeParamsToDysText(parentParams:getDysText(),parentParams,self.writeParamAndCommaToDysText,writeClosingParenToSuper)
+	parserParams:getDysText():writeTwoArgs(self.parentName,":new(")
+	self:writeParamsToDysText(parserParams:getDysText(),parentParams,self.writeParamAndCommaToDysText,writeClosingParenToSuper)
+	io.write("end super is: ",endSuper,"\n" )
 	return endSuper
 end
 
