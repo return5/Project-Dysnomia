@@ -16,6 +16,14 @@ function ParserParameters:isTokenMatch(index,toMatch)
 	return self.tokens[index] == toMatch
 end
 
+function ParserParameters:isCurrentToken(toMatch)
+	return self:isTokenMatch(self.i,toMatch)
+end
+
+function ParserParameters:isPrevToken(toMatch)
+	return self:isTokenMatch(self.i - 1,toMatch)
+end
+
 function ParserParameters:getCurrentToken()
 	return self.tokens[self.i]
 end

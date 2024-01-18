@@ -7,6 +7,7 @@ local RequireParser <const> = require('parser.RequireParser')
 local TokenParser <const> = require('parser.TokenParser')
 local RecordParser <const> = require('parser.RecordParser')
 local ClassParser <const> = require('parser.ClassParser')
+local LambdaParser <const> = require('parser.LambdaParser')
 
 local ParserDriver <const> = {type = 'ParserDriver'}
 ParserDriver.__index = ParserDriver
@@ -60,6 +61,10 @@ end
 
 function ParserDriver:parseClass(parserParams,returnMode)
 	return ClassParser:new(returnMode,parserParams:getDysText():getLength()):startParsingClass(parserParams)
+end
+
+function ParserDriver:parseLambda(parserParams,returnMode)
+	return LambdaParser:new(returnMode):startParsing(parserParams)
 end
 
 local function postConstruct()
