@@ -3,6 +3,7 @@
 # Source files
 # ============
 *.lua       text
+*.dys       text
 
 # Luadoc output
 # =============
