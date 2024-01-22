@@ -33,6 +33,18 @@ end
 
 function TokenParser.doNothing() end
 
+function TokenParser:loopOverString(parserParams,start,endingQuoteMark)
+	local index = start
+	local text <const> = parserParams:getTokens()
+	local prevToken = ""
+	while index <= #text do
+		if text[index] == endingQuoteMark and prevToken ~= "\\" then return index end
+		prevToken = text[index]
+		index = index + 1
+	end
+	return -1
+end
+
 function TokenParser:loopBackUntilMatch(text,from,to,doFunc)
 	local index = from
 	while index > 0 and not match(text:getAt(index),to) do

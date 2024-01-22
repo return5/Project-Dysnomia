@@ -7,6 +7,9 @@ ParserParameters.__index = ParserParameters
 
 _ENV = ParserParameters
 
+function ParserParameters:isIWithinLen()
+	return self.i <= #self.tokens
+end
 
 function ParserParameters:isTokenMatchExpression(index,expression)
 	return match(self.tokens[index],expression)
