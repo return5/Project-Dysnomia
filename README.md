@@ -49,6 +49,7 @@ a list of the flags and command line options for dysnomia:
   - ``super(var1,var2)``
 - ``record`` immutable collection for holding data. [(please see records section)](#records)
   - ```record MyRecord(a,b,c,d) {}```
+- ``lambdas`` shorthand syntax for declaring an anonymous function. [(please see lambda section)](#lambda)
 - ```#skipRequire``` add this in a comment on the line directly above any ```require``` statement to tell dysnomia to ignore that file. dysnomia will not attempt to parse the file included in the require.
   ```
     -- #skipRequire
@@ -88,6 +89,39 @@ record MyRecord(a,b) endRec
 var rec = MyRecord(5,6)
 ````
 - unlike classes, they do not have to be declared inside their own file.
+
+## lambda
+A shorthand syntax for declaring an anonymous function.
+- a single parameter, single statement can be declared as:
+  - ```a -> a+5```
+  - this is, a function which takes in one input 'a' and returns 'a' + 5.  equivalent to the lua code:
+    - ``function(a) return a + 5 end``
+  - for single input, no parenthesis are needed.
+  - for single statement body, no brackets are used nor is 'return' used.  
+  
+
+- a no parameter lambda can be declared as:
+  - ```() -> 5```
+  - this, a function which takes no input and returns the number 5.
+  - for zero inputs, parenthesis must be used.  
+  
+
+- multiple input lambda can be declared as:
+  - ``(a,b) -> a+b``
+  - that is, a function which takes two inputs and returns their values added together.
+  - for multiple inputs, parenthesis must be used.  
+  
+
+- multiple statement lambdas:
+  - ```(a,b) -> { if a < 5 then return b end return a}```
+  - a function which takes in two inputs, if the first is less than 5 then return second input, otherwise return the first.
+  - for multi-statement lambdas curly brackets and 'return' statement must be used.  
+
+
+- just as an FYI, lambdas arnt picky about spaces.
+  - ``a->{if a<5 then return 5 end return 5} ``
+  - perfectly valid to have spaces between parameters, '->', curly brackets, etc.   
+
 
 ## considerations
 to keep the parser simpler and easier to write, there are a few things to keep in mind when writing dysnomia syntax.
