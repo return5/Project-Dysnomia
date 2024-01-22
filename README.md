@@ -131,7 +131,8 @@ to keep the parser simpler and easier to write, there are a few things to keep i
 - when declaring classes, the keywords in class declarations should have spaces around them. the parameters, if any, should not have spaces.
   - ```class MyClass(par1,par2,par3) :> MyParentClass endClass```
 - classes need to be declared inside their own separate file.
-- for simplicity reasons, the readability of the outputted lua code wasnt a high priority. as such, it isnt as readable or optimized as hand-written code.
+- for simplicity reasons, the out putted lua code isnt as readable nor optimized as handwritten code.  
+  it is entirely readable, but may not be formatted well. under normal use cases this isnt a problem as it would only need to be read in a debugging session.
 
 ## examples
   please see the ``eamples`` directory for examples of dysnomia.
