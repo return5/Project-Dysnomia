@@ -142,4 +142,4 @@ as a superset of Lua, all  Lua features should be supported. If it is valid Lua 
 currently the parser does not support the follow lua features:
   - Multi-line strings  
   - Multi-line comments  
-  - strings quoated with double brackets: [[ this is a valid lua string, but not a valid dysnomia string ]]
+  - strings quoted with double brackets: [[ this is a valid lua string, but not a valid dysnomia string ]]
