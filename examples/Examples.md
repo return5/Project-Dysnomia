@@ -17,3 +17,9 @@ example of dys files and their syntax
 - example includes creating a child class which inherents from a parent class. creating methods on classes, and creating methods on records.
 - to run, try: ``lua dysnomia.lua examples/example3/example3.dys``
   - to view the lua output, try: ``lua dysnomia.lua -perm examples/example3/example3.dys``
+
+## example 4
+- files: ``example4-lambdas.dys``
+- includes a few examples of creating and using lambda expression.
+- to run, try: ``lua dysnomia.lua examples/example4/example4-lambdas.dys``
+  - to view the lua output, try: ``lua dysnomia.lua -perm examples/example4/example4-lambdas.dys``

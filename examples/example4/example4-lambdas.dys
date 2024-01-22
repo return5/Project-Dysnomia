@@ -1,0 +1,23 @@
+
+--create a lambda and assign it to a variable.
+--this lambda is a function with takes in an input and returns its value plus 5
+var myLambda = a -> a + 5
+
+
+--call the lambda.
+io.write(myLambda(5),"\n")
+
+--create a lambda which takes in no inputs
+var lambda2 = () -> 5
+
+io.write("value for lambda2 is: ", lambda2(),"\n")
+
+
+--a helper function to illustrate using lambdas as callbacks.
+--this function takes in a callback and prints the returned value from calling the callback.
+function exampleFunc(callBack)
+    io.write("callBack value is: ",callBack(1,2),"\n")
+end
+
+--create a callback which is a function that takes in two inputs and returns their values added together
+exampleFunc( (a,b) -> {return a + b} )
