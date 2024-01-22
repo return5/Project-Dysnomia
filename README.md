@@ -50,6 +50,7 @@ a list of the flags and command line options for dysnomia:
 - ``record`` immutable collection for holding data. [(please see records section)](#records)
   - ```record MyRecord(a,b,c,d) {}```
 - ``lambdas`` shorthand syntax for declaring an anonymous function. [(please see lambda section)](#lambda)
+  - ``a -> a + 5``
 - ```#skipRequire``` add this in a comment on the line directly above any ```require``` statement to tell dysnomia to ignore that file. dysnomia will not attempt to parse the file included in the require.
   ```
     -- #skipRequire
@@ -58,7 +59,9 @@ a list of the flags and command line options for dysnomia:
 
 ## class
 offers class declaration inspired by java records.  
-basic syntax is: class keyword followed by class name. then include any parameters to pass into constructor and a parent class if it is a child class. finally, close with ``endClass``:    
+basic syntax is: class keyword followed by class name.  
+then include any parameters to pass into constructor and a parent class if it is a child class.  
+finally, close with ``endClass``:    
 ```class MyChildClass(param1,param2) :> MyParentClass endClass```
 - if no constructor is provided, then one will be created automatically.  
 - ``constructor`` declares a class constructor.
@@ -114,8 +117,8 @@ A shorthand syntax for declaring an anonymous function.
 
 - multiple statement lambdas:
   - ```(a,b) -> { if a < 5 then return b end return a}```
-  - a function which takes in two inputs, if the first is less than 5 then return second input, otherwise return the first.
-  - for multi-statement lambdas curly brackets and 'return' statement must be used.  
+  - a function which takes in two inputs, if the first is less than 5 then return second input, otherwise return the first argument.
+  - for multi-statement lambdas, curly brackets and 'return' statement must be used.  
 
 
 - just as an FYI, lambdas arnt picky about spaces.
