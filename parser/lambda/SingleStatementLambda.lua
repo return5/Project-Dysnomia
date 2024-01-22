@@ -11,8 +11,8 @@ setmetatable(SingleStatementLambdaParser,LambdaParser)
 _ENV = SingleStatementLambdaParser
 
 function SingleStatementLambdaParser:finishLambda(parserParams)
-	parserParams:getDysText():writeTwoArgs(" end ",parserParams:getCurrentToken())
-	parserParams:update(self.returnMode,1)
+	parserParams:getDysText():writeTwoArgs(" end ")
+	parserParams:update(self.returnMode,0)
 	return self
 end
 

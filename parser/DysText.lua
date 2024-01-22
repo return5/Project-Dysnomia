@@ -1,6 +1,5 @@
 local setmetatable <const> = setmetatable
 local remove <const> = table.remove
-local match <const> = string.match
 
 local DysText <const> = {type = 'DysText'}
 DysText.__index = DysText
@@ -11,9 +10,9 @@ function DysText:eraseEndingText()
 	remove(self.text)
 end
 
-function DysText:loopBackUntil(endingChar,func)
+function DysText:loopBackUntil(matchFunc,func)
 	local i = #self.text
-	while i > 0 and not match(self.text[i],endingChar) do
+	while i > 0 and not matchFunc(self.text[i]) do
 		func(self)
 		i = i - 1
 	end

@@ -1,12 +1,7 @@
 local TokenParser <const> = require('parser.TokenParser')
-local LambdaTopLevelScope <const> = require('parser.lambda.LambdaTopLevelScope')
-local LambdaScope <const> = require('parser.lambda.LambdaScope')
-local StringParser <const> = require('parser.StringParser')
-local BracketStringParser <const> = require('parser.BracketStringParser')
 local setmetatable <const> = setmetatable
 local concat <const> = table.concat
 local match <const> = string.match
-local write <const> = io.write
 
 local LambdaParser <const> = {type = "LambdaParser"}
 LambdaParser.__index = LambdaParser
@@ -15,36 +10,12 @@ setmetatable(LambdaParser,TokenParser)
 
 _ENV = LambdaParser
 
-function LambdaParser:returnDoubleQuoteStringParser(parserParams)
-	parserParams:update(StringParser:new(self,'"'),1)
-	return self
-end
-
-function LambdaParser:returnSingleQuoteStringParser(parserParams)
-	parserParams:update(StringParser:new(self,"'"),1)
-	return self
-end
-
-function LambdaParser:returnDoubleBracketStringParser(parserParams)
-	parserParams:update(BracketStringParser:new(self),1)
-	return self
-end
-
 function LambdaParser:balancedBrackets()
-	return self.parenCount == 0 and self.braceCount == 0 and self.bracketCount == 0
+	return self.bracketCount == 0
 end
-
-local strings = {
-	["'"] = LambdaParser.returnDoubleQuoteStringParser,
-	["'"] = LambdaParser.returnSingleQuoteStringParser
-}
 
 function LambdaParser:parseInput(parserParams)
-	local currentToken <const> = parserParams:getCurrentToken()
-	if strings[currentToken] then return strings[currentToken](self,parserParams) end
-	--TODO implement double bracket strings
---	if currentToken == "[" and parserParams:isPrevToken("[") then return self:returnDoubleBracketStringParser(parserParams) end
-	if self:endingFunc(parserParams) or not parserParams:isIWithinLen() and self:balancedBrackets() then
+	if self:endingFunc(parserParams) or not parserParams:isIWithinLen() then
 		return self:finishLambda(parserParams)
 	end
 	return TokenParser.parseInput(self,parserParams)
@@ -67,25 +38,58 @@ function LambdaParser:setMultiParams(parserParams,startI)
 	self:loopBackUntilMatch(parserParams,startI,"%(",self:addToParams())
 end
 
-local function eraseDysTextUntil(dysText,charMatch)
+local function matchNonSpaces(char)
+	return match(char,"%S")
+end
+
+local function eraseDysTextUntil(dysText,charMatchFunc)
 	if match(dysText:getCurrent(),"%s") then
-		dysText:loopBackUntil("%S",dysText.eraseEndingText)
+		dysText:loopBackUntil(matchNonSpaces,dysText.eraseEndingText)
 	end
-	dysText:loopBackUntil(charMatch,dysText.eraseEndingText)
+	dysText:loopBackUntil(charMatchFunc,dysText.eraseEndingText)
+end
+
+local singleParamMatchers <const> = {
+	[")"] = true,
+	["("] = true,
+	["]"] = true,
+	["["] = true,
+	["{"] = true,
+	["}"] = true,
+	["\t"] = true,
+	[" "] = true,
+	["\n"] = true,
+	["\r"] = true,
+	[";"] = true,
+	[","] = true,
+	["->"] = true,
+	["and"] = true,
+	["or"] = true,
+	["="] = true
+}
+
+local multiParamMatchers <const> = {
+	['('] = true
+}
+
+local function matchSingleParam(char)
+	return singleParamMatchers[char]
+end
+
+local function matchMultiParam(char)
+	return multiParamMatchers[char]
 end
 
 function LambdaParser:setParams(parserParams)
-	write("setting params\n")
 	local paramStartI <const> = self:loopBackUntilMatch(parserParams,parserParams:getI() - 1,"%S",self.doNothing)
 	local char <const> = parserParams:getAt(paramStartI)
-	write("char is: ",char,"\n")
 	if char ~= ")" then
 		self:setSingleParam(char)
-		eraseDysTextUntil(parserParams:getDysText(),"%s")
+		eraseDysTextUntil(parserParams:getDysText(),matchSingleParam)
 		return self
 	end
 	self:setMultiParams(parserParams,paramStartI - 1)
-	eraseDysTextUntil(parserParams:getDysText(),"%(")
+	eraseDysTextUntil(parserParams:getDysText(),matchMultiParam)
 	parserParams:getDysText():eraseEndingText()
 	return self
 end
@@ -105,7 +109,7 @@ function LambdaParser:generateFunction(parserParams)
 end
 
 function LambdaParser:new(returnMode)
-	return setmetatable({scope = LambdaTopLevelScope:new(),returnMode = returnMode,braceCount = 0,bracketCount = 0,parenCount = 0},self)
+	return setmetatable({returnMode = returnMode,bracketCount = 0},self)
 end
 
 return LambdaParser
