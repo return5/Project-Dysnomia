@@ -11,10 +11,26 @@ setmetatable(LambdaParser,TokenParser)
 _ENV = LambdaParser
 
 function LambdaParser:balancedBrackets()
-	return self.bracketCount == 0
+	return self.bracketCount == 0 and self.parensCount == 0 and self.bracesCount == 0
 end
 
+local countersMatches <const> = {
+	["("] = function(parser) parser.parensCount = parser.parensCount + 1 end,
+	[")"] = function(parser) parser.parensCount = parser.parensCount - 1 end,
+	["["] = function(parser) parser.bracketCount = parser.bracketCount + 1 end,
+	["]"] = function(parser) parser.bracketCount = parser.bracketCount - 1 end,
+	["{"] = function(parser) parser.bracesCount = parser.bracesCount + 1 end,
+	["}"] = function(parser)  parser.bracesCount = parser.bracesCount - 1 end
+}
+
 function LambdaParser:parseInput(parserParams)
+	local char <const> = parserParams:getCurrentToken()
+	if (self:endingFunc(char) and self:balancedBrackets()) or not parserParams:isIWithinLen() then
+		return self:finishLambda(parserParams)
+	end
+	if countersMatches[char] then
+		countersMatches[char](self)
+	end
 	return TokenParser.parseInput(self,parserParams)
 end
 
@@ -111,7 +127,7 @@ function LambdaParser:startParsing(parserParams)
 end
 
 function LambdaParser:new(returnMode)
-	return setmetatable({returnMode = returnMode},self)
+	return setmetatable({returnMode = returnMode,parensCount = 0,bracesCount = 0,bracketCount = 0},self)
 end
 
 return LambdaParser

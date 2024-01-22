@@ -9,13 +9,6 @@ setmetatable(SingleStatementLambda,LambdaParser)
 
 _ENV = SingleStatementLambda
 
-function SingleStatementLambda:parseInput(parserParams)
-	if self:endingFunc(parserParams) or not parserParams:isIWithinLen() then
-		return self:finishLambda(parserParams)
-	end
-	return LambdaParser.parseInput(self,parserParams)
-end
-
 function SingleStatementLambda:finishLambda(parserParams)
 	parserParams:getDysText():write(" end ")
 	parserParams:update(self.returnMode,0)
@@ -33,8 +26,8 @@ local endingChars <const> = {
 	["}"] = true
 }
 
-function SingleStatementLambda:endingFunc(parserParams)
-	return endingChars[parserParams:getCurrentToken()]
+function SingleStatementLambda:endingFunc(char)
+	return endingChars[char]
 end
 
 function SingleStatementLambda:startParsing(parserParams)

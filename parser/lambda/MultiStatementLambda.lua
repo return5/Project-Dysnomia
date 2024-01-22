@@ -10,19 +10,6 @@ setmetatable(MultiStatementLambda,LambdaParser)
 
 _ENV = MultiStatementLambda
 
-function MultiStatementLambda:parseInput(parserParams)
-	local char <const> = parserParams:getCurrentToken()
-	if char == "{" then
-		self.bracketCount = self.bracketCount + 1
-	elseif char == "}" then
-		self.bracketCount = self.bracketCount - 1
-	end
-	if (self:endingFunc(char) and self.bracketCount == 0) or not parserParams:isIWithinLen() then
-		return self:finishLambda(parserParams)
-	end
-	return LambdaParser.parseInput(self,parserParams)
-end
-
 function MultiStatementLambda:finishLambda(parserParams)
 	parserParams:getDysText():write(" end ")
 	parserParams:update(self.returnMode,1)
@@ -44,9 +31,7 @@ function MultiStatementLambda:startParsing(parserParams,bodyStartI)
 end
 
 function MultiStatementLambda:new(returnMode)
-	local o <const> = setmetatable(LambdaParser:new(returnMode),self)
-	o.bracketCount = 1
-	return o
+	return setmetatable(LambdaParser:new(returnMode),self)
 end
 
 return MultiStatementLambda

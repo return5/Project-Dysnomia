@@ -1,13 +1,16 @@
 
 --create a lambda and assign it to a variable.
 --this lambda is a function with takes in an input and returns its value plus 5
+--note that for a single input no parenthesis are need.
+--for a simple single statement lambda, no brackets nor return statement is used.
 var myLambda = a -> a + 5
 
 
 --call the lambda.
-io.write(myLambda(5),"\n")
+io.write("value from first lambda is: ",myLambda(5),"\n")
 
 --create a lambda which takes in no inputs
+--for a zero input lambda, parenthesis are needed.
 var lambda2 = () -> 5
 
 io.write("value for lambda2 is: ", lambda2(),"\n")
@@ -19,5 +22,16 @@ function exampleFunc(callBack)
     io.write("callBack value is: ",callBack(1,2),"\n")
 end
 
---create a callback which is a function that takes in two inputs and returns their values added together
+--create a callback which is a function that takes in two inputs and returns their values added together.
+--when using return inside an lambda, or more than one statement, brackets are needed.
 exampleFunc( (a,b) -> {return a + b} )
+
+
+--showing lambdas can be used as closures
+function closureExample()
+    var a = 5
+    return () -> a
+end
+
+
+io.write("the value for 'a' inside the closure is: ",closureExample()(),"\n")
