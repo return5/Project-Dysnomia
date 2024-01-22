@@ -1,43 +1,52 @@
 local LambdaParser <const> = require('parser.lambda.LambdaParser')
 
-local write <const> = io.write
 local setmetatable <const> = setmetatable
 
-local SingleStatementLambdaParser <const> = {type = "SingleStatementLambdaParser"}
-SingleStatementLambdaParser.__index = SingleStatementLambdaParser
+local SingleStatementLambda <const> = {type = "SingleStatementLambda"}
+SingleStatementLambda.__index = SingleStatementLambda
 
-setmetatable(SingleStatementLambdaParser,LambdaParser)
+setmetatable(SingleStatementLambda,LambdaParser)
 
-_ENV = SingleStatementLambdaParser
+_ENV = SingleStatementLambda
 
-function SingleStatementLambdaParser:finishLambda(parserParams)
-	parserParams:getDysText():writeTwoArgs(" end ")
+function SingleStatementLambda:parseInput(parserParams)
+	if self:endingFunc(parserParams) or not parserParams:isIWithinLen() then
+		return self:finishLambda(parserParams)
+	end
+	return LambdaParser.parseInput(self,parserParams)
+end
+
+function SingleStatementLambda:finishLambda(parserParams)
+	parserParams:getDysText():write(" end ")
 	parserParams:update(self.returnMode,0)
 	return self
 end
 
-function SingleStatementLambdaParser:startParsing(parserParams)
-	self:setParams(parserParams)
-	self:generateFunction(parserParams)
-	parserParams:getDysText():write("return ")
-	parserParams:update(self,1)
-	return self
-end
 local endingChars <const> = {
 	[";"] = true,
 	[","] = true,
 	["\n"] = true,
+	["\r"] = true,
 	["end"] = true,
-	[")"] = true
+	[")"] = true,
+	["]"] = true,
+	["}"] = true
 }
 
-function SingleStatementLambdaParser:endingFunc(parserParams)
+function SingleStatementLambda:endingFunc(parserParams)
 	return endingChars[parserParams:getCurrentToken()]
 end
 
-function SingleStatementLambdaParser:new(returnMode)
+function SingleStatementLambda:startParsing(parserParams)
+	LambdaParser.startParsing(self,parserParams)
+	parserParams:getDysText():write("return ")
+	parserParams:update(self,1)
+	return self
+end
+
+function SingleStatementLambda:new(returnMode)
 	return setmetatable(LambdaParser:new(returnMode),self)
 end
 
-return SingleStatementLambdaParser
+return SingleStatementLambda
 

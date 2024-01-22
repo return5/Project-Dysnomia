@@ -1,6 +1,7 @@
 local setmetatable <const> = setmetatable
 local remove <const> = table.remove
 
+
 local DysText <const> = {type = 'DysText'}
 DysText.__index = DysText
 

@@ -15,11 +15,7 @@ function LambdaParser:balancedBrackets()
 end
 
 function LambdaParser:parseInput(parserParams)
-	if self:endingFunc(parserParams) or not parserParams:isIWithinLen() then
-		return self:finishLambda(parserParams)
-	end
 	return TokenParser.parseInput(self,parserParams)
-
 end
 
 function LambdaParser:setSingleParam(parameter)
@@ -108,8 +104,14 @@ function LambdaParser:generateFunction(parserParams)
 	return self
 end
 
+function LambdaParser:startParsing(parserParams)
+	self:setParams(parserParams)
+	self:generateFunction(parserParams)
+	return self
+end
+
 function LambdaParser:new(returnMode)
-	return setmetatable({returnMode = returnMode,bracketCount = 0},self)
+	return setmetatable({returnMode = returnMode},self)
 end
 
 return LambdaParser
