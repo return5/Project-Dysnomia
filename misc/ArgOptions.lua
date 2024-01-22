@@ -1,5 +1,5 @@
 
-local setmetatable <const> = setmetatable 
+local setmetatable <const> = setmetatable
 
 local ArgOptions <const> = {}
 ArgOptions.__index = ArgOptions

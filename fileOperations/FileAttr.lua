@@ -1,5 +1,5 @@
 
-local setmetatable <const> = setmetatable 
+local setmetatable <const> = setmetatable
 
 local FileAttr <const> = {}
 FileAttr.__index = FileAttr

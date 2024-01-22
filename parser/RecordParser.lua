@@ -1,6 +1,5 @@
 local ClassAndRecordParser <const> = require('parser.ClassAndRecordParser')
 local setmetatable <const> = setmetatable
-local match <const> = string.match
 
 local RecordParser <const> = {type = 'RecordParser'}
 RecordParser.__index = RecordParser

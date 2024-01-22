@@ -2,7 +2,6 @@ local TokenParser <const> = require('parser.TokenParser')
 local Scanner <const> = require('scanner.Scanner')
 local FileReader <const> = require('fileOperations.FileReader')
 local gsub <const> = string.gsub
-local io = io
 
 local RequireParser <const> = {type = 'RequireParser'}
 RequireParser.__index = RequireParser

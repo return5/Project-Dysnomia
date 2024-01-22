@@ -223,7 +223,7 @@ function ClassParser:writeSuperConstructor(parserParams,closingParens)
 	return endSuper
 end
 
-function ClassParser:writeEndOfConstructor(parserParams,params)
+function ClassParser:writeEndOfConstructor(parserParams)
 	parserParams:getDysText():write("\t\t__obj__:__constructor__(")
 	self:writeChildParams(parserParams,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():writeThreeArgs(")\n\t\treturn __obj__\n\tend\n\nfunction ",self.classOrRecordName,":__constructor__(")
