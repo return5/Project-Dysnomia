@@ -1,11 +1,16 @@
 
-Project [Dysnomia](https://en.wikipedia.org/wiki/Dysnomia_(moon)): adding syntax and features on top of Lua 5.4  
-The stated goal of this project is to build on top of Lua 5.4 with new syntax, features, and enhancements.    
+Project [Dysnomia](https://en.wikipedia.org/wiki/Dysnomia_(moon)): adding syntax and features on top of Lua 5.4 
+
+- The stated goal of this project is to build on top of Lua 5.4 with new syntax, features, and enhancements.   
+
   
-Takes dysnomia files and cross-compiles them into syntactically correct lua 5.4 files.  
+- Takes dysnomia files and cross-compiles them into syntactically correct lua 5.4 files.  
   
-this repo is a huge rewrite of my previous attempt.   
-currently this is a work in progress.  
+
+- this repo is a huge rewrite of my previous attempt.   
+
+
+- (currently this is a work in progress.)  
   
 ## requirements
  - Lua >= 5.4
