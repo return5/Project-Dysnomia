@@ -135,21 +135,11 @@ to keep the parser simpler and easier to write, there are a few things to keep i
   it is entirely readable, but may not be formatted well. under normal use cases this isnt a problem as it would only need to be read in a debugging session.
 
 ## examples
-  please see the ``eamples`` directory for examples of dysnomia.
+  please see the ``examples`` directory for examples of dysnomia.
 
 ## Lua features not currently supported
 as a superset of Lua, all  Lua features should be supported. If it is valid Lua code then it should be valid Dysnomia code. 
 currently the parser does not support the follow lua features:
   - Multi-line strings  
   - Multi-line comments  
-
-
-## TODO
-- [ ] add lambda constructs
-- [ ] add built-in functions and libraries
-- [ ] test on windows
-- [ ] test on Mac
-- [ ] do more edge case testing
-- [ ] syntax highlighter
-- [ ] syntax checking and error handling
-- [ ] add metatable functions for classes
+  - strings quoated with double brackets: [[ this is a valid lua string, but not a valid dysnomia string ]]
