@@ -1,5 +1,6 @@
 
 
+- [x] move arg reading to its own class
 - [ ] fix up require to properly scan directories not in dysnomia project path
 - [x] add lambdas.
 - [x] add records.
