@@ -25,13 +25,13 @@ function RequireParser:writeFileName(start,stop,parserParams)
 	return self
 end
 
-function RequireParser:scanAndParseRequiredFile(fileAttr,isLuaFile)
+function RequireParser:scanAndParseRequiredFile(fileAttr)
 	if fileAttr then
 		local scanner <const> = Scanner:new(fileAttr)
 		local scanned <const> = scanner:scanFile()
 		local parser <const> = RequireParser.Parser:new(scanned,fileAttr.filePath)
-		if isLuaFile then
-			parser:scanForRequire()
+		if fileAttr.isLuaFile then
+			parser:parseLuaFile()
 		else
 			parser:beginParsing()
 		end
@@ -42,11 +42,10 @@ end
 function RequireParser:parseRequire(parserParams)
 	local closingParen <const>, fileName <const> = self:parseParenthesisStatement(parserParams)
 	self:writeFileName(parserParams:getI(),closingParen,parserParams)
-	local fileAttr <const>, isLuaFile <const> = FileReader:new(fileName):readFile()
-	self:scanAndParseRequiredFile(fileAttr,isLuaFile)
+	local fileAttr <const> = FileReader:new(fileName):readFile()
+	self:scanAndParseRequiredFile(fileAttr)
 	parserParams:updateSetI(TokenParser,closingParen + 1)
 	return self
-
 end
 
 function RequireParser:parseInput(parserParams)

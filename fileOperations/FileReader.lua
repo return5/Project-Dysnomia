@@ -6,6 +6,7 @@ local setmetatable <const> = setmetatable
 local openFile <const> = io.open
 local gsub <const> = string.gsub
 local match <const> = string.match
+
 local FileReader <const> = {}
 FileReader.__index = FileReader
 
@@ -14,12 +15,12 @@ _ENV = FileReader
 FileReader.fileRead = {}
 
 local function findFile(filePath,ending)
-	local fulFilePath <const> = gsub(filePath,"%.",Config.sep)
-	local file <const> = openFile(fulFilePath .. ending,"r")
+	local fullFilePath <const> = gsub(filePath,"%.",Config.sep)
+	local file <const> = openFile(fullFilePath .. ending,"r")
 	if file then
 		local text <const> = file:read("a*") .. "\n"
 		file:close()
-		return FileAttr:new(fulFilePath,text)
+		return FileAttr:new(fullFilePath,text)
 	end
 	return false
 end
@@ -33,15 +34,15 @@ function FileReader:readFile()
 			--search for a dysnomia file
 			local dysFile <const> = findFile(self.file,".dys")
 			--if it is a dysnomia file then we return it for parsing.
-			if dysFile then return dysFile,false end
+			if dysFile then return dysFile:setIsLuaFile(false) end
 		end
 		if not Config.skip[fileName .. ".lua"] then
 			--if it wasnt a dysnomia file then search for a regular lua file.
 			local luaFile <const> = findFile(self.file,".lua")
-			if luaFile then return luaFile,true end
+			if luaFile then return luaFile:setIsLuaFile(true) end
 		end
 	end
-	return false,false
+	return FileAttr:new("","",false)
 end
 
 --when user passes in main file to start with, they might have included the .dys or .lua ending.

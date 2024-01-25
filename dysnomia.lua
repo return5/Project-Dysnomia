@@ -144,7 +144,12 @@ local function runParser()
 	local file <const> = fileReader:readFile()
 	if file then
 		local scanned <const> = Scanner:new(file):scanFile()
-		Parser:new(scanned,file.filePath):beginParsing()
+		local parser <const> = Parser:new(scanned,file.filePath)
+		if file.isLuaFile then
+			parser:parseLuaFile()
+		else
+			parser:beginParsing()
+		end
 		if Config.run then
 			local file <const> = arg[#arg]:gsub("%.dys$",".lua")
 			os.execute("lua " .. file)
@@ -172,6 +177,7 @@ local function parseOptions(preChecks)
 end
 
 local function main()
+	io.write("Arg2 is: ",arg[#arg],"\n")
 	if #arg == 0 then
 		printHelp()
 		os.exit(75)
