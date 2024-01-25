@@ -22,7 +22,7 @@ local FileWriter <const> = require  ('fileOperations.FileWriter')
 local Parser <const> = require('parser.Parser')
 local Scanner <const> = require('scanner.Scanner')
 local FileSkipper <const> = require('fileOperations.FileSkipper')
-local ArgHandler <const> = require('misc.ArgHandler')
+local ArgHandler <const> = require('args.ArgHandler')
 
 
 local function runParser()

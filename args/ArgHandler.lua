@@ -1,4 +1,4 @@
-local ArgOption <const> = require('misc.ArgOptions')
+local ArgOption <const> = require('args.ArgOptions')
 local ConfigManager <const> = require('config.ConfigManager')
 local Config <const> = require  ('config.config')
 
