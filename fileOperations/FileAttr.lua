@@ -11,8 +11,8 @@ function FileAttr:setIsLuaFile(isLua)
 	return self
 end
 
-function FileAttr:new(filePath,text,isLuaFile)
-	local o <const> = setmetatable({filePath = filePath,text = text,isLuaFile = isLuaFile},self)
+function FileAttr:new(filePath,text,fileName,isLuaFile)
+	local o <const> = setmetatable({filePath = filePath,text = text,fileName = fileName,isLuaFile = isLuaFile},self)
 	return o
 end
 

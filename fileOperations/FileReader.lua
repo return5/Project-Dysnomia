@@ -16,11 +16,12 @@ FileReader.fileRead = {}
 
 local function findFile(filePath,ending)
 	local fullFilePath <const> = gsub(filePath,"%.",Config.sep)
-	local file <const> = openFile(fullFilePath .. ending,"r")
+	local fileName <const> = filePath .. ending
+	local file <const> = openFile(fileName,"r")
 	if file then
 		local text <const> = file:read("a*") .. "\n"
 		file:close()
-		return FileAttr:new(fullFilePath,text)
+		return FileAttr:new(fullFilePath,text,fileName)
 	end
 	return false
 end

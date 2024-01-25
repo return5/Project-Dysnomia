@@ -1,6 +1,7 @@
 local TokenParser <const> = require('parser.TokenParser')
 local Scanner <const> = require('scanner.Scanner')
 local FileReader <const> = require('fileOperations.FileReader')
+local FileSkipper <const> = require('fileOperations.FileSkipper')
 local gsub <const> = string.gsub
 
 local RequireParser <const> = {type = 'RequireParser'}
@@ -43,7 +44,9 @@ function RequireParser:parseRequire(parserParams)
 	local closingParen <const>, fileName <const> = self:parseParenthesisStatement(parserParams)
 	self:writeFileName(parserParams:getI(),closingParen,parserParams)
 	local fileAttr <const> = FileReader:new(fileName):readFile()
-	self:scanAndParseRequiredFile(fileAttr)
+	if not FileSkipper:scanForSkipFile(fileAttr) then
+		self:scanAndParseRequiredFile(fileAttr)
+	end
 	parserParams:updateSetI(TokenParser,closingParen + 1)
 	return self
 end

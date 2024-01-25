@@ -61,6 +61,7 @@ a list of the flags and command line options for dysnomia:
     -- #skipRequire
     var myRequire = require('myFile') --dysnomia will not scan this file.
   ```
+- ```#skiprequire``` ```#skipRequire``` ```#Skiprequire``` ```#SkipRequire``` add one of these in a comment to tell dysnomia to skip scanning and parsing of this file.
 
 ## class
 offers class declaration inspired by java records.  

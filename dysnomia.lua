@@ -22,6 +22,8 @@ local FileWriter <const> = require  ('fileOperations.FileWriter')
 local ArgOption <const> = require('misc.ArgOptions')
 local Parser <const> = require('parser.Parser')
 local Scanner <const> = require('scanner.Scanner')
+local ConfigManager <const> = require('config.ConfigManager')
+local FileSkipper <const> = require('fileOperations.FileSkipper')
 
 
 local separators <const> = {
@@ -44,10 +46,10 @@ local function getOSType()
 	if popen_status then
 		popen_result:close()
 		-- Unix-based OS
-		Config.os = string.lower(io.popen('uname -s','r'):read('*l'))
+		ConfigManager:setOs(io.popen('uname -s','r'):read('*l'))
 	else
 		-- Windows
-		Config.os = string.lower(os.getenv('OS'))
+		ConfigManager:setOs(os.getenv('OS'))
 	end
 	if Config.os == nil then
 		io.stderr:write("Error: could not determine host Operating system. Suggestion: pass in command line argument '",argOptions.os.option,"'\n")
@@ -57,7 +59,7 @@ end
 local function getSep()
 	--if couldnt find either then error out
 	if separators[Config.os] then
-		Config.sep = separators[Config.os]
+		ConfigManager:setSep(separators[Config.os])
 	else
 		io.stderr:write("Error: could not find file separator for ",Config.os," Operating system. suggestion: pass in commandline argument '",argOptions.sep.option,"'\n")
 		os.exit(64)
@@ -67,7 +69,7 @@ end
 local function getNewLine()
 	--if couldnt find either then error out
 	if separators[Config.os] then
-		Config.newLine = newLines[Config.os]
+		ConfigManager:setNewLine(newLines[Config.os])
 	else
 		io.stderr:write("Error: could not find file separator for ",Config.os," Operating system. suggestion: pass in commandline argument '",argOptions.sep.option,"'\n")
 		os.exit(64)
@@ -83,7 +85,7 @@ end
 
 local function osType(_,checkSep,checkNl,args)
 	local os <const> =  args:match(argOptions.os.pat)
-	Config.os = os:lower()
+	ConfigManager:setOs(os)
 	return nil,checkSep,checkNl
 end
 
@@ -93,29 +95,29 @@ local function printHelpAndExit()
 end
 
 local function parseOnly(checkOs,checkSep,checkNl)
-	Config.run = false
-	Config.temp = false
+	ConfigManager:setRun(false)
+	ConfigManager:setTemp(false)
 	return checkOs,checkSep,checkNl
 end
 
 local function sepType(checkOs,_,checkNl,args)
 	local sep <const> =  args:match(argOptions.sep.pat)
-	Config.sep = sep
+	ConfigManager:setSep(sep)
 	return checkOs,nil,checkNl
 end
 
 local function permFiles(checkOs,checkSep,checkNl)
-	Config.temp = false
+	ConfigManager:setTemp(false)
 	return checkOs,checkSep,checkNl
 end
 
 local function tempFiles(checkOs,checkSep,checkNl)
-	Config.temp = true
+	ConfigManager:setTemp(true)
 	return checkOs,checkSep,checkNl
 end
 
 local function newLineType(checkOs,checkSep,_,args)
-	Config.sep = args:match(argOptions.newLine.pat)
+	ConfigManager:setSep(args:match(argOptions.newLine.pat))
 	return checkOs,checkSep,nil
 end
 
@@ -123,7 +125,7 @@ end
 local function skipFiles(checkOs,checkSep,checkNl,args)
 	local files <const> = args:match(argOptions.skip.pat)
 	for match in files:gmatch("[^,]+") do
-		Config.skip[match] = true
+		ConfigManager:addToSkipFiles(match)
 	end
 	return checkOs,checkSep,checkNl
 end
@@ -142,7 +144,8 @@ argOptions = {
 local function runParser()
 	local fileReader <const> = FileReader:new(FileReader.checkMainFile(arg[#arg]))
 	local file <const> = fileReader:readFile()
-	if file then
+	local isSkipped <const> = FileSkipper:scanForSkipFile(file)
+	if file and not isSkipped then
 		local scanned <const> = Scanner:new(file):scanFile()
 		local parser <const> = Parser:new(scanned,file.filePath)
 		if file.isLuaFile then
