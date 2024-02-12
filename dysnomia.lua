@@ -15,14 +15,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --]]
+local pipe <const> = io.popen('echo "$PWD"')
+local dir <const> =  pipe:read()
+pipe:close()
 
-local Config <const> = require  ('config.config')
-local FileReader <const> = require  ('fileOperations.FileReader')
-local FileWriter <const> = require  ('fileOperations.FileWriter')
-local Parser <const> = require('parser.Parser')
-local Scanner <const> = require('scanner.Scanner')
-local FileSkipper <const> = require('fileOperations.FileSkipper')
-local ArgHandler <const> = require('args.ArgHandler')
+
+package.path = package.path .. ";" .. dir .. "/?.lua"
+io.write("packages: ", package.path,"\n")
+--package.path = package.path .. ";/home/chris/Documents/programming/Lua/Project-Dysnomia/?.lua"
+
+local Config <const> = require  ('dysnomiaConfig.config')
+local FileReader <const> = require  ('dysnomiaFileOperations.FileReader')
+local FileWriter <const> = require  ('dysnomiaFileOperations.FileWriter')
+local Parser <const> = require('dysnomiaParser.Parser')
+local Scanner <const> = require('dysnomiaScanner.Scanner')
+local FileSkipper <const> = require('dysnomiaFileOperations.FileSkipper')
+local ArgHandler <const> = require('dysnomiaArgs.ArgHandler')
 
 
 local function runParser()
@@ -49,7 +57,7 @@ end
 
 local function main()
 	if #arg == 0 then
-		printHelp()
+		ArgHandler.printHelp()
 		os.exit(75)
 	end
 	local preChecks <const> = {}

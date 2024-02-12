@@ -140,8 +140,8 @@ to keep the parser simpler and easier to write, there are a few things to keep i
 - for simplicity reasons, the out putted lua code isnt as readable nor optimized as handwritten code.  
   it is entirely readable, but may not be formatted well. under normal use cases this isnt a problem as it would only need to be read in a debugging session.
 
-## examples
-  please see the ``examples`` directory for examples of dysnomia.
+## dysnomiaExamples
+  please see the ``dysnomiaExamples`` directory for dysnomiaExamples of dysnomia.
 
 ## Lua features not currently supported
 as a superset of Lua, all  Lua features should be supported. If it is valid Lua code then it should be valid Dysnomia code. 

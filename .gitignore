@@ -1,4 +1,4 @@
-*examples/*/*.lua
+*dysnomiaExamples/*/*.lua
 
 # Compiled Lua sources
 luac.out
