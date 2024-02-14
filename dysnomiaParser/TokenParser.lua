@@ -64,6 +64,20 @@ function TokenParser:loopUntilMatch(parserParams,start,toFind,doFunc)
 	return index
 end
 
+function TokenParser:loopUntilMatchParams(parserParams,start,toFind,doFunc)
+	local index = start
+	local stopI <const> = #parserParams:getTokens()
+	local word <const> = {}
+	while index <= stopI and not match(parserParams:getAt(index),toFind) do
+		doFunc(parserParams:getAt(index),word)
+		index = index + 1
+	end
+	if index ~= start then
+		doFunc(",",word)
+	end
+	return index
+end
+
 function TokenParser.trimString(str)
 	return match(str,"^%s*(.-)%s*$")
 end

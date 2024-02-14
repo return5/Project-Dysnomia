@@ -128,7 +128,7 @@ argOptions = {
 	temp = ArgOption:new("-temp","-temp;","remove all generated files after running.(default)",tempFiles),
 	skip = ArgOption:new("-skip [files]","-skip;?s*(.+);","comma separated list of files to skip over",skipFiles),
 	help = ArgOption:new("-help","-help;","print help screen.",printHelpAndExit),
-	newLine = ArgOption:new("-nl -[char(s)]","-nl:?s*(.+);","enter the newline character(s) which your OS uses.",newLineType)
+	newLine = ArgOption:new("-nl [char(s)]","-nl:?s*(.+);","enter the newline character(s) which your OS uses.",newLineType)
 }
 
 function ArgHandler.parseOptions(arg,preChecks)

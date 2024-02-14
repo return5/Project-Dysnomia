@@ -15,14 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 --]]
-local pipe <const> = io.popen('echo "$PWD"')
-local dir <const> =  pipe:read()
-pipe:close()
 
-
-package.path = package.path .. ";" .. dir .. "/?.lua"
-io.write("packages: ", package.path,"\n")
---package.path = package.path .. ";/home/chris/Documents/programming/Lua/Project-Dysnomia/?.lua"
 
 local Config <const> = require  ('dysnomiaConfig.config')
 local FileReader <const> = require  ('dysnomiaFileOperations.FileReader')
@@ -55,7 +48,16 @@ local function runParser()
 	end
 end
 
+local function setPath()
+	local pipe <const> = io.popen('echo "$PWD"')
+	local dir <const> =  pipe:read()
+	pipe:close()
+	package.path =  dir .. "/?.lua;" .. dir .. "?.dys" ..  package.path
+	io.write("package.path: ",package.path,"\n")
+end
+
 local function main()
+	setPath()
 	if #arg == 0 then
 		ArgHandler.printHelp()
 		os.exit(75)

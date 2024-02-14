@@ -24,7 +24,7 @@ end
 
 function RecordParser:parseParams(index,parserParams)
 	local openParens <const> = self:loopUntilMatch(parserParams,index,"%(",self.doNothing)
-	local closeParens <const> = self:loopUntilMatch(parserParams,openParens + 1,"%)",self:returnFunctionAddingTextToParams(self.params))
+	local closeParens <const> = self:loopUntilMatchParams(parserParams,openParens + 1,"%)",self:returnFunctionAddingTextToParams(self.params))
 	return closeParens
 end
 local function writeFinalAssigmentOfParams(dysText,param)

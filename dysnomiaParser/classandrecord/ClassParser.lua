@@ -15,7 +15,7 @@ ClassParser.classes = {}
 
 function ClassParser:grabClassParameters(parserParams,startI)
 	local openParen <const> = self:loopUntilMatch(parserParams,startI,"%(",self.doNothing)
-	local closingParens <const> = self:loopUntilMatch(parserParams,openParen + 1,"%)",self:returnFunctionAddingTextToParams(self.params))
+	local closingParens <const> = self:loopUntilMatchParams(parserParams,openParen + 1,"%)",self:returnFunctionAddingTextToParams(self.params))
 	return closingParens
 end
 
@@ -64,8 +64,8 @@ end
 function ClassParser:writeStartOfClass(parserParams)
 	parserParams:getDysText()
 			:writeFiveArgs("\nlocal setmetatable <const> = setmetatable\nlocal ",
-				self.classOrRecordName," <const> = {}\n",self.classOrRecordName,".__index = ")
-			:writeTwoArgs(self.classOrRecordName,"\n")
+				self.classOrRecordName," <const> = {__className = '",self.classOrRecordName,"'}\n")
+			:writeFourArgs(self.classOrRecordName,".__index = ",self.classOrRecordName,"\n")
 	self:writeParent(parserParams)
 	return self
 end
@@ -102,6 +102,7 @@ local function writeFinalParamToDysText(dysText,param)
 end
 
 function ClassParser:writeClassConstructorToDysText(parserParams)
+	write("in write class constructor\n")
 	parserParams:getDysText():writeThreeArgs("function ",self.classOrRecordName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),self.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():write(")\n")
@@ -123,6 +124,7 @@ local function writeChildParamAssignment(dysText,param)
 end
 
 function ClassParser:writeClassConstructWithParent(parserParams)
+	write("writing constructor for: ",self.class.name,"\n\n\n")
 	parserParams:getDysText():writeThreeArgs("\tlocal __obj__ = setmetatable(",self.parentName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),self.class.parent.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():write("),self)\n")
@@ -146,7 +148,9 @@ function ClassParser:writeChildParams(parserParams,writeFunction,finalWriteFunct
 end
 
 local function writeFinalParamAssignmentToDysText(dysText,param)
-	dysText:writeThreeArgs(param," = ",param)
+	if param then
+		dysText:writeThreeArgs(param," = ",param)
+	end
 end
 
 function ClassParser:writeClassConstructNoParent(parserParams)
@@ -157,6 +161,7 @@ end
 
 function ClassParser:parseConstructor(parserParams)
 	self.foundConstructor = true
+	write("parsing constructor for: ",self.class.name,"\n\n")
 	local closingParens<const>, constructorParams <const> = self:grabConstructorParams(parserParams)
 	self:writeStartOfConstructor(parserParams,constructorParams)
 	local finalI <const> = self:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
@@ -167,9 +172,7 @@ end
 function ClassParser:grabConstructorParams(parserParams)
 	local openingParens <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%(",self.doNothing)
 	local constructorParams <const> = {}
-	local closingParens <const> = self:loopUntilMatch(parserParams,openingParens + 1,"%)",self:returnFunctionAddingTextToParams(constructorParams))
-	for i=1,#constructorParams,1 do
-	end
+	local closingParens <const> = self:loopUntilMatchParams(parserParams,openingParens + 1,"%)",self:returnFunctionAddingTextToParams(constructorParams))
 	return closingParens,constructorParams
 end
 
@@ -182,7 +185,7 @@ end
 
 function ClassParser:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
 	if self.parentName then
-		write("parent name is true\n")
+		write("parent name is: ",self.parentName,"\n")
 		local endSuper <const> = self:writeSuperConstructor(parserParams,closingParens)
 		self:writeEndOfConstructor(parserParams,constructorParams)
 		return endSuper + 1
@@ -203,10 +206,11 @@ local function loopThroughUntilClosingChar(start,parserParams,openingChar,closin
 	local index = start
 	local count = 1
 	local limit <const> = parserParams:getLength()
+	local word <const> = {}
 	while count > 0 and index <= limit do
 		local token <const> = parserParams:getAt(index)
 		count = updateCount(token,openingChar,closingChar,count)
-		loopFunc(token)
+		loopFunc(token,word)
 		index = index + 1
 	end
 	return index

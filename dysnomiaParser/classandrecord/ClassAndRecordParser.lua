@@ -1,6 +1,9 @@
 local TokenParser <const> = require('dysnomiaParser.TokenParser')
 local setmetatable <const> = setmetatable
 local match <const> = string.match
+local concat <const> = table.concat
+local remove <const> = table.remove
+local io = io
 
 local ClassAndRecordParser <const> = {type = 'ClassAndRecordParser'}
 ClassAndRecordParser.__index = ClassAndRecordParser
@@ -48,16 +51,25 @@ function ClassAndRecordParser:writeParamsToDysText(dysText,params,loopFunc,endin
 		for i=1,#params - 1,1 do
 			loopFunc(dysText,params[i])
 		end
-		endingFunc(dysText,params[#params])
 	end
+	endingFunc(dysText,params[#params])
 	return self
 end
 
+local function clearWord(word)
+	for i=1,#word,1 do
+		remove(word)
+	end
+end
 
 function ClassAndRecordParser:returnFunctionAddingTextToParams(params)
-	return function(text)
+	return function(text,word)
 		if text and #text > 0 and text ~= "," then
-			params[#params + 1] = text
+			word[#word + 1] = text
+		elseif text and #text > 0 and text == "," then
+			params[#params + 1] = concat(word)
+			io.write("word is: ",concat(word),"\n")
+			clearWord(word)
 		end
 	end
 end
