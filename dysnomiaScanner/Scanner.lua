@@ -1,8 +1,6 @@
 local ScanChars <const> = require('dysnomiaScanner.ScanChars')
 require('dysnomiaScanner.ScannerDriver')
 
-local io = io
-
 local setmetatable <const> = setmetatable
 local gmatch <const> = string.gmatch
 
@@ -19,11 +17,6 @@ function Scanner:scanFile()
 		currentScannerMode = currentScannerMode:parseInput(word,char,allWords)
 	end
 	ScanChars:createNewWord(word,allWords)
---	io.write("scanned is: \n\n")
---	for i=1,#allWords,1 do
-		--
-	--	io.write(allWords[i],";;;\n")
---	end
 	return allWords
 end
 

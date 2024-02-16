@@ -53,7 +53,6 @@ local function setPath()
 	local dir <const> =  pipe:read()
 	pipe:close()
 	package.path =  dir .. "/?.lua;" .. dir .. "?.dys" ..  package.path
-	io.write("package.path: ",package.path,"\n")
 end
 
 local function main()

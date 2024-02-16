@@ -4,9 +4,6 @@ local concat <const> = table.concat
 local remove <const> = os.remove
 local setmetatable <const> = setmetatable
 
-local write = io.write
-
-
 local FileWriter <const> = {}
 FileWriter.__index = FileWriter
 
@@ -17,7 +14,6 @@ FileWriter.files = {}
 function FileWriter:writeFile()
 	self.file.text[#self.file.text] = Config.newLine
 	local fileName <const> = self.file.filePath .. ".lua"
-	write("writing: ",fileName,"\n")
 	local file <const> = open(fileName,"w+")
 	file:write(concat(self.file.text))
 	file:close()

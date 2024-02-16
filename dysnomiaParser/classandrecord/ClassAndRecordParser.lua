@@ -4,7 +4,6 @@ local match <const> = string.match
 local concat <const> = table.concat
 local remove <const> = table.remove
 
-local io = io
 
 local ClassAndRecordParser <const> = {type = 'ClassAndRecordParser'}
 ClassAndRecordParser.__index = ClassAndRecordParser
@@ -48,7 +47,6 @@ function ClassAndRecordParser.writeParamAndCommaToDysText(dysText,param)
 end
 
 function ClassAndRecordParser:writeParamsToDysText(dysText,params,loopFunc,endingFunc)
-	io.write("write params to dys text\n")
 	if #params > 0 then
 		for i=1,#params - 1,1 do
 			loopFunc(dysText,params[i])
@@ -67,11 +65,9 @@ end
 function ClassAndRecordParser:returnFunctionAddingTextToParams(params)
 	return function(text,word)
 		if text and #text > 0 and text ~= "," then
-			io.write("text is: ",text,";;\n")
 			word[#word + 1] = text
 		elseif text and #text > 0 and text == "," then
 			params[#params + 1] = concat(word)
-			io.write("params is: ",params[#params],";;\n")
 			clearWord(word)
 		end
 	end

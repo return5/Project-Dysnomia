@@ -5,7 +5,6 @@ local TokenParser <const> = require('dysnomiaParser.TokenParser')
 local DysText <const> = require('dysnomiaParser.DysText')
 local RequireParser <const> = require('dysnomiaParser.RequireParser')
 local RequireOnlyParser <const> = require('dysnomiaParser.RequireOnlyParser')
-local write = io.write
 
 local setmetatable <const> = setmetatable
 
@@ -24,7 +23,6 @@ function Parser:parseFile(tokenParser)
 		parserParameters.currentMode:parseInput(parserParameters)
 		index = parserParameters:getI()
 	end
-	write("self.filePAth: ",self.filePath,"\n")
 	local fileWriter <const> = FileWriter:new(FileAttr:new(self.filePath,parserParameters:getDysText():getDysText()))
 	fileWriter:writeFile()
 	return self
@@ -39,7 +37,6 @@ function Parser:parseLuaFile()
 end
 
 function Parser:new(text,filePath)
-	write("file path is: ",filePath,"\n")
 	return setmetatable({filePath = filePath,text = text,methods = {},inClass = false},self)
 end
 

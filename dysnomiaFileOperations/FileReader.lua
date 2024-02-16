@@ -6,7 +6,6 @@ local setmetatable <const> = setmetatable
 local openFile <const> = io.open
 local gsub <const> = string.gsub
 local match <const> = string.match
-local write = io.write
 
 local FileReader <const> = {}
 FileReader.__index = FileReader
@@ -18,10 +17,8 @@ FileReader.fileRead = {}
 local function findFile(filePath,ending)
 	local fullFilePath <const> = gsub(filePath,"%.",Config.sep)
 	local fileName <const> = fullFilePath .. ending
-	write("looking for file: ",fileName,"\n")
 	local file <const> = openFile(fileName,"r")
 	if file then
-		write("found file: ",fileName,"\n")
 		local text <const> = file:read("a*") .. "\n"
 		file:close()
 		return FileAttr:new(fullFilePath,text,fileName)
@@ -62,7 +59,6 @@ function FileReader.checkMainFile(file)
 end
 
 function FileReader:new(file)
-	write("file is: ",file,"\n")
 	return setmetatable({file = file},self)
 end
 
