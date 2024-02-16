@@ -3,6 +3,7 @@ local setmetatable <const> = setmetatable
 local match <const> = string.match
 local concat <const> = table.concat
 local remove <const> = table.remove
+
 local io = io
 
 local ClassAndRecordParser <const> = {type = 'ClassAndRecordParser'}
@@ -31,7 +32,7 @@ function ClassAndRecordParser:secondPass(parserParams,name)
 	local regex <const> = name .. "[:%.]"
 	local dysText <const> = parserParams:getDysText()
 	for i=self.startI,dysText:getLength(),1 do
-		if self.methods[dysText:getAt(i)] then
+		if self.class.methods[dysText:getAt(i)] then
 			self:writeSelfInFrontOfMethodCall(i,dysText,regex)
 		end
 	end
@@ -47,6 +48,7 @@ function ClassAndRecordParser.writeParamAndCommaToDysText(dysText,param)
 end
 
 function ClassAndRecordParser:writeParamsToDysText(dysText,params,loopFunc,endingFunc)
+	io.write("write params to dys text\n")
 	if #params > 0 then
 		for i=1,#params - 1,1 do
 			loopFunc(dysText,params[i])
@@ -65,10 +67,11 @@ end
 function ClassAndRecordParser:returnFunctionAddingTextToParams(params)
 	return function(text,word)
 		if text and #text > 0 and text ~= "," then
+			io.write("text is: ",text,";;\n")
 			word[#word + 1] = text
 		elseif text and #text > 0 and text == "," then
 			params[#params + 1] = concat(word)
-			io.write("word is: ",concat(word),"\n")
+			io.write("params is: ",params[#params],";;\n")
 			clearWord(word)
 		end
 	end
@@ -76,7 +79,7 @@ end
 
 function ClassAndRecordParser:parseMethod(parserParams)
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%S",self.doNothing)
-	self.methods[parserParams:getAt(newI)] = true
+	self.class.methods[parserParams:getAt(newI)] = true
 	parserParams:getDysText():writeFourArgs("function ",self.classOrRecordName,":",parserParams:getAt(newI))
 	parserParams:updateSetI(self,newI + 1)
 	return self
@@ -85,7 +88,7 @@ end
 ClassAndRecordParser.tokenFuncs['method'] = ClassAndRecordParser.parseMethod
 
 function ClassAndRecordParser:new(returnMode,startI)
-	return setmetatable({returnMode = returnMode,startI = startI,params = {},methods = {}},self)
+	return setmetatable({returnMode = returnMode,startI = startI,params = {}},self)
 end
 
 return ClassAndRecordParser

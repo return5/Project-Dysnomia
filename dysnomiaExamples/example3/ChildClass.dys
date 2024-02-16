@@ -1,4 +1,4 @@
-var ParentClass = require('examples.example3.ParentClass')
+var ParentClass = require('dysnomiaExamples.example3.ParentClass')
 
 --declare a class which inherents from ParentClass
 class ChildClass(a,b,c) :> ParentClass

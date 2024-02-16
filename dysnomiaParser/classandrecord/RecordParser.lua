@@ -1,4 +1,5 @@
 local ClassAndRecordParser <const> = require('dysnomiaParser.classandrecord.ClassAndRecordParser')
+local Class <const> = require('dysnomiaParser.classandrecord.Class')
 local setmetatable <const> = setmetatable
 
 local RecordParser <const> = {type = 'RecordParser'}
@@ -48,9 +49,16 @@ function RecordParser:writeLocalRecordVar(parserParams)
 	return self
 end
 
+function RecordParser:createClassObject()
+	local class <const> = Class:new(self.classOrRecordName,self.params,parent)
+	self.class = class
+	return self
+end
+
 function RecordParser:startParsingRecord(parserParams)
 	local nameI <const> = self:handleRecordName(parserParams)
 	local closingParens <const> = self:parseParams(nameI + 1,parserParams)
+	self:createClassObject()
 	self:writeRecordFunctionParams(parserParams)
 	self:writeLocalRecordVar(parserParams)
 	parserParams:updateSetI(self,closingParens + 1)

@@ -1,5 +1,5 @@
-var ParentClass = require('examples.example3.ParentClass')
-var ChildClass = require('examples.example3.ChildClass')
+var ParentClass = require('dysnomiaExamples.example3.ParentClass')
+var ChildClass = require('dysnomiaExamples.example3.ChildClass')
 
 var myParent = ParentClass:new(1,2)
 

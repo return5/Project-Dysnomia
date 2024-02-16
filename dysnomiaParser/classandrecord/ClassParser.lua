@@ -204,15 +204,17 @@ end
 
 local function loopThroughUntilClosingChar(start,parserParams,openingChar,closingChar,loopFunc)
 	local index = start
-	local count = 1
 	local limit <const> = parserParams:getLength()
 	local word <const> = {}
-	while count > 0 and index <= limit do
+	local count = 1
+	while index <= limit do
 		local token <const> = parserParams:getAt(index)
 		count = updateCount(token,openingChar,closingChar,count)
+		if count <= 0 then break end
 		loopFunc(token,word)
 		index = index + 1
 	end
+	loopFunc(",",word)
 	return index
 end
 
@@ -224,7 +226,6 @@ function ClassParser:writeSuperConstructor(parserParams,closingParens)
 	local superParams <const> = {}
 	local openingParensSuper <const> = self:loopUntilMatch(parserParams,closingParens + 1,"%(",self.doNothing)
 	local endSuper <const> = loopThroughUntilClosingChar(openingParensSuper + 1,parserParams,"(",")",self:returnFunctionAddingTextToParams(superParams))
-	superParams[#superParams] = nil
 	parserParams:getDysText():writeTwoArgs(self.parentName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),superParams,self.writeParamAndCommaToDysText,writeClosingParenToSuper)
 	return endSuper
