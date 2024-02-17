@@ -3,6 +3,7 @@ local match <const> = string.match
 local TokenParser <const> = {type = 'TokenParser'}
 TokenParser.__index = TokenParser
 
+
 _ENV = TokenParser
 
 TokenParser.returnMode = TokenParser
@@ -90,7 +91,6 @@ end
 
 function TokenParser:parseGlobal(parserParams)
 	self.parserDriver:parseGlobal(parserParams)
-	parserParams:setCurrentMode(self)
 	return self
 end
 
@@ -113,7 +113,6 @@ function TokenParser:parseRequire(parserParams)
 end
 
 function TokenParser:parseEndRec(parserParams)
-	--parserParams:getDysText():write('endRec')
 	parserParams:update(self.returnMode,1)
 	return self
 end

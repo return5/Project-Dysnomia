@@ -65,6 +65,12 @@ function RecordParser:startParsingRecord(parserParams)
 	return self
 end
 
+function RecordParser:startParsingLocalRecord(parserParams)
+	parserParams:getDysText():write('local ')
+	self:startParsingRecord(parserParams)
+	return self
+end
+
 function RecordParser:parseEndRec(parserParams)
 	self:writeEndRecord(parserParams)
 	self:secondPass(parserParams,self.originalRecordName)

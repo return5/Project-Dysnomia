@@ -56,7 +56,7 @@ function ParserDriver:parseRequire(parserParams)
 end
 
 function ParserDriver:parseRecord(parserParams,returnMode)
-	return RecordParser:new(returnMode,parserParams:getDysText():getLength()):startParsingRecord(parserParams)
+	return RecordParser:new(returnMode,parserParams:getDysText():getLength()):startParsingLocalRecord(parserParams)
 end
 
 function ParserDriver:parseClass(parserParams,returnMode)

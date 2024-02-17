@@ -45,6 +45,11 @@ function ParserParameters:getI()
 	return self.i
 end
 
+function ParserParameters:setI(newI)
+	self.i = newI
+	return self
+end
+
 function ParserParameters:getTokens()
 	return self.tokens
 end
