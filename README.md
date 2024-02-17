@@ -41,9 +41,10 @@ a list of the flags and command line options for dysnomia:
 - by default, all vars are local and const.
 - ```var``` keyword. declares a variable.
   - ``var myVariable``
-- ```global``` keyword. declares a variable or function to not be local
+- ```global``` keyword. declares a variable, Record, or function to not be local
   - ```var myVar <global> = 5```
   - ``global function myFunc() return 5 end``
+  - ``global Record myRecord``
 - ```mutable``` keyword. declares a variable is mutable.
   - ```var myVar <mutable> = 6```
 - ```class``` keyword. declares a class. [(please see class section)](#class)
