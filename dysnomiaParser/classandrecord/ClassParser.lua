@@ -1,6 +1,5 @@
 local Class <const> = require('dysnomiaParser.classandrecord.Class')
 local ClassAndRecordParser <const> = require('dysnomiaParser.classandrecord.ClassAndRecordParser')
-local write = io.write
 
 local setmetatable <const> = setmetatable
 
@@ -102,7 +101,6 @@ local function writeFinalParamToDysText(dysText,param)
 end
 
 function ClassParser:writeClassConstructorToDysText(parserParams)
-	write("in write class constructor\n")
 	parserParams:getDysText():writeThreeArgs("function ",self.classOrRecordName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),self.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():write(")\n")
@@ -124,7 +122,6 @@ local function writeChildParamAssignment(dysText,param)
 end
 
 function ClassParser:writeClassConstructWithParent(parserParams)
-	write("writing constructor for: ",self.class.name,"\n\n\n")
 	parserParams:getDysText():writeThreeArgs("\tlocal __obj__ = setmetatable(",self.parentName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),self.class.parent.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():write("),self)\n")
@@ -161,7 +158,6 @@ end
 
 function ClassParser:parseConstructor(parserParams)
 	self.foundConstructor = true
-	write("parsing constructor for: ",self.class.name,"\n\n")
 	local closingParens<const>, constructorParams <const> = self:grabConstructorParams(parserParams)
 	self:writeStartOfConstructor(parserParams,constructorParams)
 	local finalI <const> = self:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
@@ -185,12 +181,10 @@ end
 
 function ClassParser:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
 	if self.parentName then
-		write("parent name is: ",self.parentName,"\n")
 		local endSuper <const> = self:writeSuperConstructor(parserParams,closingParens)
 		self:writeEndOfConstructor(parserParams,constructorParams)
 		return endSuper + 1
 	end
-	write("parent name is false\n")
 	parserParams:getDysText():write("{},self)\n")
 	self:writeEndOfConstructor(parserParams,constructorParams)
 	return closingParens + 1

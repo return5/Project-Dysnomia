@@ -52,7 +52,7 @@ local function setPath()
 	local pipe <const> = io.popen('echo "$PWD"')
 	local dir <const> =  pipe:read()
 	pipe:close()
-	package.path =  dir .. "/?.lua;" .. dir .. "?.dys" ..  package.path
+	package.path =  dir .. "/?.lua;" .. dir .. "/?.dys" ..  package.path
 end
 
 local function main()

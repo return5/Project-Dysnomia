@@ -4,6 +4,8 @@ local FileReader <const> = require('dysnomiaFileOperations.FileReader')
 local FileSkipper <const> = require('dysnomiaFileOperations.FileSkipper')
 local gsub <const> = string.gsub
 
+local write = io.write
+
 
 local RequireParser <const> = {type = 'RequireParser'}
 RequireParser.__index = RequireParser
@@ -45,7 +47,7 @@ function RequireParser:parseRequire(parserParams)
 	local closingParen <const>, fileName <const> = self:parseParenthesisStatement(parserParams)
 	self:writeFileName(parserParams:getI(),closingParen,parserParams)
 	local fileAttr <const> = FileReader:new(fileName):readFile()
-	if not FileSkipper:scanForSkipFile(fileAttr) then
+	if fileAttr.fileName and not FileSkipper:scanForSkipFile(fileAttr)  then
 		self:scanAndParseRequiredFile(fileAttr)
 	end
 	parserParams:updateSetI(TokenParser,closingParen + 1)

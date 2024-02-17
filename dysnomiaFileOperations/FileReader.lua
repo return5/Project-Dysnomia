@@ -7,6 +7,8 @@ local openFile <const> = io.open
 local gsub <const> = string.gsub
 local match <const> = string.match
 
+local write = io.write
+
 local FileReader <const> = {}
 FileReader.__index = FileReader
 
