@@ -78,3 +78,4 @@ function ParserParameters:new(currentMode,i,tokens,dysText)
 end
 
 return ParserParameters
+

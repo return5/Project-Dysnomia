@@ -4,7 +4,6 @@ local FileReader <const> = require('dysnomiaFileOperations.FileReader')
 local FileSkipper <const> = require('dysnomiaFileOperations.FileSkipper')
 local gsub <const> = string.gsub
 
-local write = io.write
 
 
 local RequireParser <const> = {type = 'RequireParser'}
@@ -66,3 +65,4 @@ function RequireParser:parseInput(parserParams)
 end
 
 return RequireParser
+

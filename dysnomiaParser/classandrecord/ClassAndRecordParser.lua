@@ -88,3 +88,4 @@ function ClassAndRecordParser:new(returnMode,startI)
 end
 
 return ClassAndRecordParser
+

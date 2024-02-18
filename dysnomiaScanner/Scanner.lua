@@ -25,3 +25,4 @@ function Scanner:new(file)
 end
 
 return Scanner
+

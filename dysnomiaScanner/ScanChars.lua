@@ -116,3 +116,4 @@ function ScanChars.initScannerDriver(scannerDriver)
 end
 
 return ScanChars
+

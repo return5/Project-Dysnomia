@@ -11,3 +11,4 @@ function ArgOptions:new(flag,pat,descr,func)
 end
 
 return ArgOptions
+

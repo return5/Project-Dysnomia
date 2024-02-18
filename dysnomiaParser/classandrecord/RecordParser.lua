@@ -2,10 +2,16 @@ local ClassAndRecordParser <const> = require('dysnomiaParser.classandrecord.Clas
 local Class <const> = require('dysnomiaParser.classandrecord.Class')
 local setmetatable <const> = setmetatable
 
+
 local RecordParser <const> = {type = 'RecordParser'}
 RecordParser.__index = RecordParser
 
 setmetatable(RecordParser,ClassAndRecordParser)
+
+RecordParser.tokenFuncs = {}
+for token,func in pairs(ClassAndRecordParser.tokenFuncs) do
+	RecordParser.tokenFuncs[token] = func
+end
 
 _ENV = RecordParser
 
@@ -86,3 +92,4 @@ end
 
 
 return RecordParser
+

@@ -17,3 +17,4 @@ function FileSkipper:scanForSkipFile(fileAttr)
 end
 
 return FileSkipper
+

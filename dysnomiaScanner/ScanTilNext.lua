@@ -34,3 +34,4 @@ function ScanTilNext:new(endingChars)
 end
 
 return ScanTilNext
+

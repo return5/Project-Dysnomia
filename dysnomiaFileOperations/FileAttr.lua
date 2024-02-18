@@ -17,3 +17,4 @@ function FileAttr:new(filePath,text,fileName,isLuaFile)
 end
 
 return FileAttr
+

@@ -15,3 +15,4 @@ function SKipTillNewLine:parseInput(word,char,allWords)
 end
 
 return SKipTillNewLine
+

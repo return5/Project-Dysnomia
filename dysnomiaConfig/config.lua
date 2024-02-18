@@ -6,3 +6,4 @@ return {
 	run = true,
 	newLine = "\n"
 }
+

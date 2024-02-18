@@ -27,3 +27,4 @@ function GlobalParser:parseInput(parserParams)
 end
 
 return GlobalParser
+

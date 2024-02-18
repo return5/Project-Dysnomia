@@ -20,3 +20,4 @@ function LocalParser:parseInput(parserParams)
 end
 
 return LocalParser
+

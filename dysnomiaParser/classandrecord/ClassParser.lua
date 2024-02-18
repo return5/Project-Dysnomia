@@ -8,6 +8,11 @@ ClassParser.__index = ClassParser
 
 setmetatable(ClassParser,ClassAndRecordParser)
 
+ClassParser.tokenFuncs = {}
+for token,func in pairs(ClassAndRecordParser.tokenFuncs) do
+	ClassParser.tokenFuncs[token] = func
+end
+
 _ENV = ClassParser
 
 ClassParser.classes = {}
@@ -243,3 +248,4 @@ end
 
 
 return ClassParser
+

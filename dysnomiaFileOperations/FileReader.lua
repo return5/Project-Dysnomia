@@ -7,7 +7,6 @@ local openFile <const> = io.open
 local gsub <const> = string.gsub
 local match <const> = string.match
 
-local write = io.write
 
 local FileReader <const> = {}
 FileReader.__index = FileReader
@@ -16,14 +15,14 @@ _ENV = FileReader
 
 FileReader.fileRead = {}
 
-local function findFile(filePath,ending)
+local function findFile(filePath,ending,isLua)
 	local fullFilePath <const> = gsub(filePath,"%.",Config.sep)
 	local fileName <const> = fullFilePath .. ending
 	local file <const> = openFile(fileName,"r")
 	if file then
 		local text <const> = file:read("a*") .. "\n"
 		file:close()
-		return FileAttr:new(fullFilePath,text,fileName)
+		return FileAttr:new(fullFilePath,text,fileName,isLua)
 	end
 	return false
 end
@@ -35,17 +34,17 @@ function FileReader:readFile()
 		self.fileRead[self.file] = true
 		if not Config.skip[fileName .. ".dys"] then
 			--search for a dysnomia file
-			local dysFile <const> = findFile(self.file,".dys")
+			local dysFile <const> = findFile(self.file,".dys",false)
 			--if it is a dysnomia file then we return it for parsing.
-			if dysFile then return dysFile:setIsLuaFile(false) end
+			if dysFile then return dysFile end
 		end
 		if not Config.skip[fileName .. ".lua"] then
 			--if it wasnt a dysnomia file then search for a regular lua file.
-			local luaFile <const> = findFile(self.file,".lua")
-			if luaFile then return luaFile:setIsLuaFile(true) end
+			local luaFile <const> = findFile(self.file,".lua",true)
+			if luaFile then return luaFile end
 		end
 	end
-	return FileAttr:new("","",false)
+	return FileAttr:new("","",nil)
 end
 
 --when user passes in main file to start with, they might have included the .dys or .lua ending.
@@ -65,3 +64,4 @@ function FileReader:new(file)
 end
 
 return FileReader
+
