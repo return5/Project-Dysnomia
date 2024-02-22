@@ -26,6 +26,15 @@ local FileSkipper <const> = require('dysnomiaFileOperations.FileSkipper')
 local ArgHandler <const> = require('dysnomiaArgs.ArgHandler')
 
 
+local function setPath()
+	local pipe <const> = io.popen('echo "$PWD"')
+	local dir <const> =  pipe:read()
+	pipe:close()
+	package.path =  dir .. "/?.lua;" .. dir .. "/?.dys;" ..  package.path
+end
+
+setPath()
+
 local function runParser()
 	local fileReader <const> = FileReader:new(FileReader.checkMainFile(arg[#arg]))
 	local file <const> = fileReader:readFile()
@@ -48,15 +57,7 @@ local function runParser()
 	end
 end
 
-local function setPath()
-	local pipe <const> = io.popen('echo "$PWD"')
-	local dir <const> =  pipe:read()
-	pipe:close()
-	package.path =  dir .. "/?.lua;" .. dir .. "/?.dys" ..  package.path
-end
-
 local function main()
-	setPath()
 	if #arg == 0 then
 		ArgHandler.printHelp()
 		os.exit(75)

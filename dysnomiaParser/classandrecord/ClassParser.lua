@@ -102,6 +102,9 @@ function ClassParser:writeClassConstructor(parserParams)
 end
 
 local function writeFinalParamToDysText(dysText,param)
+	if param then
+		write("param: ",param,"\n")
+	end
 	dysText:write(param)
 end
 
@@ -127,6 +130,7 @@ local function writeChildParamAssignment(dysText,param)
 end
 
 function ClassParser:writeClassConstructWithParent(parserParams)
+	write("write constructor with parent\n")
 	parserParams:getDysText():writeThreeArgs("\tlocal __obj__ = setmetatable(",self.parentName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),self.class.parent.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
 	parserParams:getDysText():write("),self)\n")
@@ -141,7 +145,7 @@ function ClassParser:writeChildParams(parserParams,writeFunction,finalWriteFunct
 	if #self.params > 0 then
 		for i=1,#self.params - 1,1 do
 			if not parentParamDict[self.params[i]] then
-				writeFunction(dysText,parserParams:getAt(i))
+				writeFunction(dysText,self.params[i])
 			end
 		end
 		if not parentParamDict[self.params[#self.params]] then finalWriteFunction(dysText,self.params[#self.params]) end
