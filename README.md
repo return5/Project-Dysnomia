@@ -10,7 +10,9 @@ Project [Dysnomia](https://en.wikipedia.org/wiki/Dysnomia_(moon)): adding syntax
 - this repo is a huge rewrite of my previous attempt.   
 
 
-- (currently this is a work in progress.)  
+- (currently this is a work in progress.)
+
+- this project has been rewritten entirley in dysnomia. [check it out here](https://github.com/return5/dysnomia)
   
 ## requirements
  - Lua >= 5.4
