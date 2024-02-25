@@ -18,11 +18,11 @@ end
 _ENV = ClassAndRecordParser
 
 
-function ClassAndRecordParser:writeSelfInFrontOfMethodCall(i,dysText,regex)
+function ClassAndRecordParser:writeSelfInFrontOfMethodCall(i,dysText,regex,pattern)
 	local prevI <const> = self:loopBackUntilMatch(dysText,i - 1,"%S",self.doNothing)
 	local text <const> = dysText:getAt(prevI)
-	if text ~= "." and text ~= ":" and not match(text,regex) and not match(text,"self:") then
-		dysText:replaceTextAt("self:" .. dysText:getAt(i),i)
+	if text ~= "." and text ~= ":" and not match(text,regex) and not match(text,pattern) then
+		dysText:replaceTextAt(pattern .. dysText:getAt(i),i)
 	end
 	return self
 end
@@ -32,7 +32,9 @@ function ClassAndRecordParser:secondPass(parserParams,name)
 	local dysText <const> = parserParams:getDysText()
 	for i=self.startI,dysText:getLength(),1 do
 		if self.class.methods[dysText:getAt(i)] then
-			self:writeSelfInFrontOfMethodCall(i,dysText,regex)
+			self:writeSelfInFrontOfMethodCall(i,dysText,regex,"self:")
+		elseif self.class.staticMethods[dysText:getAt(i)] then
+			self:writeSelfInFrontOfMethodCall(i,dysText,regex,"self.")
 		end
 	end
 	return self
@@ -73,15 +75,29 @@ function ClassAndRecordParser:returnFunctionAddingTextToParams(params)
 	end
 end
 
-function ClassAndRecordParser:parseMethod(parserParams)
+function ClassAndRecordParser:parseStaticAndInstanceMethod(parserParams,sep)
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%S",self.doNothing)
 	self.class.methods[parserParams:getAt(newI)] = true
-	parserParams:getDysText():writeFourArgs("function ",self.classOrRecordName,":",parserParams:getAt(newI))
+	parserParams:getDysText():writeFourArgs("function ",self.classOrRecordName,sep,parserParams:getAt(newI))
 	parserParams:updateSetI(self,newI + 1)
 	return self
 end
 
+
+function ClassAndRecordParser:parseMethod(parserParams)
+	self:parseStaticAndInstanceMethod(parserParams,":")
+	return self
+end
+
+function ClassAndRecordParser:parseStatic(parserParams)
+	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%S",self.doNothing)
+	parserParams:updateSetI(self,newI)
+	self:parseStaticAndInstanceMethod(parserParams,".")
+	return self
+end
+
 ClassAndRecordParser.tokenFuncs['method'] = ClassAndRecordParser.parseMethod
+ClassAndRecordParser.tokenFuncs['static'] = ClassAndRecordParser.parseStatic
 
 function ClassAndRecordParser:new(returnMode,startI)
 	return setmetatable({returnMode = returnMode,startI = startI,params = {}},self)

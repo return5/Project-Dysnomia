@@ -17,17 +17,17 @@ local function creatParamDictionary(params)
 	return parentDict
 end
 
-function Class:inherentMethods(parentMethods)
+local function inherentMethods(methods,parentMethods)
 	for method,_ in pairs(parentMethods) do
-		self.methods[method] = true
+		methods[method] = true
 	end
-	return self
 end
 
 function Class:new(name,params,parent)
-	local o <const> = setmetatable({name = name, params = params,parent = parent,foundConstructor = false,paramDict = creatParamDictionary(params),methods = {}},self)
+	local o <const> = setmetatable({name = name, params = params,parent = parent,foundConstructor = false,paramDict = creatParamDictionary(params),methods = {},staticMethods = {}},self)
 	if parent then
-		o:inherentMethods(parent.methods)
+		inherentMethods(o.methods,parent.methods)
+		inherentMethods(o.staticMethods,parent.staticMethods)
 	end
 	return o
 end
