@@ -79,6 +79,8 @@ finally, close with ``endClass``:
   - ``super(param1)``
 - you may declare class methods inside the class:
   - ```method myMethod(a,b) end```
+- ``static`` declares a method to be static rather than an instance method.
+    - ```static method myMethod()```
 - to access class variables you use the ```self``` keyword
   - ```self.myVar = 6```
 - ```self``` is not needed when accessing class methods
