@@ -62,7 +62,7 @@ a list of the flags and command line options for dysnomia:
 - ```super()``` calls parent constructor inside of class. [(please see class section)](#class)
   - ``super(var1,var2)``
 - ``record`` immutable collection for holding data. [(please see records section)](#records)
-  - ```record MyRecord(a,b,c,d) {}```
+  - ```record MyRecord(a,b,c,d) endRec```
 - ``lambdas`` shorthand syntax for declaring an anonymous function. [(please see lambda section)](#lambda)
   - ``a -> a + 5``
 - ```#skipRequire``` add this in a comment on the line directly above any ```require``` statement to tell dysnomia to ignore that file. dysnomia will not attempt to parse the file included in the require.
