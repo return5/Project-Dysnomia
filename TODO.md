@@ -1,8 +1,10 @@
 
-- [ ] static methods
+- [ ] try-catch blocks
+- [x] static methods
 - [ ] add constructor to records
 - [x] move arg reading to its own class
-- [ ] fix up require to properly scan directories not in dysnomia project path
+- [x] fix up require to properly scan directories not in dysnomia project path - partly fixed
+  - [ ] come up with better solution.
 - [x] add lambdas.
 - [x] add records.
 - [ ] add metatable functions for classes.
@@ -15,6 +17,10 @@
 - [ ] syntax highlighter.
 - [ ] syntax checking and error handling.
 - [ ] remove necessity for 'var' keyword.
+- [ ] require inside of comment
+- [ ] derRecord
+- [ ] ImRecord
+- [ ] immutable array
 
 
 
