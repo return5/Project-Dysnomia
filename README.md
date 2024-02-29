@@ -17,6 +17,12 @@ Project [Dysnomia](https://en.wikipedia.org/wiki/Dysnomia_(moon)): adding syntax
 ## requirements
  - Lua >= 5.4
 
+## installing
+the easiest way to install is to grab the single file version of it [here](https://gist.github.com/return5/6e95741cb526262d149e69bb880e45f7). (checkout [squish](https://code.matthewwild.co.uk/squish/summary))
+you can then place theat file anywhere you want, maybe even make an alias or put it on your system path for easy use.  
+
+alternatively download the sourceode of thei project and run ``lua dysnomia.lua``
+
 ## running
 simply pass into dysnomia any dysnomia flags and the file which serves at the starting point of your application.  
 dysnomia will parse through the ```.dys``` files and (by default) run the Lua program.     
