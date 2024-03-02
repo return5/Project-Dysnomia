@@ -1,0 +1,46 @@
+
+--create a simple record.  this will be a local record which takes in two parameters
+record myRec(a,b) endRec
+
+--create simple global record. this is a record which takes in two parameters and is global in scope
+global record myGlobalRec(a,b) endRec
+
+--create a record with an attached method.
+record myRec2(a,b,c)
+    method print() io.write("a is: ",self.a," b is: ",self.b," c is: ",self.c,"\n") end
+endRec
+
+--create a record with a constructor and an attached method
+record consRec(name,age)
+    method print()
+        io.write("name is: ",self.name,"\n")
+        io.write("age is: ",self.age,"\n")
+     end
+
+     --note that record constructors take in no parameters.
+     constructor()
+        self.name = name
+        self.age = age < 100 and age or "you are very old."
+     end
+endRec
+
+
+--create obj from simple record
+var rec1 = myRec(1,2)
+
+--create obj from global record
+var rec2 = myGlobalRec(3,4)
+
+--create obj from myRec2
+var rec3 = myRec2(5,6,7)
+
+--calling the method on that record
+rec3:print()
+
+--create obj from consRec
+var rec4 = consRec("return5",105)
+
+--calling the print method on constructor record
+rec4:print()
+
+
