@@ -108,7 +108,13 @@ An immutable object for storing data. declare the number and names of the parame
 record MyRecord(a,b) endRec
 var rec = MyRecord(5,6)
 ````
+- by default records are local.
 - unlike classes, they do not have to be declared inside their own file.
+- like classes, they can have methods and constructors.
+  - unlike classes, record constructors take in no parameters. they use the parameters used in the record declaration.
+    - ```constructor() self.a = a end```
+- records can be declared global
+  - ``global record MyRec(c,d) endRec``
 
 ## lambda
 A shorthand syntax for declaring an anonymous function.
