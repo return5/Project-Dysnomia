@@ -1,5 +1,4 @@
 
---local Parser <const> = require('parser.Parser')
 local Config <const> = require('dysnomiaConfig.config')
 local FileAttr <const> = require('dysnomiaFileOperations.FileAttr')
 local setmetatable <const> = setmetatable
