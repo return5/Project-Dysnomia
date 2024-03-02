@@ -40,10 +40,6 @@ function ClassAndRecordParser:secondPass(parserParams,name)
 	return self
 end
 
-function ClassAndRecordParser.writeAssignmentOfParams(dysText,param)
-	dysText:writeFourArgs(param," = ",param,",")
-end
-
 function ClassAndRecordParser.writeParamAndCommaToDysText(dysText,param)
 	dysText:writeTwoArgs(param,",")
 end
@@ -83,9 +79,25 @@ function ClassAndRecordParser:parseStaticAndInstanceMethod(parserParams,sep)
 	return self
 end
 
-
 function ClassAndRecordParser:parseMethod(parserParams)
 	self:parseStaticAndInstanceMethod(parserParams,":")
+	return self
+end
+
+function ClassAndRecordParser:grabConstructorParams(parserParams)
+	local openingParens <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%(",self.doNothing)
+	local constructorParams <const> = {}
+	local closingParens <const> = self:loopUntilMatchParams(parserParams,openingParens + 1,"%)",self:returnFunctionAddingTextToParams(constructorParams))
+	return closingParens,constructorParams
+end
+
+function ClassAndRecordParser:parseConstructor(parserParams)
+	self.foundConstructor = true
+	local closingParens <const>, constructorParams <const> = self:grabConstructorParams(parserParams)
+	self:writeStartOfConstructor(parserParams,constructorParams)
+	local finalI <const> = self:writeSuperConstructorIfNeed(parserParams,closingParens)
+	self:writeEndOfConstructor(parserParams,constructorParams)
+	parserParams:updateSetI(self,finalI + 1)
 	return self
 end
 
@@ -98,6 +110,7 @@ end
 
 ClassAndRecordParser.tokenFuncs['method'] = ClassAndRecordParser.parseMethod
 ClassAndRecordParser.tokenFuncs['static'] = ClassAndRecordParser.parseStatic
+ClassAndRecordParser.tokenFuncs['constructor'] = ClassAndRecordParser.parseConstructor
 
 function ClassAndRecordParser:new(returnMode,startI)
 	return setmetatable({returnMode = returnMode,startI = startI,params = {}},self)

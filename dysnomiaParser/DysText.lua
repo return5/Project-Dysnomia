@@ -66,6 +66,11 @@ function DysText:replaceTextAt(text,index)
 	return self
 end
 
+function DysText:setDysText(newDys)
+	self.text = newDys
+	return self
+end
+
 function DysText:new()
 	return setmetatable({text = {}},self)
 end

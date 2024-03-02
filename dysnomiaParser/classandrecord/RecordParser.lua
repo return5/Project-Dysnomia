@@ -1,6 +1,7 @@
 local ClassAndRecordParser <const> = require('dysnomiaParser.classandrecord.ClassAndRecordParser')
 local Class <const> = require('dysnomiaParser.classandrecord.Class')
 local setmetatable <const> = setmetatable
+local concat <const> = table.concat
 
 
 local RecordParser <const> = {type = 'RecordParser'}
@@ -15,9 +16,9 @@ end
 
 _ENV = RecordParser
 
-function RecordParser:writeEndRecord(parserParams)
-	parserParams:getDysText():writeFiveArgs("\treturn setmetatable({},{__index = ",self.classOrRecordName,
-			",__newindex = function() end,__len = function() return #",self.classOrRecordName," end})\nend")
+function RecordParser:writeSetmetatableForRecord(parserParams)
+	parserParams:getDysText():writeFiveArgs("\t\treturn setmetatable({},{__index = ",self.classOrRecordName,
+			',__newindex = function() error("attempt to update a record: ',self.classOrRecordName,'") end,__len = function() return #'):writeTwoArgs(self.classOrRecordName," end})\n")
 	return self
 end
 
@@ -34,30 +35,38 @@ function RecordParser:parseParams(index,parserParams)
 	local closeParens <const> = self:loopUntilMatchParams(parserParams,openParens + 1,"%)",self:returnFunctionAddingTextToParams(self.params))
 	return closeParens
 end
-local function writeFinalAssigmentOfParams(dysText,param)
-	dysText:writeFourArgs(param," = ",param,"}\n")
-end
 
 local function writeFinalRecordParam(dysText,param)
 	dysText:writeTwoArgs(param,")\n")
 end
 
 function RecordParser:writeRecordFunctionParams(parserParams)
-	local dysText <const> = parserParams:getDysText()
-	self:writeParamsToDysText(dysText,self.params,self.writeParamAndCommaToDysText,writeFinalRecordParam)
+	self:writeParamsToDysText(parserParams:getDysText(),self.params,self.writeParamAndCommaToDysText,writeFinalRecordParam)
 	return self
 end
 
 function RecordParser:writeLocalRecordVar(parserParams)
-	local dysText <const> = parserParams:getDysText()
-	dysText:writeThreeArgs("\tlocal ",self.classOrRecordName," <const> = {")
-	self:writeParamsToDysText(dysText,self.params,self.writeAssignmentOfParams,writeFinalAssigmentOfParams)
+	parserParams:getDysText():writeThreeArgs("\tlocal ",self.classOrRecordName," <const> = {}\n")
+	return self
+end
+
+function RecordParser:writeNewConstructor(parserParams)
+	parserParams:getDysText():writeThreeArgs("\tfunction ",self.classOrRecordName,":new()\n")
+	return self
+end
+
+function RecordParser.writeAssignmentOfParams(dysText,param)
+	dysText:writeFiveArgs('\t\tself.',param,' = ',param,"\n")
+end
+
+function RecordParser:writeDefaultConstructor(parserParams)
+	self:writeNewConstructor(parserParams)
+	self:writeParamsToDysText(parserParams:getDysText(),self.params,self.writeAssignmentOfParams,self.writeAssignmentOfParams)
 	return self
 end
 
 function RecordParser:createClassObject()
-	local class <const> = Class:new(self.classOrRecordName,self.params,parent)
-	self.class = class
+	self.class = Class:new(self.classOrRecordName,self.params,parent)
 	return self
 end
 
@@ -77,10 +86,62 @@ function RecordParser:startParsingLocalRecord(parserParams)
 	return self
 end
 
+function RecordParser:writeConstructorIfNoneProvided(parserParams)
+	if not self.foundConstructor then
+		self:writeDefaultConstructor(parserParams)
+		self:writeSetmetatableForRecord(parserParams)
+		parserParams:getDysText():write("\tend\n")
+	end
+	return self
+end
+
+function RecordParser:returnConstructorCall(parserParams)
+	parserParams:getDysText():writeThreeArgs("\treturn ",self.classOrRecordName,":new()\nend\n")
+	return self
+end
+
 function RecordParser:parseEndRec(parserParams)
-	self:writeEndRecord(parserParams)
+	self:writeConstructorIfNoneProvided(parserParams)
+	self:returnConstructorCall(parserParams)
 	self:secondPass(parserParams,self.originalRecordName)
 	parserParams:update(self.returnMode,1)
+	return self
+end
+
+local openBlocks <const> = {
+	['do'] = true,
+	['then'] = true,
+	['function'] = true,
+}
+
+function RecordParser:parseOverBlocksUntil(parserParams)
+	local index = parserParams:getI()
+	local limit <const> = parserParams:getLength()
+	local count = 1
+	while count > 0 and index <= limit do
+		local token <const> = parserParams:getCurrentToken()
+		if openBlocks[token] then count = count + 1 elseif token == 'end' then count = count - 1 end
+		parserParams.currentMode:parseInput(parserParams)
+		index = parserParams:getI()
+	end
+	return index
+end
+
+function RecordParser:writeEndOfConstructor(parserParams)
+	parserParams:getDysText():replaceTextAt("",parserParams:getDysText():getLength())
+	self:writeSetmetatableForRecord(parserParams)
+	parserParams:getDysText():write("\tend\n")
+	return self
+end
+
+function RecordParser:writeSuperConstructorIfNeed(parserParams)
+	local startI <const> = self:loopUntilMatch(parserParams,parserParams:getI(),"%)",self.doNothing) + 1
+	parserParams:setI(startI)
+	return self:parseOverBlocksUntil(parserParams)
+end
+
+function RecordParser:writeStartOfConstructor(parserParams)
+	self:writeNewConstructor(parserParams)
 	return self
 end
 

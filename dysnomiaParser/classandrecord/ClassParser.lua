@@ -161,20 +161,12 @@ function ClassParser:writeClassConstructNoParent(parserParams)
 	parserParams:getDysText():write("},self)\nend\n")
 end
 
-function ClassParser:parseConstructor(parserParams)
-	self.foundConstructor = true
-	local closingParens<const>, constructorParams <const> = self:grabConstructorParams(parserParams)
-	self:writeStartOfConstructor(parserParams,constructorParams)
-	local finalI <const> = self:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
-	parserParams:updateSetI(self,finalI + 1)
-	return self
-end
-
-function ClassParser:grabConstructorParams(parserParams)
-	local openingParens <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%(",self.doNothing)
-	local constructorParams <const> = {}
-	local closingParens <const> = self:loopUntilMatchParams(parserParams,openingParens + 1,"%)",self:returnFunctionAddingTextToParams(constructorParams))
-	return closingParens,constructorParams
+function ClassParser:writeSuperConstructorIfNeed(parserParams,closingParens)
+	if self.parentName then
+		return self:writeSuperConstructor(parserParams,closingParens) + 1
+	end
+	parserParams:getDysText():write("{},self)\n")
+	return closingParens + 1
 end
 
 function ClassParser:writeStartOfConstructor(parserParams,constructorParams)
@@ -184,15 +176,8 @@ function ClassParser:writeStartOfConstructor(parserParams,constructorParams)
 	return self
 end
 
-function ClassParser:writeSuperConstructorIfNeed(parserParams,closingParens,constructorParams)
-	if self.parentName then
-		local endSuper <const> = self:writeSuperConstructor(parserParams,closingParens)
-		self:writeEndOfConstructor(parserParams,constructorParams)
-		return endSuper + 1
-	end
-	parserParams:getDysText():write("{},self)\n")
-	self:writeEndOfConstructor(parserParams,constructorParams)
-	return closingParens + 1
+function ClassParser.writeAssignmentOfParams(dysText,param)
+	dysText:writeFourArgs(param," = ",param,",")
 end
 
 local function updateCount(token,openingChar,closingChar,count)
@@ -240,7 +225,6 @@ function ClassParser:writeEndOfConstructor(parserParams)
 end
 
 ClassParser.tokenFuncs['endClass'] = ClassParser.parseEndClass
-ClassParser.tokenFuncs['constructor'] = ClassParser.parseConstructor
 
 function ClassParser:new(returnMode,startI)
 	return setmetatable(ClassAndRecordParser:new(returnMode,startI),self)
