@@ -1,7 +1,7 @@
 
 - [ ] try-catch blocks
 - [x] static methods
-- [ ] add constructor to records
+- [x] add constructor to records
 - [x] move arg reading to its own class
 - [x] fix up require to properly scan directories not in dysnomia project path - partly fixed
   - [ ] come up with better solution.

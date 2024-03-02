@@ -18,7 +18,8 @@ _ENV = RecordParser
 
 function RecordParser:writeSetmetatableForRecord(parserParams)
 	parserParams:getDysText():writeFiveArgs("\t\treturn setmetatable({},{__index = ",self.classOrRecordName,
-			',__newindex = function() error("attempt to update a record: ',self.classOrRecordName,'") end,__len = function() return #'):writeTwoArgs(self.classOrRecordName," end})\n")
+			',__newindex = function() error("attempt to update a record: ',self.classOrRecordName,'") end,__len = function() return #'):writeFourArgs(self.classOrRecordName,
+			" end, __pairs = function() return function(_,k) return next(",self.classOrRecordName,",k) end end})\n")
 	return self
 end
 
