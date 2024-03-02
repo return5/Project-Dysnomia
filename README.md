@@ -158,4 +158,4 @@ to keep the parser simpler and easier to write, there are a few things to keep i
   it is entirely readable, but may not be formatted well. under normal use cases this isnt a problem as it would only need to be read in a debugging session.
 
 ## dysnomiaExamples
-  please see the ``dysnomiaExamples`` directory for dysnomiaExamples of dysnomia.
+  please see the ``dysnomiaExamples`` directory for examples of dysnomia.
