@@ -41,6 +41,9 @@ local function runParser()
 	local isSkipped <const> = FileSkipper:scanForSkipFile(file)
 	if file and not isSkipped then
 		local scanned <const> = Scanner:new(file):scanFile()
+		for i=1,#scanned,1 do
+			--io.write(scanned[i],";;\n")
+		end
 		local parser <const> = Parser:new(scanned,file.filePath)
 		if file.isLuaFile then
 			parser:parseLuaFile()

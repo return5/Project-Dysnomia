@@ -46,13 +46,42 @@ function TokenParser:loopOverString(parserParams,start,endingQuoteMark)
 	return -1
 end
 
-function TokenParser:loopBackUntilMatch(text,from,to,doFunc)
+function TokenParser:loopBackUntilLoop(text,from,doFunc,matchFunc,to)
 	local index = from
-	while index > 0 and not match(text:getAt(index),to) do
+	while index > 0 and not matchFunc(text:getAt(index),to) do
 		doFunc(text:getAt(index),index)
 		index = index - 1
 	end
 	return index
+end
+
+local endStatements <const> = {
+	['end'] = true,
+	[';'] = true,
+	['do'] = true,
+	['for'] = true,
+	['then'] = true,
+	['else'] = true,
+	['while'] = true,
+	['until'] = true,
+	['repeat'] = true,
+	['{'] = true,
+	['}'] = true,
+	['return'] = true,
+	['\n'] = true
+
+}
+
+local function matchStatement(text)
+	return endStatements[text]
+end
+
+function TokenParser:loopBackUntilMatchStatement(text,from,doFunc)
+	return self:loopBackUntilLoop(text,from,doFunc,matchStatement)
+end
+
+function TokenParser:loopBackUntilMatch(text,from,to,doFunc)
+	return self:loopBackUntilLoop(text,from,match,doFunc,to)
 end
 
 function TokenParser:loopUntilMatch(parserParams,start,toFind,doFunc)

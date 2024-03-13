@@ -41,7 +41,7 @@ a list of the flags and command line options for dysnomia:
  - ```-help```  print help screen.  
 
 ## features, syntax changed, and enhancements
-- update operators:
+- update operators [(please see update Ops section)](#UpdateOps)
   - ```+=``` 
   - ```-=``` 
   - ```/=``` 
@@ -71,6 +71,24 @@ a list of the flags and command line options for dysnomia:
     var myRequire = require('myFile') --dysnomia will not scan this file.
   ```
 - ```#skipfile``` ```#skipFile``` ```#Skipfile``` ```#SkipFile``` add one of these in a comment to tell dysnomia to skip scanning and parsing of this file.
+
+## UpdateOps
+assigns the value of the right hand expression, the math operator in front of the equals sign, and the variable on the left to the variable.  
+```i += 1```
+- equivalent to: 
+```i = i + 1```  
+
+can assign to more than one var at a time: ```i,j += 1```
+- equivalent to ```i = i + 1; j = j + 1```  
+
+if there are more variables on the left hand side than on the right hand side, then the last variable on the right hand side is repeated: 
+```i,j,k += 1```
+- is equivalent to: ```i = i + 1; j = j + 1; k = k + 1```  
+
+if the repeated value on the right hand side is a function call, then it will be called only once, assigned to a variable, then that variable is used in its place.  
+```i,j,k += returnFive()```
+- is equivalent to: ```local __temp1 <const> = returnFive(); i = i + __temp1; j = j + __temp1; k = k + __temp1```
+
 
 ## class
 offers class declaration inspired by java records.  

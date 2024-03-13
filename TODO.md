@@ -1,4 +1,5 @@
 
+- [x] multi-var update ops
 - [ ] try-catch blocks
 - [x] static methods
 - [x] add constructor to records
