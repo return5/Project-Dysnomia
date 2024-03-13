@@ -78,8 +78,8 @@ assigns the value of the right hand expression, the math operator in front of th
 - equivalent to: 
 ```i = i + 1```  
 
-can assign to more than one var at a time: ```i,j += 1```
-- equivalent to ```i = i + 1; j = j + 1```  
+can assign to more than one var at a time: ```i,j += 1,2```
+- equivalent to ```i = i + 1; j = j + 2```  
 
 if there are more variables on the left hand side than on the right hand side, then the last variable on the right hand side is repeated: 
 ```i,j,k += 1```
