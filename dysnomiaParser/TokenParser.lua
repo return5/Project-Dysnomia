@@ -81,7 +81,7 @@ function TokenParser:loopBackUntilMatchStatement(text,from,doFunc)
 end
 
 function TokenParser:loopBackUntilMatch(text,from,to,doFunc)
-	return self:loopBackUntilLoop(text,from,match,doFunc,to)
+	return self:loopBackUntilLoop(text,from,doFunc,match,to)
 end
 
 function TokenParser:loopUntilMatch(parserParams,start,toFind,doFunc)

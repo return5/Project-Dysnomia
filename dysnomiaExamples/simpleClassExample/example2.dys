@@ -1,6 +1,6 @@
 
 --import in Simpleclass.dys
-var SimpleClass = require('dysnomiaExamples.example2.SimpleClass')
+var SimpleClass = require('dysnomiaExamples.simpleClassExample.SimpleClass')
 
 --instantiate a object from SimpleClass
 var myClass = SimpleClass:new(2,3)
