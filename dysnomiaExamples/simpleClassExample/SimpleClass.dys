@@ -1,5 +1,8 @@
 --create a very simple class example
 class SimpleClass(a,b)
+
+    metamethod add(c1,c2) return c1.a + c2.a end
     method testing() io.write("testing\n") end
+   method testing2() add() end
 
 endClass

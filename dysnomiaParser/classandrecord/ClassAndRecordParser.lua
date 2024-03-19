@@ -25,7 +25,7 @@ function ClassAndRecordParser:writeSelfInFrontOfMethodCall(i,dysText,regex,patte
 	return self
 end
 
-function ClassAndRecordParser:secondPass(parserParams,name,sep)
+function ClassAndRecordParser:secondPass(parserParams,name)
 	local regex <const> = name .. "[:%.]"
 	local dysText <const> = parserParams:getDysText()
 	local staticName <const> = self.classOrRecordName .. "."
@@ -36,7 +36,6 @@ function ClassAndRecordParser:secondPass(parserParams,name,sep)
 			self:writeSelfInFrontOfMethodCall(i,dysText,regex,staticName)
 		end
 	end
-	self:writeCustomMetaMethods(sep,parserParams:getDysText())
 	return self
 end
 
@@ -115,7 +114,7 @@ function ClassAndRecordParser:parseStatic(parserParams)
 	return self
 end
 
-function ClassAndRecordParser:writeCustomMetaMethods(sep,dysText)
+function ClassAndRecordParser:writeCustomMetaMethods(sep,dysText,newLine)
 	local strTbl <const> = {dysText:getAt(self.metaMethodsI)}
 	for i=1,#self.class.metaMethods,1 do
 		strTbl[#strTbl + 1] = sep
@@ -126,6 +125,7 @@ function ClassAndRecordParser:writeCustomMetaMethods(sep,dysText)
 		strTbl[#strTbl + 1] = "."
 		strTbl[#strTbl + 1] = self.class.metaMethods[i]
 	end
+	if newLine then strTbl[#strTbl + 1] = newLine end
 	dysText:replaceTextAt(concat(strTbl),self.metaMethodsI)
 	return self
 end

@@ -24,3 +24,9 @@ myClass.c = 7
 io.write("myClass.c is: ",myClass.c,"\n")
 
 --if you want to test it, try to update or add a field to the record.
+
+
+--we can use the 'add' metamethod in SimpleClass to add two SimpleClass objects together
+var c1 = SimpleClass:new(1,5)
+var c2 = SimpleClass:new(2,6)
+io.write("adding c1 and c2 equals: ",c1 + c2,"\n")

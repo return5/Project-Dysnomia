@@ -1,5 +1,6 @@
 local Class <const> = require('dysnomiaParser.classandrecord.Class')
 local ClassAndRecordParser <const> = require('dysnomiaParser.classandrecord.ClassAndRecordParser')
+local Config <const> = require('dysnomiaConfig.config')
 
 local setmetatable <const> = setmetatable
 
@@ -67,16 +68,16 @@ end
 
 function ClassParser:writeStartOfClass(parserParams)
 	parserParams:getDysText()
-			:writeFiveArgs("\nlocal setmetatable <const> = setmetatable\nlocal ",
-				self.classOrRecordName," <const> = {__className = '",self.classOrRecordName,"'}\n")
-			:writeFourArgs(self.classOrRecordName,".__index = ",self.classOrRecordName,"\n")
+			:writeFiveArgs(Config.newLine,"local setmetatable <const> = setmetatable",Config.newLine,"local ",self.classOrRecordName)
+			:writeFiveArgs(" <const> = {__className = '",self.classOrRecordName,"'}",Config.newLine,self.classOrRecordName)
+			:writeThreeArgs(".__index = ",self.classOrRecordName,Config.newLine)
 	self:writeParent(parserParams)
 	return self
 end
 
 function ClassParser:writeParent(parserParams)
 	if self.parentName then
-		parserParams:getDysText():writeFiveArgs("setmetatable(",self.classOrRecordName,",",self.parentName,")\n")
+		parserParams:getDysText():writeFiveArgs("setmetatable(",self.classOrRecordName,",",self.parentName,")"):write(Config.newLine)
 	end
 	return self
 end
@@ -85,11 +86,13 @@ function ClassParser:parseEndClass(parserParams)
 	self:secondPass(parserParams,self.classOrRecordName)
 	self:writeEndClass(parserParams)
 	parserParams:update(self.returnMode,1)
+	self:writeCustomMetaMethods(Config.newLine .. self.classOrRecordName ..".",parserParams:getDysText(),Config.newLine)
 	return self
 end
 
 function ClassParser:writeEndClass(parserParams)
 	self:writeClassConstructor(parserParams)
+	self.metaMethodsI = parserParams:getDysText():getLength()
 	parserParams:getDysText():writeTwoArgs("return ",self.classOrRecordName)
 	return self
 end

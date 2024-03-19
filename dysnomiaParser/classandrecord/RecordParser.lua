@@ -105,7 +105,8 @@ end
 function RecordParser:parseEndRec(parserParams)
 	self:writeConstructorIfNoneProvided(parserParams)
 	self:returnConstructorCall(parserParams)
-	self:secondPass(parserParams,self.originalRecordName,",")
+	self:secondPass(parserParams,self.originalRecordName)
+	self:writeCustomMetaMethods(",",parserParams:getDysText())
 	parserParams:update(self.returnMode,1)
 	return self
 end
