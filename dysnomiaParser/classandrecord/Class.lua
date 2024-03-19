@@ -23,11 +23,18 @@ local function inherentMethods(methods,parentMethods)
 	end
 end
 
+local function inherentMetaMethods(metamethods,parentMetamethods)
+	for i=1,#parentMetamethods,1 do
+		metamethods[i] = parentMetamethods[i]
+	end
+end
+
 function Class:new(name,params,parent)
-	local o <const> = setmetatable({name = name, params = params,parent = parent,foundConstructor = false,paramDict = creatParamDictionary(params),methods = {},staticMethods = {}},self)
+	local o <const> = setmetatable({name = name, params = params,parent = parent,foundConstructor = false,paramDict = creatParamDictionary(params),methods = {},staticMethods = {},metaMethods = {}},self)
 	if parent then
 		inherentMethods(o.methods,parent.methods)
 		inherentMethods(o.staticMethods,parent.staticMethods)
+		inherentMetaMethods(o.metaMethods,parent.metaMethods)
 	end
 	return o
 end

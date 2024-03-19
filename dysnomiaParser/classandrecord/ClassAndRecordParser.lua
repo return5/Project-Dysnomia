@@ -4,7 +4,6 @@ local match <const> = string.match
 local concat <const> = table.concat
 local remove <const> = table.remove
 
-
 local ClassAndRecordParser <const> = {type = 'ClassAndRecordParser'}
 ClassAndRecordParser.__index = ClassAndRecordParser
 
@@ -17,7 +16,6 @@ end
 
 _ENV = ClassAndRecordParser
 
-
 function ClassAndRecordParser:writeSelfInFrontOfMethodCall(i,dysText,regex,pattern)
 	local prevI <const> = self:loopBackUntilMatch(dysText,i - 1,"%S",self.doNothing)
 	local text <const> = dysText:getAt(prevI)
@@ -27,16 +25,18 @@ function ClassAndRecordParser:writeSelfInFrontOfMethodCall(i,dysText,regex,patte
 	return self
 end
 
-function ClassAndRecordParser:secondPass(parserParams,name)
+function ClassAndRecordParser:secondPass(parserParams,name,sep)
 	local regex <const> = name .. "[:%.]"
 	local dysText <const> = parserParams:getDysText()
+	local staticName <const> = self.classOrRecordName .. "."
 	for i=self.startI,dysText:getLength(),1 do
 		if self.class.methods[dysText:getAt(i)] then
 			self:writeSelfInFrontOfMethodCall(i,dysText,regex,"self:")
 		elseif self.class.staticMethods[dysText:getAt(i)] then
-			self:writeSelfInFrontOfMethodCall(i,dysText,regex,"self.")
+			self:writeSelfInFrontOfMethodCall(i,dysText,regex,staticName)
 		end
 	end
+	self:writeCustomMetaMethods(sep,parserParams:getDysText())
 	return self
 end
 
@@ -71,16 +71,21 @@ function ClassAndRecordParser:returnFunctionAddingTextToParams(params)
 	end
 end
 
-function ClassAndRecordParser:parseStaticAndInstanceMethod(parserParams,sep)
+function ClassAndRecordParser:parseMethodName(parserParams)
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%S",self.doNothing)
-	self.class.methods[parserParams:getAt(newI)] = true
+	return newI,parserParams:getAt(newI)
+end
+
+function ClassAndRecordParser:parseStaticAndInstanceMethod(parserParams,sep,newI)
 	parserParams:getDysText():writeFourArgs("function ",self.classOrRecordName,sep,parserParams:getAt(newI))
 	parserParams:updateSetI(self,newI + 1)
 	return self
 end
 
 function ClassAndRecordParser:parseMethod(parserParams)
-	self:parseStaticAndInstanceMethod(parserParams,":")
+	local newI <const>,methodName <const> =  self:parseMethodName(parserParams)
+	self.class.methods[methodName] = true
+	self:parseStaticAndInstanceMethod(parserParams,":",newI)
 	return self
 end
 
@@ -104,17 +109,42 @@ end
 function ClassAndRecordParser:parseStatic(parserParams)
 	local newI <const> = self:loopUntilMatch(parserParams,parserParams:getI() + 1,"%S",self.doNothing)
 	parserParams:updateSetI(self,newI)
-	self:parseStaticAndInstanceMethod(parserParams,".")
+	local nextI <const>,methodName <const> = self:parseMethodName(parserParams)
+	self.class.staticMethods[methodName] = true
+	self:parseStaticAndInstanceMethod(parserParams,".",nextI)
+	return self
+end
+
+function ClassAndRecordParser:writeCustomMetaMethods(sep,dysText)
+	local strTbl <const> = {dysText:getAt(self.metaMethodsI)}
+	for i=1,#self.class.metaMethods,1 do
+		strTbl[#strTbl + 1] = sep
+		strTbl[#strTbl + 1] = "__"
+		strTbl[#strTbl + 1] = self.class.metaMethods[i]
+		strTbl[#strTbl + 1] = " = "
+		strTbl[#strTbl + 1] = self.classOrRecordName
+		strTbl[#strTbl + 1] = "."
+		strTbl[#strTbl + 1] = self.class.metaMethods[i]
+	end
+	dysText:replaceTextAt(concat(strTbl),self.metaMethodsI)
+	return self
+end
+
+function ClassAndRecordParser:parseMetaMethod(parserParams)
+	local newI <const>, methodName <const> = self:parseMethodName(parserParams)
+	self.class.staticMethods[methodName] = true
+	self.class.metaMethods[#self.class.metaMethods + 1] = methodName
+	self:parseStaticAndInstanceMethod(parserParams,".",newI)
 	return self
 end
 
 ClassAndRecordParser.tokenFuncs['method'] = ClassAndRecordParser.parseMethod
 ClassAndRecordParser.tokenFuncs['static'] = ClassAndRecordParser.parseStatic
 ClassAndRecordParser.tokenFuncs['constructor'] = ClassAndRecordParser.parseConstructor
+ClassAndRecordParser.tokenFuncs['metamethod'] = ClassAndRecordParser.parseMetaMethod
 
 function ClassAndRecordParser:new(returnMode,startI)
 	return setmetatable({returnMode = returnMode,startI = startI,params = {}},self)
 end
 
 return ClassAndRecordParser
-

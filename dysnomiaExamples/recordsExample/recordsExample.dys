@@ -25,6 +25,12 @@ record consRec(name,age)
 endRec
 
 
+--create a record with a metamethod 'add' so that we can add two records together
+record addRec(a)
+    metamethod add(rec1,rec2) return rec1.a + rec2.a end
+endRec
+
+
 --create obj from simple record
 var rec1 = myRec(1,2)
 
@@ -42,5 +48,9 @@ var rec4 = consRec("return5",105)
 
 --calling the print method on constructor record
 rec4:print()
+
+var rec5 = addRec(5)
+var rec6 = addRec(6)
+io.write("Adding rec5 and rec6 equals: ",rec5 + rec6,"\n")
 
 

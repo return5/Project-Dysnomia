@@ -1,6 +1,7 @@
 local ClassAndRecordParser <const> = require('dysnomiaParser.classandrecord.ClassAndRecordParser')
 local Class <const> = require('dysnomiaParser.classandrecord.Class')
 local setmetatable <const> = setmetatable
+local write = io.write
 
 local RecordParser <const> = {type = 'RecordParser'}
 RecordParser.__index = RecordParser
@@ -17,7 +18,9 @@ _ENV = RecordParser
 function RecordParser:writeSetmetatableForRecord(parserParams)
 	parserParams:getDysText():writeFiveArgs("\t\treturn setmetatable({},{__index = ",self.classOrRecordName,
 			',__newindex = function() error("attempt to update a record: ',self.classOrRecordName,'") end,__len = function() return #'):writeFourArgs(self.classOrRecordName,
-			" end, __pairs = function() return function(_,k) return next(",self.classOrRecordName,",k) end end})\n")
+			" end, __pairs = function() return function(_,k) return next(",self.classOrRecordName,",k) end end");
+	self.metaMethodsI = parserParams:getDysText():getLength()
+	parserParams:getDysText():write("})\n")
 	return self
 end
 
@@ -102,7 +105,7 @@ end
 function RecordParser:parseEndRec(parserParams)
 	self:writeConstructorIfNoneProvided(parserParams)
 	self:returnConstructorCall(parserParams)
-	self:secondPass(parserParams,self.originalRecordName)
+	self:secondPass(parserParams,self.originalRecordName,",")
 	parserParams:update(self.returnMode,1)
 	return self
 end
