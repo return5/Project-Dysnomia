@@ -117,6 +117,9 @@ finally, close with ``endClass``:
   - ```local function myFun(a,b) end```
 - ``global`` declares that a function is global in scope.
   - ``global function myFunc(a,b) end``
+- ``metamethod`` declares a metamethod on the class  
+  - the metamethods are the standard metamethods for lua objects. 
+  - ``metamethod add(c1,c1) return c1.a + c2.a end``
 - note: spaces are required between keywords in declaration.
 - note: classes need to be declared inside their own separate file.
 
@@ -128,7 +131,7 @@ var rec = MyRecord(5,6)
 ````
 - by default records are local.
 - unlike classes, they do not have to be declared inside their own file.
-- like classes, they can have methods and constructors.
+- like classes, they can have methods,metamethods, and constructors.
   - unlike classes, record constructors take in no parameters. they use the parameters used in the record declaration.
     - ```constructor() self.a = a end```
 - records can be declared global
