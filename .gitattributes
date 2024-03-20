@@ -1,9 +1,14 @@
 # Basic .gitattributes for a Lua repo.
 
+*.dys linguist-detectable
+
 # Source files
 # ============
 *.lua       text
 *.dys       text
+
+*.lua linguist-language=Lua
+*.dys linguist-language=Dysnomia
 
 # Luadoc output
 # =============
