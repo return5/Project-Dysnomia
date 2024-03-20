@@ -126,15 +126,15 @@ function ClassParser:writeClassConstructorAndParams(parserParams)
 end
 
 local function writeChildParamAssignment(dysText,param)
-	dysText:writeFiveArgs("\t__obj__.",param," = ",param,"\n")
+	dysText:writeFiveArgs("\t__obj__.",param," = ",param,Config.newLine)
 end
 
 function ClassParser:writeClassConstructWithParent(parserParams)
 	parserParams:getDysText():writeThreeArgs("\tlocal __obj__ = setmetatable(",self.parentName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),self.class.parent.params,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
-	parserParams:getDysText():write("),self)\n")
+	parserParams:getDysText():writeTwoArgs("),self)",Config.newLine)
 	self:writeChildParams(parserParams,writeChildParamAssignment,writeChildParamAssignment)
-	parserParams:getDysText():write("\treturn __obj__\nend\n")
+	parserParams:getDysText():writeFourArgs("\treturn __obj__",Config.newLine,"end",Config.newLine)
 	return self
 end
 
@@ -161,21 +161,21 @@ end
 function ClassParser:writeClassConstructNoParent(parserParams)
 	parserParams:getDysText():write("\treturn setmetatable({")
 	self:writeParamsToDysText(parserParams:getDysText(),self.params,self.writeAssignmentOfParams,writeFinalParamAssignmentToDysText)
-	parserParams:getDysText():write("},self)\nend\n")
+	parserParams:getDysText():writeFourArgs("},self)",Config.newLine,"end",Config.newLine)
 end
 
 function ClassParser:writeSuperConstructorIfNeed(parserParams,closingParens)
 	if self.parentName then
 		return self:writeSuperConstructor(parserParams,closingParens) + 1
 	end
-	parserParams:getDysText():write("{},self)\n")
+	parserParams:getDysText():writeTwoArgs("{},self)",Config.newLine)
 	return closingParens + 1
 end
 
 function ClassParser:writeStartOfConstructor(parserParams,constructorParams)
 	parserParams:getDysText():writeThreeArgs("function ",self.classOrRecordName,":new(")
 	self:writeParamsToDysText(parserParams:getDysText(),constructorParams,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
-	parserParams:getDysText():writeTwoArgs(")\n","\t\tlocal __obj__ = setmetatable(")
+	parserParams:getDysText():writeThreeArgs(")",Config.newLine,"\t\tlocal __obj__ = setmetatable(")
 	return self
 end
 
@@ -206,7 +206,7 @@ local function loopThroughUntilClosingChar(start,parserParams,openingChar,closin
 end
 
 local function writeClosingParenToSuper(dysText,param)
-	dysText:writeTwoArgs(param,"),self)\n")
+	dysText:writeThreeArgs(param,"),self)",Config.newLine)
 end
 
 function ClassParser:writeSuperConstructor(parserParams,closingParens)
@@ -221,9 +221,9 @@ end
 function ClassParser:writeEndOfConstructor(parserParams)
 	parserParams:getDysText():write("\t\t__obj__:__constructor__(")
 	self:writeChildParams(parserParams,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
-	parserParams:getDysText():writeThreeArgs(")\n\t\treturn __obj__\n\tend\n\nfunction ",self.classOrRecordName,":__constructor__(")
+	parserParams:getDysText():writeFiveArgs(")",Config.newLine,"\t\treturn __obj__\n\tend",Config.newLine,"function "):writeTwoArgs(self.classOrRecordName,":__constructor__(")
 	self:writeChildParams(parserParams,self.writeParamAndCommaToDysText,writeFinalParamToDysText)
-	parserParams:getDysText():write(")\n")
+	parserParams:getDysText():writeTwoArgs(")",Config.newLine)
 	return self
 end
 

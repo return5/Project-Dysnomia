@@ -1,5 +1,6 @@
 local ClassAndRecordParser <const> = require('dysnomiaParser.classandrecord.ClassAndRecordParser')
 local Class <const> = require('dysnomiaParser.classandrecord.Class')
+local Config <const> = require('dysnomiaConfig.config')
 local setmetatable <const> = setmetatable
 local write = io.write
 
@@ -20,7 +21,7 @@ function RecordParser:writeSetmetatableForRecord(parserParams)
 			',__newindex = function() error("attempt to update a record: ',self.classOrRecordName,'") end,__len = function() return #'):writeFourArgs(self.classOrRecordName,
 			" end, __pairs = function() return function(_,k) return next(",self.classOrRecordName,",k) end end");
 	self.metaMethodsI = parserParams:getDysText():getLength()
-	parserParams:getDysText():write("})\n")
+	parserParams:getDysText():writeTwoArgs("})",Config.newLine)
 	return self
 end
 
@@ -39,7 +40,7 @@ function RecordParser:parseParams(index,parserParams)
 end
 
 local function writeFinalRecordParam(dysText,param)
-	dysText:writeTwoArgs(param,")\n")
+	dysText:writeTwoArgs(param,")",Config.newLine)
 end
 
 function RecordParser:writeRecordFunctionParams(parserParams)
@@ -48,17 +49,17 @@ function RecordParser:writeRecordFunctionParams(parserParams)
 end
 
 function RecordParser:writeLocalRecordVar(parserParams)
-	parserParams:getDysText():writeThreeArgs("\tlocal ",self.classOrRecordName," <const> = {}\n")
+	parserParams:getDysText():writeFourArgs("\tlocal ",self.classOrRecordName," <const> = {}",Config.newLine)
 	return self
 end
 
 function RecordParser:writeNewConstructor(parserParams)
-	parserParams:getDysText():writeThreeArgs("\tfunction ",self.classOrRecordName,":new()\n")
+	parserParams:getDysText():writeFourArgs("\tfunction ",self.classOrRecordName,":new()",Config.newLine)
 	return self
 end
 
 function RecordParser.writeAssignmentOfParams(dysText,param)
-	dysText:writeFiveArgs('\t\tself.',param,' = ',param,"\n")
+	dysText:writeFiveArgs('\t\tself.',param,' = ',param,Config.newLine)
 end
 
 function RecordParser:writeDefaultConstructor(parserParams)
@@ -92,13 +93,13 @@ function RecordParser:writeConstructorIfNoneProvided(parserParams)
 	if not self.foundConstructor then
 		self:writeDefaultConstructor(parserParams)
 		self:writeSetmetatableForRecord(parserParams)
-		parserParams:getDysText():write("\tend\n")
+		parserParams:getDysText():writeTwoArgs("\tend",Config.newLine)
 	end
 	return self
 end
 
 function RecordParser:returnConstructorCall(parserParams)
-	parserParams:getDysText():writeThreeArgs("\treturn ",self.classOrRecordName,":new()\nend\n")
+	parserParams:getDysText():writeFiveArgs("\treturn ",self.classOrRecordName,":new()",Config.newLine,"end",Config.newLine)
 	return self
 end
 
@@ -133,7 +134,7 @@ end
 function RecordParser:writeEndOfConstructor(parserParams)
 	parserParams:getDysText():replaceTextAt("",parserParams:getDysText():getLength())
 	self:writeSetmetatableForRecord(parserParams)
-	parserParams:getDysText():write("\tend\n")
+	parserParams:getDysText():writeTwoArgs("\tend",Config.newLine)
 	return self
 end
 

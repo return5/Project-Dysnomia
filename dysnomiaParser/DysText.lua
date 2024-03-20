@@ -26,22 +26,32 @@ function DysText:write(arg)
 end
 
 function DysText:writeTwoArgs(arg1,arg2)
-	self:write(arg1):write(arg2)
+	self.text[#self.text + 1] = arg1
+	self.text[#self.text + 1] = arg2
 	return self
 end
 
 function DysText:writeThreeArgs(arg1,arg2,arg3)
-	self:writeTwoArgs(arg1,arg2):write(arg3)
+	self.text[#self.text + 1] = arg1
+	self.text[#self.text + 1] = arg2
+	self.text[#self.text + 1] = arg3
 	return self
 end
 
 function DysText:writeFourArgs(arg1,arg2,arg3,arg4)
-	self:writeThreeArgs(arg1,arg2,arg3):write(arg4)
+	self.text[#self.text + 1] = arg1
+	self.text[#self.text + 1] = arg2
+	self.text[#self.text + 1] = arg3
+	self.text[#self.text + 1] = arg4
 	return self
 end
 
 function DysText:writeFiveArgs(arg1,arg2,arg3,arg4,arg5)
-	self:writeFourArgs(arg1,arg2,arg3,arg4):write(arg5)
+	self.text[#self.text + 1] = arg1
+	self.text[#self.text + 1] = arg2
+	self.text[#self.text + 1] = arg3
+	self.text[#self.text + 1] = arg4
+	self.text[#self.text + 1] = arg5
 	return self
 end
 
