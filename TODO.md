@@ -8,7 +8,7 @@
   - [ ] come up with better solution.
 - [x] add lambdas.
 - [x] add records.
-- [ ] add metatable functions for classes.
+- [x] add metatable functions for classes.
 - [x] annotation for skipping a required file. 
 - [x] annotation for skipping file itself.
 - [x] commandline param for skipping file(s).
